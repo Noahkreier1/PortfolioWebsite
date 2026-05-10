@@ -1,0 +1,176 @@
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-bg: #0B0A09;
+  --color-surface: #141210;
+  --color-border: #252018;
+  --color-text: #EDE7DC;
+  --color-muted: #7A7468;
+  --color-accent: #C4A46A;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  font-family: 'Inter', system-ui, sans-serif;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+@media (pointer: fine) {
+  * { cursor: none !important; }
+}
+
+::selection {
+  background: var(--color-accent);
+  color: #0B0A09;
+}
+
+::-webkit-scrollbar { width: 3px; }
+::-webkit-scrollbar-track { background: var(--color-bg); }
+::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 2px; }
+::-webkit-scrollbar-thumb:hover { background: #3a3428; }
+
+/* ─── Utilities ─── */
+
+.section-label {
+  @apply flex items-center gap-3 text-xs font-medium tracking-[0.25em] uppercase text-text-muted;
+}
+.section-label::before {
+  content: '';
+  display: block;
+  width: 24px;
+  height: 1px;
+  background: currentColor;
+  flex-shrink: 0;
+}
+
+/* Grid / dot backgrounds — warmer tint */
+.bg-grid {
+  background-image:
+    linear-gradient(rgba(237,231,220,0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(237,231,220,0.025) 1px, transparent 1px);
+  background-size: 60px 60px;
+}
+.bg-dots {
+  background-image: radial-gradient(rgba(237,231,220,0.06) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+
+/* Nav links */
+.nav-link {
+  position: relative;
+  color: var(--color-muted);
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: color 0.25s ease;
+  letter-spacing: 0.01em;
+}
+.nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: -3px; left: 0;
+  width: 0; height: 1px;
+  background: var(--color-text);
+  transition: width 0.3s ease;
+}
+.nav-link:hover { color: var(--color-text); }
+.nav-link:hover::after { width: 100%; }
+
+/* Buttons */
+.btn-accent {
+  @apply relative inline-flex items-center gap-2 bg-accent text-bg font-body font-semibold text-sm px-8 py-4 rounded-full overflow-hidden;
+  transition: gap 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
+}
+.btn-accent:hover {
+  box-shadow: 0 8px 32px rgba(196, 164, 106, 0.18);
+  gap: 14px;
+}
+
+.btn-outline {
+  @apply inline-flex items-center gap-2 border border-border text-text-primary font-body font-medium text-sm px-8 py-4 rounded-full;
+  transition: border-color 0.3s ease, background 0.3s ease;
+}
+.btn-outline:hover {
+  border-color: rgba(196,164,106,0.35);
+  background: rgba(196,164,106,0.04);
+}
+
+/* Project cards */
+.project-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 16px;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  transition: border-color 0.35s ease, transform 0.4s cubic-bezier(0.25,0.1,0.25,1);
+}
+.project-card:hover {
+  border-color: rgba(196,164,106,0.5);
+  transform: translateY(-4px);
+}
+.project-card-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(11,10,9,0.78);
+  opacity: 0;
+  transition: opacity 0.35s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+}
+.project-card:hover .project-card-overlay { opacity: 1; }
+
+/* Service cards */
+.service-card {
+  padding: 2rem;
+  border: 1px solid var(--color-border);
+  border-radius: 16px;
+  background: var(--color-surface);
+  transition: border-color 0.3s ease, background 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+.service-card:hover {
+  border-color: rgba(196,164,106,0.28);
+  background: #161410;
+}
+.service-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(196,164,106,0.45), transparent);
+  transform: scaleX(0);
+  transition: transform 0.4s ease;
+}
+.service-card:hover::before { transform: scaleX(1); }
+
+/* Team cards */
+.team-card:hover {
+  border-color: rgba(196,164,106,0.28) !important;
+  transform: translateY(-3px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
