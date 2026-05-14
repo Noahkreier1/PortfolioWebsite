@@ -3,8 +3,8 @@ import { motion, AnimatePresence } from 'framer-motion'
 
 export default function ThemeToggle() {
   const [theme, setTheme] = useState(() => {
-    if (typeof document === 'undefined') return 'dark'
-    return document.documentElement.dataset.theme || 'dark'
+    if (typeof document === 'undefined') return 'light'
+    return document.documentElement.dataset.theme || 'light'
   })
 
   useEffect(() => {

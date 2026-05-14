@@ -33,7 +33,7 @@ export default function Services() {
   const inView = useInView(ref, { once: true, margin: '-60px' })
 
   return (
-    <section id="services" className="py-20 border-t border-border" style={{ background: 'var(--color-bg)' }}>
+    <section id="services" className="py-14 sm:py-20 border-t border-border" style={{ background: 'var(--color-bg)' }}>
       <div className="max-w-6xl mx-auto px-6" ref={ref}>
 
         <div className="flex items-end justify-between mb-10">

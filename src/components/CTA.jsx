@@ -6,7 +6,7 @@ export default function CTA() {
   const inView = useInView(ref, { once: true, margin: '-60px' })
 
   return (
-    <section id="contact" className="relative py-24 border-t border-border overflow-hidden" ref={ref}>
+    <section id="contact" className="relative py-16 sm:py-24 border-t border-border overflow-hidden" ref={ref}>
       <div className="absolute inset-0 bg-grid pointer-events-none" style={{ opacity: 0.6 }} />
       <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse 60% 50% at 50% 50%, var(--color-accent-glow) 0%, transparent 70%)' }} />
 
@@ -19,7 +19,7 @@ export default function CTA() {
         <motion.h2 initial={{ opacity: 0, y: 20 }} animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.7, delay: 0.1 }}
           className="font-display"
-          style={{ fontWeight: 500, letterSpacing: '-0.04em', fontSize: 'clamp(2.4rem, 5.4vw, 4.6rem)', color: 'var(--color-text)', lineHeight: 1.0, marginBottom: '1.25rem' }}>
+          style={{ fontWeight: 500, letterSpacing: '-0.04em', fontSize: 'clamp(2rem, 5.4vw, 4.6rem)', color: 'var(--color-text)', lineHeight: 1.05, marginBottom: '1.25rem' }}>
           Bereit für eine Webseite,<br />
           <em className="font-display-italic" style={{ color: 'var(--color-accent)', fontWeight: 500 }}>die wirklich verkauft?</em>
         </motion.h2>

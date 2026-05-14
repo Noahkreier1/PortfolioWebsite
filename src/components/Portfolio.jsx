@@ -173,7 +173,7 @@ export default function Portfolio() {
   const inView = useInView(ref, { once: true, margin: '-60px' })
 
   return (
-    <section id="work" className="py-20 border-t border-border" style={{ background: 'var(--color-bg)' }}>
+    <section id="work" className="py-14 sm:py-20 border-t border-border" style={{ background: 'var(--color-bg)' }}>
       <div className="max-w-6xl mx-auto px-6">
 
         <div ref={ref} className="flex items-end justify-between mb-10">

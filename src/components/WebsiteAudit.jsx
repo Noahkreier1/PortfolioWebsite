@@ -144,13 +144,13 @@ function IdleState({ url, setUrl, onAnalyze, error }) {
       initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -8, scale: 0.97 }}
       transition={{ duration: 0.35 }}
-      className="rounded-2xl p-7"
+      className="rounded-2xl p-5 sm:p-7"
       style={{ background: 'var(--color-bg-soft)', border: '1px solid var(--color-border)' }}
     >
       <p style={{ fontFamily: 'Inter', fontSize: 11, color: 'var(--color-text-faint)', textTransform: 'uppercase', letterSpacing: '0.18em', marginBottom: 14 }}>
         Ihre aktuelle Webseiten-URL
       </p>
-      <div style={{ display: 'flex', gap: 8 }}>
+      <div className="flex flex-col sm:flex-row" style={{ gap: 8 }}>
         <input
           value={url}
           onChange={e => setUrl(e.target.value)}
@@ -223,7 +223,7 @@ function ScanningState({ cleanUrl, stepsDone, progress }) {
       initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.35 }}
-      className="rounded-2xl p-7"
+      className="rounded-2xl p-5 sm:p-7"
       style={{ background: 'var(--color-bg-soft)', border: '1px solid var(--color-border)' }}
     >
       {/* Scanning header */}
@@ -303,7 +303,7 @@ function ResultsState({ scores, cleanUrl, onReset }) {
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.45, ease: [0.25, 0.1, 0.25, 1] }}
-      className="rounded-2xl p-7"
+      className="rounded-2xl p-5 sm:p-7"
       style={{ background: 'var(--color-bg-soft)', border: `1px solid var(--color-border)` }}
     >
       {/* Header — grade + meta */}
@@ -447,7 +447,7 @@ export default function WebsiteAudit() {
     <section
       ref={sectionRef}
       style={{ background: 'var(--color-bg-soft)', borderTop: '1px solid var(--color-border)', borderBottom: '1px solid var(--color-border)' }}
-      className="py-20 overflow-hidden"
+      className="py-14 sm:py-20 overflow-hidden"
     >
       <div className="max-w-6xl mx-auto px-6">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">

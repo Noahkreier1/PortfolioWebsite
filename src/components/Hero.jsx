@@ -225,7 +225,7 @@ export default function Hero() {
       <div className="absolute top-0 right-0 pointer-events-none" style={{ width: 480, height: 480, background: 'radial-gradient(circle at 70% 25%, var(--color-accent-glow) 0%, transparent 65%)' }} />
 
       {/* Content */}
-      <div className="relative z-10 flex-1 flex items-center max-w-6xl mx-auto px-6 w-full pt-24 pb-16">
+      <div className="relative z-10 flex-1 flex items-center max-w-6xl mx-auto px-5 sm:px-6 w-full pt-20 sm:pt-24 pb-12 sm:pb-16">
         <div className="w-full flex items-center justify-between gap-12">
 
           {/* Text */}
@@ -246,7 +246,7 @@ export default function Hero() {
             <motion.h1
               variants={item}
               className="font-display"
-              style={{ fontWeight: 500, lineHeight: 0.98, letterSpacing: '-0.035em', fontSize: 'clamp(2.8rem, 6.4vw, 5.4rem)', color: 'var(--color-text)', marginBottom: '1.25rem' }}
+              style={{ fontWeight: 500, lineHeight: 1.02, letterSpacing: '-0.035em', fontSize: 'clamp(2.2rem, 6.4vw, 5.4rem)', color: 'var(--color-text)', marginBottom: '1.25rem' }}
             >
               Wir bauen Webseiten,<br />
               die <em className="font-display-italic" style={{ color: 'var(--color-accent)', fontWeight: 500 }}>verkaufen.</em>
@@ -272,10 +272,10 @@ export default function Hero() {
             </motion.div>
 
             {/* Inline stats */}
-            <motion.div variants={item} className="flex items-center gap-6 flex-wrap">
+            <motion.div variants={item} className="flex items-center gap-x-5 gap-y-3 flex-wrap">
               {STATS.map((s, i) => (
-                <div key={i} className="flex items-center gap-6">
-                  {i > 0 && <div className="w-px h-7 bg-border" />}
+                <div key={i} className="flex items-center gap-x-5">
+                  {i > 0 && <div className="hidden sm:block w-px h-7 bg-border" />}
                   <div>
                     <div style={{ fontFamily: 'Inter, sans-serif', fontWeight: 700, fontSize: '1.1rem', color: 'var(--color-text)', lineHeight: 1.1 }}>{s.value}</div>
                     <div style={{ fontFamily: 'Inter, sans-serif', fontSize: 11, color: 'var(--color-text-muted)', marginTop: 2 }}>{s.label}</div>

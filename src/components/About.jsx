@@ -60,7 +60,7 @@ export default function About() {
   const inView = useInView(ref, { once: true, margin: '-60px' })
 
   return (
-    <section id="about" className="py-20 border-t border-border" style={{ background: 'var(--color-bg)' }}>
+    <section id="about" className="py-14 sm:py-20 border-t border-border" style={{ background: 'var(--color-bg)' }}>
       <div className="max-w-6xl mx-auto px-6" ref={ref}>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
 
@@ -149,7 +149,7 @@ export default function About() {
           initial={{ opacity: 0, y: 16 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6, delay: 0.4 }}
-          className="mt-20 pt-12"
+          className="mt-14 sm:mt-20 pt-10 sm:pt-12"
           style={{ borderTop: '1px solid var(--color-border)' }}
         >
           <p className="section-label mb-8" style={{ justifyContent: 'center', display: 'flex' }}>

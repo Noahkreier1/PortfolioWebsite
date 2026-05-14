@@ -4,10 +4,21 @@ import { motion, useMotionValue } from 'framer-motion'
 export default function CustomCursor() {
   const [variant, setVariant] = useState('default')
   const [visible, setVisible] = useState(false)
+  const [enabled, setEnabled] = useState(false)
   const x = useMotionValue(-100)
   const y = useMotionValue(-100)
 
   useEffect(() => {
+    // Only enable on devices with a fine pointer (mouse / trackpad), not touch
+    const supportsFinePointer =
+      typeof window !== 'undefined' &&
+      window.matchMedia &&
+      window.matchMedia('(pointer: fine)').matches
+    setEnabled(supportsFinePointer)
+  }, [])
+
+  useEffect(() => {
+    if (!enabled) return
     let initialized = false
 
     const move = (e) => {
@@ -40,9 +51,9 @@ export default function CustomCursor() {
       document.removeEventListener('mouseleave', hide)
       document.removeEventListener('mouseenter', show)
     }
-  }, [x, y])
+  }, [enabled, x, y])
 
-  if (!visible) return null
+  if (!enabled || !visible) return null
 
   const isHover = variant === 'hover'
 
