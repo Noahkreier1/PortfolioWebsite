@@ -1,80 +1,67 @@
-import { useEffect, useRef, useState } from 'react'
-import { motion, useMotionValue, useSpring } from 'framer-motion'
+import { useEffect, useState } from 'react'
+import { motion, useMotionValue } from 'framer-motion'
 
 export default function CustomCursor() {
   const [variant, setVariant] = useState('default')
   const [visible, setVisible] = useState(false)
-  const mouseX = useMotionValue(-100)
-  const mouseY = useMotionValue(-100)
-
-  const springCfg = { stiffness: 300, damping: 28, mass: 0.4 }
-  const ringX = useSpring(mouseX, springCfg)
-  const ringY = useSpring(mouseY, springCfg)
+  const x = useMotionValue(-100)
+  const y = useMotionValue(-100)
 
   useEffect(() => {
+    let initialized = false
+
     const move = (e) => {
-      mouseX.set(e.clientX)
-      mouseY.set(e.clientY)
-      setVisible(true)
+      x.set(e.clientX)
+      y.set(e.clientY)
+      if (!initialized) {
+        initialized = true
+        setVisible(true)
+      }
     }
-    const enter = () => setVariant('hover')
-    const leave = () => setVariant('default')
+
+    const handleHover = (e) => {
+      const interactive = e.target.closest(
+        'a, button, [role="button"], input, textarea, [data-cursor-hover]'
+      )
+      setVariant(interactive ? 'hover' : 'default')
+    }
+
     const hide = () => setVisible(false)
     const show = () => setVisible(true)
 
-    window.addEventListener('mousemove', move)
+    window.addEventListener('mousemove', move, { passive: true })
+    document.addEventListener('mouseover', handleHover)
     document.addEventListener('mouseleave', hide)
     document.addEventListener('mouseenter', show)
 
-    // Delegate hover detection
-    document.addEventListener('mouseover', (e) => {
-      if (e.target.closest('a, button, [role="button"], [data-cursor-hover]')) {
-        setVariant('hover')
-      } else {
-        setVariant('default')
-      }
-    })
-
     return () => {
       window.removeEventListener('mousemove', move)
+      document.removeEventListener('mouseover', handleHover)
       document.removeEventListener('mouseleave', hide)
       document.removeEventListener('mouseenter', show)
     }
-  }, [mouseX, mouseY])
+  }, [x, y])
 
   if (!visible) return null
 
+  const isHover = variant === 'hover'
+
   return (
-    <>
-      {/* Dot — instant tracking */}
-      <motion.div
-        className="pointer-events-none fixed z-[9999] rounded-full"
-        style={{
-          x: mouseX,
-          y: mouseY,
-          translateX: '-50%',
-          translateY: '-50%',
-          width: variant === 'hover' ? 6 : 8,
-          height: variant === 'hover' ? 6 : 8,
-          background: '#C4A46A',
-          transition: 'width 0.15s, height 0.15s',
-        }}
-      />
-      {/* Ring — spring lag */}
-      <motion.div
-        className="pointer-events-none fixed z-[9998] rounded-full border"
-        style={{
-          x: ringX,
-          y: ringY,
-          translateX: '-50%',
-          translateY: '-50%',
-          width: variant === 'hover' ? 52 : 36,
-          height: variant === 'hover' ? 52 : 36,
-          borderColor: variant === 'hover' ? 'rgba(196,164,106,0.7)' : 'rgba(196,164,106,0.4)',
-          background: variant === 'hover' ? 'rgba(196,164,106,0.05)' : 'transparent',
-          transition: 'width 0.2s cubic-bezier(0.25,0.1,0.25,1), height 0.2s cubic-bezier(0.25,0.1,0.25,1), border-color 0.2s ease, background 0.2s ease',
-        }}
-      />
-    </>
+    <motion.div
+      className="pointer-events-none fixed z-[9999] rounded-full"
+      style={{
+        x,
+        y,
+        translateX: '-50%',
+        translateY: '-50%',
+        width: isHover ? 36 : 12,
+        height: isHover ? 36 : 12,
+        background: isHover ? 'transparent' : 'var(--color-accent)',
+        border: isHover ? '1.5px solid var(--color-accent)' : '1.5px solid transparent',
+        transition:
+          'width 0.18s cubic-bezier(0.25, 0.1, 0.25, 1), height 0.18s cubic-bezier(0.25, 0.1, 0.25, 1), background 0.2s ease, border-color 0.2s ease',
+        willChange: 'transform',
+      }}
+    />
   )
 }

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import ThemeToggle from './ThemeToggle'
 
 const links = [
   { label: 'Projekte', href: '#work' },
@@ -29,19 +30,19 @@ export default function Navbar() {
       transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
       className="fixed top-0 left-0 right-0 z-50 transition-all duration-400"
       style={{
-        background: scrolled ? 'rgba(11,10,9,0.88)' : 'transparent',
+        background: scrolled ? 'color-mix(in srgb, var(--color-bg) 88%, transparent)' : 'transparent',
         backdropFilter: scrolled ? 'blur(18px)' : 'none',
-        borderBottom: scrolled ? '1px solid rgba(237,231,220,0.05)' : '1px solid transparent',
+        borderBottom: scrolled ? '1px solid var(--color-border)' : '1px solid transparent',
       }}
     >
       <nav className="max-w-6xl mx-auto px-6 h-14 flex items-center justify-between">
         {/* Logo */}
         <a href="#" className="flex items-center gap-2 group">
           <div className="w-6 h-6 rounded flex items-center justify-center flex-shrink-0 bg-accent transition-transform duration-300 group-hover:rotate-12">
-            <span style={{ fontFamily: 'Inter, sans-serif', fontWeight: 800, color: '#0B0A09', fontSize: 11, lineHeight: 1 }}>O</span>
+            <span style={{ fontFamily: 'Inter, sans-serif', fontWeight: 800, color: 'var(--color-bg)', fontSize: 11, lineHeight: 1 }}>O</span>
           </div>
-          <span style={{ fontFamily: 'Inter, sans-serif', fontWeight: 700, fontSize: 15, letterSpacing: '-0.01em', color: '#EDE7DC' }}>
-            Omnia<span style={{ color: '#7A7468', fontWeight: 400 }}> Digital</span>
+          <span style={{ fontFamily: 'Inter, sans-serif', fontWeight: 700, fontSize: 15, letterSpacing: '-0.01em', color: 'var(--color-text)' }}>
+            Omnia<span style={{ color: 'var(--color-text-muted)', fontWeight: 400 }}> Digital</span>
           </span>
         </a>
 
@@ -56,6 +57,7 @@ export default function Navbar() {
 
         {/* CTA */}
         <div className="flex items-center gap-3">
+          <ThemeToggle />
           <a
             href="#contact"
             className="hidden md:inline-flex items-center gap-2 bg-accent text-bg font-semibold text-xs px-5 py-2.5 rounded-full transition-all duration-300 hover:gap-3"

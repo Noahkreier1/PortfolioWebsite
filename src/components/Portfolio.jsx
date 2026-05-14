@@ -1,5 +1,5 @@
 import { motion, useInView } from 'framer-motion'
-import { useRef } from 'react'
+import { useRef, useState } from 'react'
 
 const projects = [
   {
@@ -18,6 +18,32 @@ const projects = [
   },
   {
     id: '02',
+    name: 'Hikebeast',
+    category: 'Outdoor · Interaktive Karte',
+    description: 'Interaktive Karte und PDF-Guide mit 122 versteckten Schweizer Wander- und Camping-Spots. Für Adventure-Reisende abseits der Touristenpfade.',
+    url: 'https://hikebeast.ch/map/',
+    urlLabel: 'hikebeast.ch',
+    baseBg: 'linear-gradient(155deg, #0A1410 0%, #1A2820 100%)',
+    blobs: [
+      { color: 'rgba(120,180,140,0.20)', top: '35%', left: '55%', size: 230 },
+      { color: 'rgba(80,140,160,0.12)', top: '70%', left: '25%', size: 150 },
+    ],
+  },
+  {
+    id: '03',
+    name: 'Andrea Silk',
+    category: 'Trauerbegleitung · Coaching',
+    description: 'Webseite für Familientrauerbegleitung in Zürich. Einfühlsames, ruhiges Design für ein sensibles Thema — vertrauensvoll und klar.',
+    url: 'https://andrea-silk.vercel.app',
+    urlLabel: 'andrea-silk.vercel.app',
+    baseBg: 'linear-gradient(155deg, #0F1410 0%, #1E2820 100%)',
+    blobs: [
+      { color: 'rgba(140,180,140,0.18)', top: '35%', left: '55%', size: 220 },
+      { color: 'rgba(196,164,106,0.10)', top: '70%', left: '25%', size: 150 },
+    ],
+  },
+  {
+    id: '04',
     name: 'Driven Co.',
     category: 'E-Commerce · Markenidentität',
     description: 'Premium Schweizer Streetwear-Marke. Limitierte Drops, minimales Design, klare Haltung.',
@@ -29,42 +55,45 @@ const projects = [
       { color: 'rgba(160, 160, 160, 0.04)', top: '68%', left: '28%', size: 160 },
     ],
   },
-  {
-    id: '03',
-    name: 'Studio Keller',
-    category: 'Portfolio-Webseite',
-    description: 'Innenarchitektur-Studio in Zürich. Klares, architektonisches Online-Portfolio.',
-    url: null,
-    urlLabel: null,
-    baseBg: 'linear-gradient(155deg, #060C06 0%, #1A2A1A 100%)',
-    blobs: [
-      { color: 'rgba(92,175,92,0.22)', top: '35%', left: '55%', size: 200 },
-      { color: 'rgba(42,106,42,0.14)', top: '72%', left: '25%', size: 130 },
-    ],
-  },
-  {
-    id: '04',
-    name: 'FinTrack Pro',
-    category: 'SaaS-Landingpage',
-    description: 'B2B-Fintech-Startup in Zürich. 400 Wartelisten-Anmeldungen in 3 Wochen nach dem Launch.',
-    url: null,
-    urlLabel: null,
-    baseBg: 'linear-gradient(155deg, #040810 0%, #0A1830 100%)',
-    blobs: [
-      { color: 'rgba(10,122,232,0.28)', top: '35%', left: '60%', size: 240 },
-      { color: 'rgba(0,207,255,0.1)', top: '20%', left: '30%', size: 140 },
-    ],
-  },
 ]
 
 function ProjectVisual({ project }) {
+  const [imgLoaded, setImgLoaded] = useState(false)
+  const [imgError, setImgError] = useState(false)
+  const showScreenshot = project.url && !imgError
+  const screenshotUrl = project.url
+    ? `https://s.wordpress.com/mshots/v1/${encodeURIComponent(project.url)}?w=1280&h=720`
+    : null
+
   return (
     <div className="relative overflow-hidden w-full" style={{ aspectRatio: '16/9', background: project.baseBg }}>
-      {project.blobs.map((b, i) => (
+      {/* Gradient fallback (visible while screenshot loads or if no URL) */}
+      {(!showScreenshot || !imgLoaded) && project.blobs.map((b, i) => (
         <div key={i} className="absolute rounded-full pointer-events-none"
           style={{ top: b.top, left: b.left, width: b.size, height: b.size, transform: 'translate(-50%,-50%)', background: `radial-gradient(circle, ${b.color} 0%, transparent 70%)`, filter: 'blur(28px)' }}
         />
       ))}
+
+      {/* Real website screenshot */}
+      {showScreenshot && (
+        <img
+          src={screenshotUrl}
+          alt={`${project.name} Webseite`}
+          loading="lazy"
+          onLoad={() => setImgLoaded(true)}
+          onError={() => setImgError(true)}
+          style={{
+            position: 'absolute',
+            inset: 0,
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+            objectPosition: 'top center',
+            opacity: imgLoaded ? 1 : 0,
+            transition: 'opacity 0.5s ease',
+          }}
+        />
+      )}
 
       {/* URL badge bottom-left */}
       {project.urlLabel && (
@@ -75,8 +104,9 @@ function ProjectVisual({ project }) {
           borderRadius: 6,
           padding: '4px 9px',
           backdropFilter: 'blur(8px)',
+          zIndex: 1,
         }}>
-          <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 10, color: 'rgba(237,231,220,0.5)', letterSpacing: '0.03em' }}>
+          <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 10, color: 'rgba(237,231,220,0.7)', letterSpacing: '0.03em' }}>
             {project.urlLabel}
           </span>
         </div>
@@ -123,16 +153,16 @@ function ProjectCard({ project, index }) {
 
       <div className="px-5 py-4">
         <div className="flex items-center justify-between mb-1.5">
-          <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 11, color: '#4A4438', fontWeight: 500 }}>{project.id}</span>
-          <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 11, color: '#7A7468' }}>{project.category}</span>
+          <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 11, color: 'var(--color-text-faint)', fontWeight: 500 }}>{project.id}</span>
+          <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 11, color: 'var(--color-text-muted)' }}>{project.category}</span>
         </div>
         <h3
-          style={{ fontFamily: 'Inter, sans-serif', fontWeight: 700, fontSize: '1.05rem', color: '#EDE7DC', marginBottom: 4, letterSpacing: '-0.01em' }}
-          className="group-hover:text-accent transition-colors duration-300"
+          className="font-display group-hover:text-accent transition-colors duration-300"
+          style={{ fontWeight: 500, fontSize: '1.25rem', color: 'var(--color-text)', marginBottom: 4, letterSpacing: '-0.02em' }}
         >
           {project.name}
         </h3>
-        <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 13, color: '#7A7468', lineHeight: 1.5 }}>{project.description}</p>
+        <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 13, color: 'var(--color-text-muted)', lineHeight: 1.5 }}>{project.description}</p>
       </div>
     </motion.div>
   )
@@ -143,7 +173,7 @@ export default function Portfolio() {
   const inView = useInView(ref, { once: true, margin: '-60px' })
 
   return (
-    <section id="work" className="bg-bg py-20 border-t border-border">
+    <section id="work" className="py-20 border-t border-border" style={{ background: 'var(--color-bg)' }}>
       <div className="max-w-6xl mx-auto px-6">
 
         <div ref={ref} className="flex items-end justify-between mb-10">
@@ -152,13 +182,14 @@ export default function Portfolio() {
               transition={{ duration: 0.5 }} className="section-label mb-3">Unsere Arbeiten</motion.p>
             <motion.h2 initial={{ opacity: 0, y: 14 }} animate={inView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.6, delay: 0.1 }}
-              style={{ fontFamily: 'Inter, sans-serif', fontWeight: 800, letterSpacing: '-0.03em', fontSize: 'clamp(1.8rem, 3.5vw, 2.8rem)', color: '#EDE7DC', lineHeight: 1.1 }}>
-              Ausgewählte Projekte
+              className="font-display"
+              style={{ fontWeight: 500, letterSpacing: '-0.035em', fontSize: 'clamp(2rem, 3.8vw, 3rem)', color: 'var(--color-text)', lineHeight: 1.05 }}>
+              Ausgewählte <em className="font-display-italic" style={{ fontWeight: 500 }}>Projekte</em>
             </motion.h2>
           </div>
           <motion.a href="#contact" initial={{ opacity: 0 }} animate={inView ? { opacity: 1 } : {}}
             transition={{ delay: 0.2 }}
-            style={{ fontFamily: 'Inter, sans-serif', fontSize: 13, color: '#7A7468' }}
+            style={{ fontFamily: 'Inter, sans-serif', fontSize: 13, color: 'var(--color-text-muted)' }}
             className="hidden sm:inline-flex items-center gap-1.5 hover:text-text-primary transition-colors duration-200 flex-shrink-0">
             Projekt starten
             <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M7 17L17 7M17 7H7M17 7v10" /></svg>

@@ -10,7 +10,7 @@ import Footer from './components/Footer'
 
 export default function App() {
   return (
-    <div className="bg-bg text-text-primary min-h-screen" style={{ fontFamily: 'Inter, system-ui, sans-serif' }}>
+    <div className="text-text-primary min-h-screen" style={{ fontFamily: 'Inter, system-ui, sans-serif', background: 'var(--color-bg)' }}>
       <CustomCursor />
       <Navbar />
       <main>

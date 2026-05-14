@@ -33,7 +33,7 @@ export default function Services() {
   const inView = useInView(ref, { once: true, margin: '-60px' })
 
   return (
-    <section id="services" className="bg-bg py-20 border-t border-border">
+    <section id="services" className="py-20 border-t border-border" style={{ background: 'var(--color-bg)' }}>
       <div className="max-w-6xl mx-auto px-6" ref={ref}>
 
         <div className="flex items-end justify-between mb-10">
@@ -42,8 +42,9 @@ export default function Services() {
               transition={{ duration: 0.5 }} className="section-label mb-3">Was wir tun</motion.p>
             <motion.h2 initial={{ opacity: 0, y: 14 }} animate={inView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.6, delay: 0.1 }}
-              style={{ fontFamily: 'Inter, sans-serif', fontWeight: 800, letterSpacing: '-0.03em', fontSize: 'clamp(1.8rem, 3.5vw, 2.8rem)', color: '#EDE7DC', lineHeight: 1.1 }}>
-              Vier Leistungen.<br />Aussergewöhnlich gut umgesetzt.
+              className="font-display"
+              style={{ fontWeight: 500, letterSpacing: '-0.035em', fontSize: 'clamp(2rem, 3.8vw, 3rem)', color: 'var(--color-text)', lineHeight: 1.05 }}>
+              Vier Leistungen.<br /><em className="font-display-italic" style={{ fontWeight: 500 }}>Aussergewöhnlich</em> gut umgesetzt.
             </motion.h2>
           </div>
         </div>
@@ -58,14 +59,14 @@ export default function Services() {
             >
               <div className="flex items-start justify-between">
                 <div className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0"
-                  style={{ background: '#1A1916', color: '#C4A46A' }}>
+                  style={{ background: 'var(--color-surface-2)', color: 'var(--color-accent)' }}>
                   {s.icon}
                 </div>
-                <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 11, color: '#362F25', fontWeight: 600 }}>{s.number}</span>
+                <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 11, color: 'var(--color-text-subtle)', fontWeight: 600 }}>{s.number}</span>
               </div>
               <div>
-                <h3 style={{ fontFamily: 'Inter, sans-serif', fontWeight: 700, fontSize: '1rem', color: '#EDE7DC', marginBottom: 8, letterSpacing: '-0.01em' }}>{s.title}</h3>
-                <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 13, color: '#7A7468', lineHeight: 1.6 }}>{s.description}</p>
+                <h3 className="font-display" style={{ fontWeight: 500, fontSize: '1.25rem', color: 'var(--color-text)', marginBottom: 8, letterSpacing: '-0.02em' }}>{s.title}</h3>
+                <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 13, color: 'var(--color-text-muted)', lineHeight: 1.6 }}>{s.description}</p>
               </div>
             </motion.div>
           ))}

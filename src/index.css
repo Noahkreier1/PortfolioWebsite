@@ -1,16 +1,52 @@
-@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-:root {
+/* ─── Theme tokens ─── */
+
+:root,
+:root[data-theme="dark"] {
   --color-bg: #0B0A09;
+  --color-bg-soft: #0D0C0A;
   --color-surface: #141210;
+  --color-surface-2: #1A1816;
   --color-border: #252018;
+  --color-border-strong: #2E2820;
   --color-text: #EDE7DC;
-  --color-muted: #7A7468;
+  --color-text-muted: #7A7468;
+  --color-text-faint: #4A4438;
+  --color-text-subtle: #362F25;
+  --color-text-veryfaint: #2E2820;
   --color-accent: #C4A46A;
+  --color-accent-soft: rgba(196, 164, 106, 0.18);
+  --color-accent-glow: rgba(196, 164, 106, 0.05);
+  --color-grid: rgba(237, 231, 220, 0.025);
+  --color-overlay: rgba(11, 10, 9, 0.78);
+  --shadow-soft: 0 8px 32px rgba(0, 0, 0, 0.5);
+  --shadow-card: 0 12px 32px rgba(0, 0, 0, 0.4);
+  color-scheme: dark;
+}
+
+:root[data-theme="light"] {
+  --color-bg: #FAFAF7;
+  --color-bg-soft: #F2F1ED;
+  --color-surface: #FFFFFF;
+  --color-surface-2: #F8F7F3;
+  --color-border: #E2DFD7;
+  --color-border-strong: #C8C4B8;
+  --color-text: #14110D;
+  --color-text-muted: #5C5648;
+  --color-text-faint: #8A8474;
+  --color-text-subtle: #B5AF9F;
+  --color-text-veryfaint: #D6D1C2;
+  --color-accent: #8B6A30;
+  --color-accent-soft: rgba(139, 106, 48, 0.20);
+  --color-accent-glow: rgba(139, 106, 48, 0.06);
+  --color-grid: rgba(20, 17, 13, 0.05);
+  --color-overlay: rgba(250, 250, 247, 0.88);
+  --shadow-soft: 0 12px 40px rgba(40, 35, 25, 0.08);
+  --shadow-card: 0 8px 28px rgba(40, 35, 25, 0.06);
+  color-scheme: light;
 }
 
 * {
@@ -30,6 +66,7 @@ body {
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.4s ease, color 0.4s ease;
 }
 
 @media (pointer: fine) {
@@ -38,18 +75,37 @@ body {
 
 ::selection {
   background: var(--color-accent);
-  color: #0B0A09;
+  color: var(--color-bg);
 }
 
 ::-webkit-scrollbar { width: 3px; }
 ::-webkit-scrollbar-track { background: var(--color-bg); }
 ::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 2px; }
-::-webkit-scrollbar-thumb:hover { background: #3a3428; }
+::-webkit-scrollbar-thumb:hover { background: var(--color-border-strong); }
+
+/* ─── Editorial display font ─── */
+
+.font-display {
+  font-family: 'Fraunces', Georgia, serif;
+  font-optical-sizing: auto;
+  font-variation-settings: 'opsz' 144, 'SOFT' 50;
+  font-feature-settings: 'ss01';
+  letter-spacing: -0.025em;
+}
+
+.font-display-italic {
+  font-family: 'Fraunces', Georgia, serif;
+  font-style: italic;
+  font-optical-sizing: auto;
+  font-variation-settings: 'opsz' 144, 'SOFT' 100;
+  font-feature-settings: 'ss01';
+}
 
 /* ─── Utilities ─── */
 
 .section-label {
-  @apply flex items-center gap-3 text-xs font-medium tracking-[0.25em] uppercase text-text-muted;
+  @apply flex items-center gap-3 text-xs font-medium tracking-[0.25em] uppercase;
+  color: var(--color-text-muted);
 }
 .section-label::before {
   content: '';
@@ -60,22 +116,21 @@ body {
   flex-shrink: 0;
 }
 
-/* Grid / dot backgrounds — warmer tint */
 .bg-grid {
   background-image:
-    linear-gradient(rgba(237,231,220,0.025) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(237,231,220,0.025) 1px, transparent 1px);
+    linear-gradient(var(--color-grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--color-grid) 1px, transparent 1px);
   background-size: 60px 60px;
 }
 .bg-dots {
-  background-image: radial-gradient(rgba(237,231,220,0.06) 1px, transparent 1px);
+  background-image: radial-gradient(var(--color-grid) 1px, transparent 1px);
   background-size: 28px 28px;
 }
 
 /* Nav links */
 .nav-link {
   position: relative;
-  color: var(--color-muted);
+  color: var(--color-text-muted);
   font-size: 0.875rem;
   font-weight: 500;
   transition: color 0.25s ease;
@@ -94,21 +149,25 @@ body {
 
 /* Buttons */
 .btn-accent {
-  @apply relative inline-flex items-center gap-2 bg-accent text-bg font-body font-semibold text-sm px-8 py-4 rounded-full overflow-hidden;
+  @apply relative inline-flex items-center gap-2 font-body font-semibold text-sm px-8 py-4 rounded-full overflow-hidden;
+  background: var(--color-accent);
+  color: var(--color-bg);
   transition: gap 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
 }
 .btn-accent:hover {
-  box-shadow: 0 8px 32px rgba(196, 164, 106, 0.18);
+  box-shadow: 0 8px 32px var(--color-accent-soft);
   gap: 14px;
 }
 
 .btn-outline {
-  @apply inline-flex items-center gap-2 border border-border text-text-primary font-body font-medium text-sm px-8 py-4 rounded-full;
+  @apply inline-flex items-center gap-2 font-body font-medium text-sm px-8 py-4 rounded-full;
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
   transition: border-color 0.3s ease, background 0.3s ease;
 }
 .btn-outline:hover {
-  border-color: rgba(196,164,106,0.35);
-  background: rgba(196,164,106,0.04);
+  border-color: var(--color-accent-soft);
+  background: var(--color-accent-glow);
 }
 
 /* Project cards */
@@ -121,13 +180,13 @@ body {
   transition: border-color 0.35s ease, transform 0.4s cubic-bezier(0.25,0.1,0.25,1);
 }
 .project-card:hover {
-  border-color: rgba(196,164,106,0.5);
+  border-color: var(--color-accent);
   transform: translateY(-4px);
 }
 .project-card-overlay {
   position: absolute;
   inset: 0;
-  background: rgba(11,10,9,0.78);
+  background: var(--color-overlay);
   opacity: 0;
   transition: opacity 0.35s ease;
   display: flex;
@@ -148,24 +207,77 @@ body {
   overflow: hidden;
 }
 .service-card:hover {
-  border-color: rgba(196,164,106,0.28);
-  background: #161410;
+  border-color: var(--color-accent-soft);
+  background: var(--color-surface-2);
 }
 .service-card::before {
   content: '';
   position: absolute;
   top: 0; left: 0; right: 0;
   height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(196,164,106,0.45), transparent);
+  background: linear-gradient(90deg, transparent, var(--color-accent), transparent);
   transform: scaleX(0);
   transition: transform 0.4s ease;
 }
 .service-card:hover::before { transform: scaleX(1); }
 
 /* Team cards */
+.team-card {
+  background: var(--color-bg-soft) !important;
+  border-color: var(--color-border) !important;
+}
 .team-card:hover {
-  border-color: rgba(196,164,106,0.28) !important;
+  border-color: var(--color-accent-soft) !important;
   transform: translateY(-3px);
+}
+
+/* Matterhorn sketch — theme-aware blend */
+.matterhorn-photo {
+  transition: filter 0.4s ease, opacity 0.4s ease;
+}
+:root[data-theme="light"] .matterhorn-photo {
+  /* black lines on white bg → multiply makes white transparent, lines stay dark */
+  mix-blend-mode: multiply;
+  opacity: 0.55;
+  filter: contrast(1.05);
+}
+:root[data-theme="dark"] .matterhorn-photo {
+  /* invert flips: white bg → black, lines → cream/white. screen drops the now-black bg */
+  filter: invert(1) contrast(1.1);
+  mix-blend-mode: screen;
+  opacity: 0.5;
+}
+
+/* Overlay — only used to softly fade bottom for stats legibility */
+.matterhorn-overlay {
+  transition: background 0.4s ease;
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    transparent 55%,
+    color-mix(in srgb, var(--color-surface) 70%, transparent) 100%
+  );
+}
+
+/* Theme toggle */
+.theme-toggle {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid var(--color-border);
+  background: transparent;
+  color: var(--color-text-muted);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: color 0.25s ease, border-color 0.25s ease, background 0.25s ease;
+  flex-shrink: 0;
+}
+.theme-toggle:hover {
+  color: var(--color-accent);
+  border-color: var(--color-accent-soft);
+  background: var(--color-accent-glow);
 }
 
 @media (prefers-reduced-motion: reduce) {

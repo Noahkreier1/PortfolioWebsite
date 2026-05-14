@@ -117,12 +117,12 @@ function ScoreBar({ label, value, delay }) {
   return (
     <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
-        <span style={{ fontFamily: 'Inter', fontSize: 12, color: '#5A5448' }}>{label}</span>
-        <span style={{ fontFamily: 'Inter', fontSize: 12, color: '#7A7468', fontWeight: 600, fontVariantNumeric: 'tabular-nums' }}>
-          {value}<span style={{ color: '#362F25' }}>/100</span>
+        <span style={{ fontFamily: 'Inter', fontSize: 12, color: 'var(--color-text-muted)' }}>{label}</span>
+        <span style={{ fontFamily: 'Inter', fontSize: 12, color: 'var(--color-text-muted)', fontWeight: 600, fontVariantNumeric: 'tabular-nums' }}>
+          {value}<span style={{ color: 'var(--color-text-subtle)' }}>/100</span>
         </span>
       </div>
-      <div style={{ height: 5, background: '#1A1816', borderRadius: 3, overflow: 'hidden' }}>
+      <div style={{ height: 5, background: 'var(--color-surface-2)', borderRadius: 3, overflow: 'hidden' }}>
         <motion.div
           initial={{ width: 0 }}
           animate={{ width: `${value}%` }}
@@ -138,16 +138,16 @@ function ScoreBar({ label, value, delay }) {
 function IdleState({ url, setUrl, onAnalyze, error }) {
   const [focused, setFocused] = useState(false)
   const canSubmit = url.trim().length >= 4
-  const borderColor = error ? 'rgba(184,96,64,0.55)' : focused ? 'rgba(196,164,106,0.5)' : '#252018'
+  const borderColor = error ? 'rgba(184,96,64,0.55)' : focused ? 'rgba(196,164,106,0.5)' : 'var(--color-border)'
   return (
     <motion.div key="idle"
       initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -8, scale: 0.97 }}
       transition={{ duration: 0.35 }}
       className="rounded-2xl p-7"
-      style={{ background: '#0F0E0B', border: '1px solid #2A2418' }}
+      style={{ background: 'var(--color-bg-soft)', border: '1px solid var(--color-border)' }}
     >
-      <p style={{ fontFamily: 'Inter', fontSize: 11, color: '#4A4438', textTransform: 'uppercase', letterSpacing: '0.18em', marginBottom: 14 }}>
+      <p style={{ fontFamily: 'Inter', fontSize: 11, color: 'var(--color-text-faint)', textTransform: 'uppercase', letterSpacing: '0.18em', marginBottom: 14 }}>
         Ihre aktuelle Webseiten-URL
       </p>
       <div style={{ display: 'flex', gap: 8 }}>
@@ -161,13 +161,13 @@ function IdleState({ url, setUrl, onAnalyze, error }) {
           autoComplete="off"
           style={{
             flex: 1,
-            background: '#0B0A09',
+            background: 'var(--color-bg)',
             border: `1px solid ${borderColor}`,
             borderRadius: 10,
             padding: '12px 14px',
             fontFamily: 'Inter, sans-serif',
             fontSize: 14,
-            color: '#EDE7DC',
+            color: 'var(--color-text)',
             outline: 'none',
             transition: 'border-color 0.2s ease',
           }}
@@ -176,8 +176,8 @@ function IdleState({ url, setUrl, onAnalyze, error }) {
           onClick={onAnalyze}
           disabled={!canSubmit}
           style={{
-            background: canSubmit ? '#C4A46A' : '#181610',
-            color: canSubmit ? '#0B0A09' : '#362F25',
+            background: canSubmit ? 'var(--color-accent)' : 'var(--color-surface)',
+            color: canSubmit ? 'var(--color-bg)' : 'var(--color-text-subtle)',
             border: 'none',
             borderRadius: 10,
             padding: '12px 22px',
@@ -207,7 +207,7 @@ function IdleState({ url, setUrl, onAnalyze, error }) {
           <motion.p key="hint"
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            style={{ fontFamily: 'Inter', fontSize: 11, color: '#2E2820', marginTop: 12 }}
+            style={{ fontFamily: 'Inter', fontSize: 11, color: 'var(--color-text-veryfaint)', marginTop: 12 }}
           >
             Dauert ~5 Sekunden · Keine E-Mail nötig · 100% kostenlos
           </motion.p>
@@ -224,22 +224,22 @@ function ScanningState({ cleanUrl, stepsDone, progress }) {
       exit={{ opacity: 0 }}
       transition={{ duration: 0.35 }}
       className="rounded-2xl p-7"
-      style={{ background: '#0F0E0B', border: '1px solid #2A2418' }}
+      style={{ background: 'var(--color-bg-soft)', border: '1px solid var(--color-border)' }}
     >
       {/* Scanning header */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 9, marginBottom: 20 }}>
         <motion.div
           animate={{ rotate: 360 }}
           transition={{ duration: 1.2, repeat: Infinity, ease: 'linear' }}
-          style={{ width: 14, height: 14, border: '2px solid #252018', borderTopColor: '#C4A46A', borderRadius: '50%', flexShrink: 0 }}
+          style={{ width: 14, height: 14, border: '2px solid var(--color-border)', borderTopColor: 'var(--color-accent)', borderRadius: '50%', flexShrink: 0 }}
         />
-        <span style={{ fontFamily: 'Inter', fontSize: 13, color: '#7A7468' }}>
-          Scanne <span style={{ color: '#EDE7DC', fontWeight: 600 }}>{cleanUrl}</span>
+        <span style={{ fontFamily: 'Inter', fontSize: 13, color: 'var(--color-text-muted)' }}>
+          Scanne <span style={{ color: 'var(--color-text)', fontWeight: 600 }}>{cleanUrl}</span>
         </span>
       </div>
 
       {/* Progress bar */}
-      <div style={{ height: 3, background: '#1A1816', borderRadius: 2, marginBottom: 24, overflow: 'hidden' }}>
+      <div style={{ height: 3, background: 'var(--color-surface-2)', borderRadius: 2, marginBottom: 24, overflow: 'hidden' }}>
         <motion.div
           style={{ height: '100%', background: 'linear-gradient(90deg, #8B6A30, #C4A46A)', borderRadius: 2 }}
           animate={{ width: `${progress}%` }}
@@ -262,7 +262,7 @@ function ScanningState({ cleanUrl, stepsDone, progress }) {
                   initial={{ scale: 0, rotate: -30 }}
                   animate={{ scale: 1, rotate: 0 }}
                   transition={{ type: 'spring', stiffness: 300, damping: 18 }}
-                  width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#C4A46A" strokeWidth="2.5"
+                  width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ color: 'var(--color-accent)' }}
                 >
                   <polyline points="20 6 9 17 4 12" />
                 </motion.svg>
@@ -270,16 +270,16 @@ function ScanningState({ cleanUrl, stepsDone, progress }) {
                 <motion.div
                   animate={{ rotate: 360 }}
                   transition={{ duration: 0.9, repeat: Infinity, ease: 'linear' }}
-                  style={{ width: 13, height: 13, border: '1.5px solid #302820', borderTopColor: '#C4A46A', borderRadius: '50%' }}
+                  style={{ width: 13, height: 13, border: '1.5px solid var(--color-border-strong)', borderTopColor: 'var(--color-accent)', borderRadius: '50%' }}
                 />
               ) : (
-                <div style={{ width: 4, height: 4, borderRadius: '50%', background: '#252018', margin: '0 auto' }} />
+                <div style={{ width: 4, height: 4, borderRadius: '50%', background: 'var(--color-border)', margin: '0 auto' }} />
               )}
             </div>
 
             <span style={{
               fontFamily: 'Inter', fontSize: 13,
-              color: i < stepsDone ? '#5A5448' : i === stepsDone ? '#EDE7DC' : '#2E2820',
+              color: i < stepsDone ? 'var(--color-text-muted)' : i === stepsDone ? 'var(--color-text)' : 'var(--color-text-veryfaint)',
               fontWeight: i === stepsDone ? 500 : 400,
               transition: 'color 0.3s ease',
             }}>
@@ -304,15 +304,15 @@ function ResultsState({ scores, cleanUrl, onReset }) {
       exit={{ opacity: 0 }}
       transition={{ duration: 0.45, ease: [0.25, 0.1, 0.25, 1] }}
       className="rounded-2xl p-7"
-      style={{ background: '#0F0E0B', border: `1px solid #2A2418` }}
+      style={{ background: 'var(--color-bg-soft)', border: `1px solid var(--color-border)` }}
     >
       {/* Header — grade + meta */}
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 22 }}>
         <div>
-          <p style={{ fontFamily: 'Inter', fontSize: 11, color: '#4A4438', textTransform: 'uppercase', letterSpacing: '0.18em', marginBottom: 5 }}>
+          <p style={{ fontFamily: 'Inter', fontSize: 11, color: 'var(--color-text-faint)', textTransform: 'uppercase', letterSpacing: '0.18em', marginBottom: 5 }}>
             Webseiten-Score
           </p>
-          <p style={{ fontFamily: 'Inter', fontSize: 13, color: '#5A5448' }}>{cleanUrl}</p>
+          <p style={{ fontFamily: 'Inter', fontSize: 13, color: 'var(--color-text-muted)' }}>{cleanUrl}</p>
         </div>
 
         {/* The dramatic grade */}
@@ -332,7 +332,7 @@ function ResultsState({ scores, cleanUrl, onReset }) {
           }}>
             {letter}
           </div>
-          <div style={{ fontFamily: 'Inter', fontSize: 10, color: '#4A4438', marginTop: 4, fontVariantNumeric: 'tabular-nums' }}>
+          <div style={{ fontFamily: 'Inter', fontSize: 10, color: 'var(--color-text-faint)', marginTop: 4, fontVariantNumeric: 'tabular-nums' }}>
             {overall} / 100
           </div>
         </motion.div>
@@ -347,13 +347,13 @@ function ResultsState({ scores, cleanUrl, onReset }) {
 
       {/* Verdict */}
       <div style={{
-        background: '#0B0A09',
-        border: '1px solid #1E1C18',
+        background: 'var(--color-bg)',
+        border: '1px solid var(--color-border)',
         borderRadius: 10,
         padding: '12px 16px',
         marginBottom: 16,
       }}>
-        <p style={{ fontFamily: 'Inter', fontSize: 13, color: '#6A6458', lineHeight: 1.65, fontStyle: 'italic' }}>
+        <p style={{ fontFamily: 'Inter', fontSize: 13, color: 'var(--color-text-muted)', lineHeight: 1.65, fontStyle: 'italic' }}>
           "{verdict}"
         </p>
       </div>
@@ -372,18 +372,18 @@ function ResultsState({ scores, cleanUrl, onReset }) {
         <button onClick={onReset}
           style={{
             background: 'transparent',
-            border: '1px solid #252018',
+            border: '1px solid var(--color-border)',
             borderRadius: 99,
             padding: '11px 16px',
             fontFamily: 'Inter',
             fontSize: 12,
-            color: '#4A4438',
+            color: 'var(--color-text-faint)',
             cursor: 'pointer',
             transition: 'border-color 0.2s, color 0.2s',
             letterSpacing: '0.01em',
           }}
-          onMouseEnter={e => { e.target.style.borderColor = '#3A3028'; e.target.style.color = '#7A7468' }}
-          onMouseLeave={e => { e.target.style.borderColor = '#252018'; e.target.style.color = '#4A4438' }}
+          onMouseEnter={e => { e.target.style.borderColor = 'var(--color-border-strong)'; e.target.style.color = 'var(--color-text-muted)' }}
+          onMouseLeave={e => { e.target.style.borderColor = 'var(--color-border)'; e.target.style.color = 'var(--color-text-faint)' }}
         >
           Nochmal
         </button>
@@ -446,7 +446,7 @@ export default function WebsiteAudit() {
   return (
     <section
       ref={sectionRef}
-      style={{ background: '#0D0C0A', borderTop: '1px solid #252018', borderBottom: '1px solid #252018' }}
+      style={{ background: 'var(--color-bg-soft)', borderTop: '1px solid var(--color-border)', borderBottom: '1px solid var(--color-border)' }}
       className="py-20 overflow-hidden"
     >
       <div className="max-w-6xl mx-auto px-6">
@@ -465,15 +465,16 @@ export default function WebsiteAudit() {
             <motion.h2
               initial={{ opacity: 0, y: 14 }} animate={inView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.6, delay: 0.1 }}
-              style={{ fontFamily: 'Inter, sans-serif', fontWeight: 800, letterSpacing: '-0.03em', fontSize: 'clamp(1.8rem, 3.5vw, 2.8rem)', color: '#EDE7DC', lineHeight: 1.1, marginBottom: '1rem' }}
+              className="font-display"
+              style={{ fontWeight: 500, letterSpacing: '-0.035em', fontSize: 'clamp(2rem, 3.8vw, 3rem)', color: 'var(--color-text)', lineHeight: 1.05, marginBottom: '1rem' }}
             >
-              Wie schneidet Ihre<br />Webseite wirklich ab?
+              Wie schneidet Ihre<br /><em className="font-display-italic" style={{ fontWeight: 500 }}>Webseite</em> wirklich ab?
             </motion.h2>
 
             <motion.p
               initial={{ opacity: 0, y: 12 }} animate={inView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.6, delay: 0.18 }}
-              style={{ fontFamily: 'Inter, sans-serif', fontSize: '0.95rem', color: '#7A7468', lineHeight: 1.75, maxWidth: 400, marginBottom: '1.5rem' }}
+              style={{ fontFamily: 'Inter, sans-serif', fontSize: '0.95rem', color: 'var(--color-text-muted)', lineHeight: 1.75, maxWidth: 400, marginBottom: '1.5rem' }}
             >
               Geben Sie Ihre URL ein. Wir prüfen Design, Ladezeit, Conversion-Setup und SEO — und zeigen Ihnen genau, wo Sie Kunden verlieren.
             </motion.p>
@@ -487,11 +488,11 @@ export default function WebsiteAudit() {
               {[
                 'Schweizer KMU erzielen im Schnitt 34/100',
                 'Die Top-3-Probleme kosten 60%+ der Leads',
-                'Wir haben diese Probleme 47-mal gelöst',
+                'Wir haben diese Probleme 20+ mal gelöst',
               ].map((t, i) => (
                 <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
-                  <div style={{ width: 4, height: 4, borderRadius: '50%', background: '#C4A46A', flexShrink: 0, opacity: 0.5 }} />
-                  <span style={{ fontFamily: 'Inter', fontSize: 12, color: '#4A4438' }}>{t}</span>
+                  <div style={{ width: 4, height: 4, borderRadius: '50%', background: 'var(--color-accent)', flexShrink: 0, opacity: 0.5 }} />
+                  <span style={{ fontFamily: 'Inter', fontSize: 12, color: 'var(--color-text-faint)' }}>{t}</span>
                 </div>
               ))}
             </motion.div>
