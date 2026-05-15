@@ -58,21 +58,44 @@ export default function CustomCursor() {
   const isHover = variant === 'hover'
 
   return (
-    <motion.div
-      className="pointer-events-none fixed z-[9999] rounded-full"
-      style={{
-        x,
-        y,
-        translateX: '-50%',
-        translateY: '-50%',
-        width: isHover ? 36 : 12,
-        height: isHover ? 36 : 12,
-        background: isHover ? 'transparent' : 'var(--color-accent)',
-        border: isHover ? '1.5px solid var(--color-accent)' : '1.5px solid transparent',
-        transition:
-          'width 0.18s cubic-bezier(0.25, 0.1, 0.25, 1), height 0.18s cubic-bezier(0.25, 0.1, 0.25, 1), background 0.2s ease, border-color 0.2s ease',
-        willChange: 'transform',
-      }}
-    />
+    <>
+      {/* Outer ring — only on hover */}
+      <motion.div
+        className="pointer-events-none fixed z-[9998] rounded-full"
+        style={{
+          x,
+          y,
+          translateX: '-50%',
+          translateY: '-50%',
+          width: isHover ? 32 : 0,
+          height: isHover ? 32 : 0,
+          background: 'transparent',
+          border: '1.5px solid var(--color-accent)',
+          boxShadow: '0 0 0 1px color-mix(in srgb, var(--color-bg) 80%, transparent)',
+          opacity: isHover ? 1 : 0,
+          transition:
+            'width 0.18s cubic-bezier(0.25, 0.1, 0.25, 1), height 0.18s cubic-bezier(0.25, 0.1, 0.25, 1), opacity 0.18s ease',
+          willChange: 'transform',
+        }}
+      />
+      {/* Inner dot — always visible, with contrast halo */}
+      <motion.div
+        className="pointer-events-none fixed z-[9999] rounded-full"
+        style={{
+          x,
+          y,
+          translateX: '-50%',
+          translateY: '-50%',
+          width: isHover ? 6 : 10,
+          height: isHover ? 6 : 10,
+          background: 'var(--color-accent)',
+          boxShadow:
+            '0 0 0 1.5px color-mix(in srgb, var(--color-bg) 85%, transparent), 0 1px 3px rgba(0,0,0,0.15)',
+          transition:
+            'width 0.18s cubic-bezier(0.25, 0.1, 0.25, 1), height 0.18s cubic-bezier(0.25, 0.1, 0.25, 1)',
+          willChange: 'transform',
+        }}
+      />
+    </>
   )
 }

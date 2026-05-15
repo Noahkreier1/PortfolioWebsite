@@ -103,35 +103,29 @@ function ProjectCard({ project, index }) {
   const ref = useRef(null)
   const inView = useInView(ref, { once: true, margin: '-50px' })
 
+  const Wrapper = project.url ? motion.a : motion.div
+  const wrapperProps = project.url
+    ? { href: project.url, target: '_blank', rel: 'noopener noreferrer' }
+    : {}
+
   return (
-    <motion.div
+    <Wrapper
       ref={ref}
+      {...wrapperProps}
       initial={{ opacity: 0, y: 24 }}
       animate={inView ? { opacity: 1, y: 0 } : {}}
       transition={{ duration: 0.6, delay: index * 0.08, ease: [0.25, 0.1, 0.25, 1] }}
-      className="project-card group"
+      className="project-card group block"
     >
       <div className="relative overflow-hidden rounded-t-[15px]">
         <ProjectVisual project={project} />
 
-        {/* Hover overlay */}
+        {/* Hover overlay (desktop) */}
         <div className="project-card-overlay rounded-t-[15px]">
-          {project.url ? (
-            <a
-              href={project.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{ color: '#C4A46A', fontFamily: 'Inter, sans-serif', fontWeight: 600, fontSize: 13, letterSpacing: '0.04em', display: 'flex', alignItems: 'center', gap: 6 }}
-            >
-              Webseite besuchen
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M7 17L17 7M17 7H7M17 7v10" /></svg>
-            </a>
-          ) : (
-            <span style={{ color: '#C4A46A', fontFamily: 'Inter, sans-serif', fontWeight: 600, fontSize: 13, letterSpacing: '0.04em', display: 'flex', alignItems: 'center', gap: 6 }}>
-              Projekt ansehen
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M7 17L17 7M17 7H7M17 7v10" /></svg>
-            </span>
-          )}
+          <span style={{ color: '#C4A46A', fontFamily: 'Inter, sans-serif', fontWeight: 600, fontSize: 13, letterSpacing: '0.04em', display: 'flex', alignItems: 'center', gap: 6 }}>
+            {project.url ? 'Webseite besuchen' : 'Projekt ansehen'}
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M7 17L17 7M17 7H7M17 7v10" /></svg>
+          </span>
         </div>
       </div>
 
@@ -148,7 +142,7 @@ function ProjectCard({ project, index }) {
         </h3>
         <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 13, color: 'var(--color-text-muted)', lineHeight: 1.5 }}>{project.description}</p>
       </div>
-    </motion.div>
+    </Wrapper>
   )
 }
 
