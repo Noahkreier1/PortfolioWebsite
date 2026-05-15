@@ -5,6 +5,7 @@ import ThemeToggle from './ThemeToggle'
 const links = [
   { label: 'Projekte', href: '#work' },
   { label: 'Leistungen', href: '#services' },
+  { label: 'Preis', href: '#preis' },
   { label: 'Über uns', href: '#about' },
 ]
 
