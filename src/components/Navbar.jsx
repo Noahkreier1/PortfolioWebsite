@@ -1,17 +1,22 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { Link, useLocation } from 'react-router-dom'
 import ThemeToggle from './ThemeToggle'
 
 const links = [
-  { label: 'Projekte', href: '#work' },
-  { label: 'Leistungen', href: '#services' },
-  { label: 'Preis', href: '#preis' },
-  { label: 'Über uns', href: '#about' },
+  { label: 'Projekte', anchor: '#work' },
+  { label: 'Leistungen', anchor: '#services' },
+  { label: 'Preis', anchor: '#preis' },
+  { label: 'Über uns', anchor: '#about' },
 ]
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
+  const location = useLocation()
+  const onHome = location.pathname === '/'
+  // From legal pages, prefix anchor links with "/" to navigate back to home
+  const navHref = (anchor) => (onHome ? anchor : `/${anchor}`)
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 50)
@@ -38,19 +43,19 @@ export default function Navbar() {
     >
       <nav className="max-w-6xl mx-auto px-6 h-14 flex items-center justify-between">
         {/* Logo */}
-        <a href="#" className="flex items-center gap-2 group">
+        <Link to="/" className="flex items-center gap-2 group">
           <div className="w-6 h-6 rounded flex items-center justify-center flex-shrink-0 bg-accent transition-transform duration-300 group-hover:rotate-12">
             <span style={{ fontFamily: 'Inter, sans-serif', fontWeight: 800, color: 'var(--color-bg)', fontSize: 11, lineHeight: 1 }}>O</span>
           </div>
           <span style={{ fontFamily: 'Inter, sans-serif', fontWeight: 700, fontSize: 15, letterSpacing: '-0.01em', color: 'var(--color-text)' }}>
             Omnia<span style={{ color: 'var(--color-text-muted)', fontWeight: 400 }}> Digital</span>
           </span>
-        </a>
+        </Link>
 
         {/* Desktop nav */}
         <div className="hidden md:flex items-center gap-7">
           {links.map((l) => (
-            <a key={l.label} href={l.href} className="nav-link">
+            <a key={l.label} href={navHref(l.anchor)} className="nav-link">
               {l.label}
             </a>
           ))}
@@ -60,7 +65,7 @@ export default function Navbar() {
         <div className="flex items-center gap-3">
           <ThemeToggle />
           <a
-            href="#contact"
+            href={navHref('#contact')}
             className="hidden md:inline-flex items-center gap-2 bg-accent text-bg font-semibold text-xs px-5 py-2.5 rounded-full transition-all duration-300 hover:gap-3"
             style={{ fontFamily: 'Inter, sans-serif' }}
           >
@@ -96,7 +101,7 @@ export default function Navbar() {
           >
             <div className="px-6 py-7 flex flex-col gap-5">
               {links.map((l, i) => (
-                <motion.a key={l.label} href={l.href} onClick={() => setMenuOpen(false)}
+                <motion.a key={l.label} href={navHref(l.anchor)} onClick={() => setMenuOpen(false)}
                   initial={{ opacity: 0, x: -12 }} animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: i * 0.06 }}
                   className="text-xl font-bold text-text-primary"
@@ -105,7 +110,7 @@ export default function Navbar() {
                   {l.label}
                 </motion.a>
               ))}
-              <motion.a href="#contact" onClick={() => setMenuOpen(false)}
+              <motion.a href={navHref('#contact')} onClick={() => setMenuOpen(false)}
                 initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}
                 className="mt-2 btn-accent self-start"
               >

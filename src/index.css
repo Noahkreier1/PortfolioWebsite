@@ -280,6 +280,62 @@ body {
   background: var(--color-accent-glow);
 }
 
+/* Legal pages — readable long-form typography */
+.legal-content section {
+  margin-bottom: 36px;
+}
+.legal-content h2 {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: var(--color-text);
+  letter-spacing: -0.01em;
+  margin-bottom: 12px;
+  margin-top: 8px;
+}
+.legal-content p {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 14.5px;
+  line-height: 1.7;
+  color: var(--color-text-muted);
+  margin-bottom: 14px;
+}
+.legal-content ul {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 14px 0;
+}
+.legal-content ul li {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 14.5px;
+  line-height: 1.7;
+  color: var(--color-text-muted);
+  padding-left: 18px;
+  position: relative;
+  margin-bottom: 6px;
+}
+.legal-content ul li::before {
+  content: '·';
+  position: absolute;
+  left: 4px;
+  top: 0;
+  color: var(--color-accent);
+  font-weight: 700;
+}
+.legal-content a {
+  color: var(--color-accent);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  transition: opacity 0.2s ease;
+}
+.legal-content a:hover {
+  opacity: 0.75;
+}
+.legal-content strong {
+  color: var(--color-text);
+  font-weight: 600;
+}
+
 /* Pricing slider (range input) */
 .pricing-slider {
   -webkit-appearance: none;
