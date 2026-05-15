@@ -64,7 +64,7 @@ const STEPS = [
   'Prüfe Conversion-Elemente',
   'Prüfe SEO-Grundlagen',
 ]
-const STEP_MS = [720, 680, 760, 700, 640]
+const STEP_MS = [1500, 1700, 1500, 1800, 1300]
 
 const METRICS = [
   { key: 'design',     label: 'Design & Klarheit' },
@@ -82,11 +82,11 @@ const WEAK_LABEL = {
 
 const VERDICTS_BY_WEAK = {
   design: [
-    'Besucher entscheiden in 50ms, ob eine Webseite vertrauenswürdig wirkt — Ihre fällt durch.',
+    'Besucher entscheiden in 50ms, ob eine Webseite vertrauenswürdig wirkt. Ihre fällt durch.',
     'Ein veraltetes Design signalisiert jedem Besucher: veraltetes Unternehmen.',
   ],
   speed: [
-    'Die meisten Besucher springen nach 4 Sekunden ab — bevor sie Ihr Angebot überhaupt sehen.',
+    'Die meisten Besucher springen nach 4 Sekunden ab, bevor sie Ihr Angebot überhaupt sehen.',
     'Jede Sekunde Ladezeit kostet ~7% Conversions. Sie verlieren bares Geld.',
   ],
   conversion: [
@@ -95,14 +95,14 @@ const VERDICTS_BY_WEAK = {
   ],
   seo: [
     'Google kann nicht ranken, was es nicht versteht. Ihre Grundlagen brauchen Arbeit.',
-    'Mitbewerber ranken über Ihnen, weil deren SEO-Basics sitzen — Ihre nicht.',
+    'Mitbewerber ranken über Ihnen, weil deren SEO-Basics sitzen. Ihre nicht.',
   ],
 }
 
 function getVerdict(scores, overall) {
   const weak = scores._weak
   if (overall >= 60) {
-    return `Solide Grundlage — aber ${WEAK_LABEL[weak]} hält Sie vom nächsten Level ab.`
+    return `Solide Grundlage, aber ${WEAK_LABEL[weak]} hält Sie vom nächsten Level ab.`
   }
   if (overall >= 45) {
     return `Stellenweise solide, aber ${WEAK_LABEL[weak]} kostet Sie jede Woche Kunden.`
@@ -209,7 +209,7 @@ function IdleState({ url, setUrl, onAnalyze, error }) {
             transition={{ duration: 0.2 }}
             style={{ fontFamily: 'Inter', fontSize: 11, color: 'var(--color-text-veryfaint)', marginTop: 12 }}
           >
-            Dauert ~5 Sekunden · Keine E-Mail nötig · 100% kostenlos
+            Dauert ca. 10 Sekunden · Keine E-Mail nötig · 100% kostenlos
           </motion.p>
         )}
       </AnimatePresence>
@@ -476,7 +476,7 @@ export default function WebsiteAudit() {
               transition={{ duration: 0.6, delay: 0.18 }}
               style={{ fontFamily: 'Inter, sans-serif', fontSize: '0.95rem', color: 'var(--color-text-muted)', lineHeight: 1.75, maxWidth: 400, marginBottom: '1.5rem' }}
             >
-              Geben Sie Ihre URL ein. Wir prüfen Design, Ladezeit, Conversion-Setup und SEO — und zeigen Ihnen genau, wo Sie Kunden verlieren.
+              Geben Sie Ihre URL ein. Wir prüfen Design, Ladezeit, Conversion-Setup und SEO. Wir zeigen Ihnen genau, wo Sie Kunden verlieren.
             </motion.p>
 
             {/* Micro trust signals */}

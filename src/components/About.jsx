@@ -82,7 +82,7 @@ export default function About() {
               transition={{ duration: 0.6, delay: 0.18 }}
               style={{ fontFamily: 'Inter, sans-serif', fontSize: '0.95rem', color: 'var(--color-text-muted)', lineHeight: 1.75, maxWidth: 420 }}>
               Wir sind ein fokussiertes Team aus Designern und Entwicklern in Zürich.
-              Jedes Projekt wird individuell gebaut — keine Templates, keine Abkürzungen.
+              Jedes Projekt wird individuell gebaut. Keine Templates, keine Abkürzungen.
               Wir verbinden Schweizer Präzision mit modernem Design für Webseiten,
               die echte Geschäftsergebnisse liefern.
             </motion.p>
@@ -252,7 +252,7 @@ export default function About() {
               maxWidth: 460, margin: '22px auto 0',
             }}
           >
-            Langjährige Erfahrung in Verkauf, Brand Building, Content Creation und Web Development — gebündelt in einem Team.
+            Langjährige Erfahrung in Verkauf, Brand Building, Content Creation und Web Development. Gebündelt in einem Team.
           </motion.p>
         </motion.div>
       </div>

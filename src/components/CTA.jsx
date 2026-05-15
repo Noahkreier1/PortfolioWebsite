@@ -27,7 +27,7 @@ export default function CTA() {
         <motion.p initial={{ opacity: 0, y: 12 }} animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6, delay: 0.2 }}
           style={{ fontFamily: 'Inter, sans-serif', fontSize: '1rem', color: 'var(--color-text-muted)', lineHeight: 1.65, maxWidth: 460, margin: '0 auto 2.5rem' }}>
-          Unverbindlich — einfach ein ehrliches Gespräch über Ihr Projekt und wie wir helfen können.
+          Unverbindlich. Einfach ein ehrliches Gespräch über Ihr Projekt und wie wir helfen können.
         </motion.p>
 
         <motion.div initial={{ opacity: 0, y: 12 }} animate={inView ? { opacity: 1, y: 0 } : {}}

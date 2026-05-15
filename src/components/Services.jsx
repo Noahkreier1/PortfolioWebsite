@@ -5,7 +5,7 @@ const services = [
   {
     number: '01',
     title: 'Webdesign',
-    description: 'Schöne, funktionale Interfaces — entworfen rund um Ihre Nutzer und Geschäftsziele. Jedes Detail ist bewusst gesetzt.',
+    description: 'Schöne, funktionale Interfaces, entworfen rund um Ihre Nutzer und Geschäftsziele. Jedes Detail ist bewusst gesetzt.',
     icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6"><rect x="3" y="3" width="18" height="18" rx="3" /><path d="M3 9h18M9 21V9" /></svg>,
   },
   {
@@ -23,7 +23,7 @@ const services = [
   {
     number: '04',
     title: 'Markenidentität',
-    description: 'Logo, Farben, Typografie — eine stimmige visuelle Identität, die im Gedächtnis bleibt.',
+    description: 'Logo, Farben, Typografie. Eine stimmige visuelle Identität, die im Gedächtnis bleibt.',
     icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6"><circle cx="12" cy="12" r="10" /><circle cx="12" cy="12" r="3" /></svg>,
   },
 ]

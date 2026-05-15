@@ -6,7 +6,7 @@ const projects = [
     id: '01',
     name: 'InspireDay',
     category: 'Event-Webseite',
-    description: 'Konferenz für Persönlichkeitsentwicklung in Zürich. Tickets, Speaker und Community — alles an einem Ort.',
+    description: 'Konferenz für Persönlichkeitsentwicklung in Zürich. Tickets, Speaker und Community an einem Ort.',
     url: 'https://www.inspireday.ch',
     urlLabel: 'inspireday.ch',
     baseBg: 'linear-gradient(155deg, #180810 0%, #2A0A1C 100%)',
@@ -33,7 +33,7 @@ const projects = [
     id: '03',
     name: 'Andrea Silk',
     category: 'Trauerbegleitung · Coaching',
-    description: 'Webseite für Familientrauerbegleitung in Zürich. Einfühlsames, ruhiges Design für ein sensibles Thema — vertrauensvoll und klar.',
+    description: 'Webseite für Familientrauerbegleitung in Zürich. Einfühlsames, ruhiges Design für ein sensibles Thema. Vertrauensvoll und klar.',
     url: 'https://andrea-silk.vercel.app',
     urlLabel: 'andrea-silk.vercel.app',
     baseBg: 'linear-gradient(155deg, #0F1410 0%, #1E2820 100%)',
@@ -95,22 +95,6 @@ function ProjectVisual({ project }) {
         />
       )}
 
-      {/* URL badge bottom-left */}
-      {project.urlLabel && (
-        <div style={{
-          position: 'absolute', bottom: 12, left: 14,
-          background: 'rgba(11,10,9,0.7)',
-          border: '1px solid rgba(237,231,220,0.08)',
-          borderRadius: 6,
-          padding: '4px 9px',
-          backdropFilter: 'blur(8px)',
-          zIndex: 1,
-        }}>
-          <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 10, color: 'rgba(237,231,220,0.7)', letterSpacing: '0.03em' }}>
-            {project.urlLabel}
-          </span>
-        </div>
-      )}
     </div>
   )
 }

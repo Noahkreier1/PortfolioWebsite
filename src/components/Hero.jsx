@@ -257,7 +257,7 @@ export default function Hero() {
               variants={item}
               style={{ fontFamily: 'Inter, sans-serif', fontSize: '1.05rem', color: 'var(--color-text-muted)', lineHeight: 1.65, maxWidth: 460, marginBottom: '2.5rem' }}
             >
-              Premium Design und Entwicklung für Schweizer Unternehmen, die wachsen wollen — gebaut für Resultate, nicht nur fürs Auge.
+              Premium Design und Entwicklung für Schweizer Unternehmen, die wachsen wollen. Gebaut für Resultate, nicht nur fürs Auge.
             </motion.p>
 
             {/* CTAs */}
