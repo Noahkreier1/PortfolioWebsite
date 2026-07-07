@@ -1,5 +1,6 @@
 import { useState, useRef } from 'react'
 import { motion, AnimatePresence, useInView } from 'framer-motion'
+import { COMPANY } from '../data/company'
 
 /* ─── URL validation ─── */
 function validateUrl(input) {
@@ -297,6 +298,12 @@ function ResultsState({ scores, cleanUrl, onReset }) {
   const { letter, color: gradeColor } = getGrade(overall)
   const verdict = getVerdict(scores, overall)
 
+  const mailtoHref = `mailto:${COMPANY.email}?subject=${encodeURIComponent(
+    `Kostenlose Analyse für ${cleanUrl}`
+  )}&body=${encodeURIComponent(
+    `Guten Tag\n\nBitte analysieren Sie meine Webseite persönlich: ${cleanUrl}\n\nFirma / Branche (optional):\n\nFreundliche Grüsse`
+  )}`
+
   return (
     <motion.div key="results"
       initial={{ opacity: 0, scale: 0.97 }}
@@ -360,11 +367,11 @@ function ResultsState({ scores, cleanUrl, onReset }) {
 
       {/* CTAs */}
       <div style={{ display: 'flex', gap: 8 }}>
-        <a href="#contact"
+        <a href={mailtoHref}
           className="btn-accent"
           style={{ flex: 1, justifyContent: 'center', fontSize: 13, padding: '11px 16px', textAlign: 'center' }}
         >
-          Kostenloses Audit anfordern
+          Kostenlose Analyse innert 24h
           <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
             <path d="M7 17L17 7M17 7H7M17 7v10" />
           </svg>
@@ -388,6 +395,10 @@ function ResultsState({ scores, cleanUrl, onReset }) {
           Nochmal
         </button>
       </div>
+
+      <p style={{ fontFamily: 'Inter', fontSize: 11, color: 'var(--color-text-faint)', lineHeight: 1.6, marginTop: 14, textAlign: 'center' }}>
+        Wir prüfen {cleanUrl} persönlich und senden Ihnen innert 24 Stunden die drei wichtigsten Verbesserungen. Kostenlos &amp; unverbindlich.
+      </p>
     </motion.div>
   )
 }
