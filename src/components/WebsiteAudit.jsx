@@ -298,12 +298,6 @@ function ResultsState({ scores, cleanUrl, onReset }) {
   const { letter, color: gradeColor } = getGrade(overall)
   const verdict = getVerdict(scores, overall)
 
-  const mailtoHref = `mailto:${COMPANY.email}?subject=${encodeURIComponent(
-    `Kostenlose Analyse für ${cleanUrl}`
-  )}&body=${encodeURIComponent(
-    `Guten Tag\n\nBitte analysieren Sie meine Webseite persönlich: ${cleanUrl}\n\nFirma / Branche (optional):\n\nFreundliche Grüsse`
-  )}`
-
   return (
     <motion.div key="results"
       initial={{ opacity: 0, scale: 0.97 }}
@@ -367,11 +361,11 @@ function ResultsState({ scores, cleanUrl, onReset }) {
 
       {/* CTAs */}
       <div style={{ display: 'flex', gap: 8 }}>
-        <a href={mailtoHref}
+        <a href="#contact"
           className="btn-accent"
           style={{ flex: 1, justifyContent: 'center', fontSize: 13, padding: '11px 16px', textAlign: 'center' }}
         >
-          Kostenlose Analyse innert 24h
+          Kostenloses Audit anfordern
           <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
             <path d="M7 17L17 7M17 7H7M17 7v10" />
           </svg>
@@ -395,10 +389,6 @@ function ResultsState({ scores, cleanUrl, onReset }) {
           Nochmal
         </button>
       </div>
-
-      <p style={{ fontFamily: 'Inter', fontSize: 11, color: 'var(--color-text-faint)', lineHeight: 1.6, marginTop: 14, textAlign: 'center' }}>
-        Wir prüfen {cleanUrl} persönlich und senden Ihnen innert 24 Stunden die drei wichtigsten Verbesserungen. Kostenlos &amp; unverbindlich.
-      </p>
     </motion.div>
   )
 }
@@ -530,6 +520,28 @@ export default function WebsiteAudit() {
                 <ResultsState scores={scores} cleanUrl={cleanUrl} onReset={handleReset} />
               )}
             </AnimatePresence>
+
+            {/* Alternative: persönliche Analyse statt automatischem Scan */}
+            <div
+              className="rounded-2xl mt-3 p-5 flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-5"
+              style={{ background: 'var(--color-bg)', border: '1px dashed var(--color-border-strong)' }}
+            >
+              <div style={{ flex: 1 }}>
+                <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 13, fontWeight: 600, color: 'var(--color-text)', marginBottom: 3 }}>
+                  Lieber von Menschen geprüft?
+                </p>
+                <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, color: 'var(--color-text-muted)', lineHeight: 1.55 }}>
+                  Überspringen Sie den Scanner: Wir analysieren Ihre Webseite persönlich und senden Ihnen innert 24h die drei wichtigsten Verbesserungen. Kostenlos &amp; unverbindlich.
+                </p>
+              </div>
+              <a
+                href={`mailto:${COMPANY.email}?subject=${encodeURIComponent('Kostenlose Webseiten-Analyse innert 24h')}&body=${encodeURIComponent('Guten Tag\n\nBitte analysieren Sie meine Webseite persönlich: ' + (url.trim() || '[Ihre URL]') + '\n\nFirma / Branche (optional):\n\nFreundliche Grüsse')}`}
+                style={{ fontFamily: 'Inter, sans-serif', fontSize: 13, fontWeight: 600, color: 'var(--color-accent)', display: 'inline-flex', alignItems: 'center', gap: 6, whiteSpace: 'nowrap', flexShrink: 0 }}
+              >
+                Analyse innert 24h anfordern
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M7 17L17 7M17 7H7M17 7v10" /></svg>
+              </a>
+            </div>
           </motion.div>
 
         </div>
