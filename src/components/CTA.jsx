@@ -27,30 +27,33 @@ export default function CTA() {
         <motion.p initial={{ opacity: 0, y: 12 }} animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6, delay: 0.2 }}
           style={{ fontFamily: 'Inter, sans-serif', fontSize: '1rem', color: 'var(--color-text-muted)', lineHeight: 1.65, maxWidth: 460, margin: '0 auto 2.5rem' }}>
-          Unverbindlich. Einfach ein ehrliches Gespräch über Ihr Projekt und wie wir helfen können.
+          30 Minuten über Ihr Projekt sprechen: was Sie brauchen, was es kostet, ob wir passen. Unverbindlich und kostenlos.
         </motion.p>
 
         <motion.div initial={{ opacity: 0, y: 12 }} animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6, delay: 0.28 }}
-          className="flex flex-col sm:flex-row gap-3 justify-center mb-10">
-          <a href="mailto:hello@omniadigital.ch" className="btn-accent">
-            Kostenloses Gespräch buchen
+          className="flex flex-col items-center gap-4 mb-10">
+          <a href="mailto:hello@omniadigital.ch?subject=Kostenloses%20Erstgespr%C3%A4ch" className="btn-accent">
+            Kostenloses Erstgespräch buchen
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M7 17L17 7M17 7H7M17 7v10" /></svg>
           </a>
-          <a href="mailto:hello@omniadigital.ch?subject=Offerte" className="btn-outline">
-            Offerte anfragen
-          </a>
+          <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 13, color: 'var(--color-text-faint)' }}>
+            Oder direkt per E-Mail:{' '}
+            <a href="mailto:hello@omniadigital.ch" style={{ color: 'var(--color-text-muted)', textDecoration: 'underline', textUnderlineOffset: 3 }}>
+              hello@omniadigital.ch
+            </a>
+          </span>
         </motion.div>
 
         <motion.div initial={{ opacity: 0 }} animate={inView ? { opacity: 1 } : {}}
           transition={{ duration: 0.5, delay: 0.4 }}
           className="flex flex-wrap items-center justify-center gap-6"
           style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, color: 'var(--color-text-faint)' }}>
-          <span>⚡ Antwort innert 24h</span>
+          <span>Antwort innert 24h</span>
           <span>·</span>
-          <span>🇨🇭 Team aus der Schweiz</span>
+          <span>Team aus der Schweiz</span>
           <span>·</span>
-          <span>✓ Keine versteckten Kosten</span>
+          <span>Keine versteckten Kosten</span>
         </motion.div>
       </div>
     </section>

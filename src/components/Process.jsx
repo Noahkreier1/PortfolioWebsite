@@ -4,23 +4,36 @@ import { useRef } from 'react'
 const steps = [
   {
     number: '01',
-    title: 'Discover',
+    title: 'Erstgespräch',
+    detail: '30 Min · kostenlos',
     description:
-      'We learn everything about your business, goals, target audience, and competitors. Strategy before design.',
-    detail: '1–2 days',
+      'Wir besprechen Ihre Ziele, Ihren aktuellen Auftritt und was Ihre Kunden brauchen. Danach wissen Sie, ob wir passen. Ohne Verpflichtung.',
     icon: (
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-        <circle cx="11" cy="11" r="8" />
-        <path d="M21 21l-4.35-4.35" />
+        <path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z" />
       </svg>
     ),
   },
   {
     number: '02',
-    title: 'Design & Build',
+    title: 'Festofferte & Konzept',
+    detail: '2–3 Tage',
     description:
-      'We design and develop your website with precision and creative ambition — you see progress every week.',
-    detail: '2–3 weeks',
+      'Sie erhalten eine verbindliche Offerte mit Fixpreis und Liefertermin. Kein Stundenzähler, keine Nachträge. Dazu einen klaren Vorschlag für Struktur und Inhalt.',
+    icon: (
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+        <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
+        <polyline points="14 2 14 8 20 8" />
+        <path d="M9 15l2 2 4-4" />
+      </svg>
+    ),
+  },
+  {
+    number: '03',
+    title: 'Design & Umsetzung',
+    detail: '1–2 Wochen',
+    description:
+      'Wir gestalten und entwickeln Ihre Webseite. Sie sehen laufend den Stand und geben direkt Feedback, an die Macher, nicht an einen Projektleiter.',
     icon: (
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
         <path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z" />
@@ -28,11 +41,11 @@ const steps = [
     ),
   },
   {
-    number: '03',
-    title: 'Launch & Grow',
+    number: '04',
+    title: 'Launch & Betreuung',
+    detail: '30 Tage inklusive',
     description:
-      'We ship, measure, and continuously improve. Your website gets better over time — not abandoned after launch.',
-    detail: 'Ongoing',
+      'Wir schalten die Seite auf, richten Domain und Hosting ein und passen in den ersten 30 Tagen kostenlos an. Auf Wunsch betreuen wir danach weiter.',
     icon: (
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
         <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" />
@@ -43,111 +56,72 @@ const steps = [
 
 export default function Process() {
   const ref = useRef(null)
-  const inView = useInView(ref, { once: true, margin: '-80px' })
+  const inView = useInView(ref, { once: true, margin: '-60px' })
 
   return (
-    <section id="process" className="relative py-28 overflow-hidden" style={{ background: '#0D0D0D' }}>
-      {/* Bg grid */}
-      <div className="absolute inset-0 bg-grid pointer-events-none opacity-60" />
+    <section id="process" className="py-14 sm:py-20 border-t border-border" style={{ background: 'var(--color-bg-soft)' }}>
+      <div className="max-w-6xl mx-auto px-6" ref={ref}>
 
-      <div className="relative max-w-7xl mx-auto px-6 lg:px-8" ref={ref}>
-        {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.5 }}
-          className="section-label mb-5"
-        >
-          How We Work
-        </motion.div>
-        <motion.h2
-          initial={{ opacity: 0, y: 20 }}
-          animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.7, delay: 0.1 }}
-          className="font-heading font-black text-text-primary mb-20 leading-tight"
-          style={{ fontSize: 'clamp(2.2rem, 4.5vw, 3.6rem)' }}
-        >
-          Simple process.<br />
-          <span style={{ color: '#C4A46A' }}>Exceptional results.</span>
-        </motion.h2>
+        <div className="mb-12">
+          <motion.p initial={{ opacity: 0, y: 10 }} animate={inView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.5 }} className="section-label mb-3">So arbeiten wir</motion.p>
+          <motion.h2 initial={{ opacity: 0, y: 14 }} animate={inView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.6, delay: 0.1 }}
+            className="font-display"
+            style={{ fontWeight: 500, letterSpacing: '-0.035em', fontSize: 'clamp(2rem, 3.8vw, 3rem)', color: 'var(--color-text)', lineHeight: 1.05, marginBottom: '0.75rem' }}>
+            Vom Erstgespräch zum Launch<br />
+            <em className="font-display-italic" style={{ fontWeight: 500, color: 'var(--color-accent)' }}>in zwei Wochen.</em>
+          </motion.h2>
+          <motion.p initial={{ opacity: 0 }} animate={inView ? { opacity: 1 } : {}}
+            transition={{ delay: 0.2 }}
+            style={{ fontFamily: 'Inter, sans-serif', fontSize: 15, color: 'var(--color-text-muted)', lineHeight: 1.65, maxWidth: 520 }}>
+            Sie wissen zu jedem Zeitpunkt, was passiert, was es kostet und wann es fertig ist.
+          </motion.p>
+        </div>
 
-        {/* Steps */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-0 relative">
-          {/* Connecting line (desktop) */}
-          <div className="hidden lg:block absolute top-[3.5rem] left-[17%] right-[17%] h-px" style={{ background: '#222' }} />
-          <motion.div
-            className="hidden lg:block absolute top-[3.5rem] h-px"
-            style={{ left: '17%', background: 'linear-gradient(90deg, #C4A46A, transparent)' }}
-            initial={{ width: 0 }}
-            animate={inView ? { width: '66%' } : { width: 0 }}
-            transition={{ duration: 1.2, delay: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
-          />
-
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {steps.map((step, i) => (
             <motion.div
               key={step.number}
-              initial={{ opacity: 0, y: 28 }}
+              initial={{ opacity: 0, y: 20 }}
               animate={inView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.7, delay: 0.15 + i * 0.18, ease: [0.25, 0.1, 0.25, 1] }}
-              className="relative flex flex-col"
+              transition={{ duration: 0.6, delay: 0.15 + i * 0.1, ease: [0.25, 0.1, 0.25, 1] }}
+              className="relative rounded-xl p-6"
+              style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)' }}
             >
-              {/* Step indicator */}
-              <div className="flex items-center gap-5 mb-8 lg:flex-col lg:items-start lg:gap-3">
-                <div className="relative flex-shrink-0">
-                  {/* Outer ring */}
-                  <div
-                    className="w-14 h-14 rounded-full flex items-center justify-center"
-                    style={{
-                      background: i === 0 ? 'rgba(196,164,106,0.1)' : '#141414',
-                      border: `1px solid ${i === 0 ? 'rgba(196,164,106,0.4)' : '#2a2a2a'}`,
-                    }}
-                  >
-                    <div style={{ color: i === 0 ? '#C4A46A' : '#666' }}>{step.icon}</div>
-                  </div>
+              <div className="flex items-center justify-between mb-5">
+                <div className="w-10 h-10 rounded-lg flex items-center justify-center"
+                  style={{ background: 'var(--color-accent-glow)', border: '1px solid var(--color-accent-soft)', color: 'var(--color-accent)' }}>
+                  {step.icon}
                 </div>
-
-                <div className="flex items-center gap-3 lg:hidden">
-                  <span className="font-heading text-text-subtle text-xs font-bold">{step.number}</span>
-                  <span className="font-body text-text-subtle text-xs">{step.detail}</span>
-                </div>
+                <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 11, fontWeight: 600, color: 'var(--color-text-subtle)' }}>{step.number}</span>
               </div>
-
-              <div className="lg:pr-8">
-                <div className="hidden lg:flex items-center gap-3 mb-3">
-                  <span className="font-heading text-text-subtle text-xs font-bold">{step.number}</span>
-                  <span
-                    className="font-body text-xs px-2 py-0.5 rounded-full"
-                    style={{ background: '#1a1a1a', color: '#555' }}
-                  >
-                    {step.detail}
-                  </span>
-                </div>
-                <h3
-                  className="font-heading font-black text-2xl sm:text-3xl mb-4"
-                  style={{ color: i === 0 ? '#C4A46A' : '#F5F5F0' }}
-                >
-                  {step.title}
-                </h3>
-                <p className="font-body text-text-muted text-sm leading-relaxed">{step.description}</p>
-              </div>
+              <h3 className="font-display" style={{ fontWeight: 500, fontSize: '1.2rem', color: 'var(--color-text)', letterSpacing: '-0.02em', marginBottom: 4 }}>
+                {step.title}
+              </h3>
+              <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 11, fontWeight: 600, color: 'var(--color-accent)', letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: 10 }}>
+                {step.detail}
+              </p>
+              <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 13, color: 'var(--color-text-muted)', lineHeight: 1.6 }}>
+                {step.description}
+              </p>
             </motion.div>
           ))}
         </div>
 
-        {/* Bottom note */}
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.5, delay: 0.8 }}
-          className="mt-20 pt-8 border-t border-border flex flex-col sm:flex-row items-start sm:items-center gap-6 justify-between"
+          transition={{ duration: 0.5, delay: 0.6 }}
+          className="mt-10 flex flex-col sm:flex-row items-start sm:items-center gap-5 justify-between"
         >
-          <p className="font-body text-text-muted text-sm max-w-md">
-            Typically, we can get a polished, launch-ready website live in{' '}
-            <span className="text-text-primary font-medium">under 4 weeks</span> — without compromising on quality.
+          <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 14, color: 'var(--color-text-muted)', maxWidth: 480, lineHeight: 1.6 }}>
+            Der erste Schritt kostet nichts und verpflichtet zu nichts:{' '}
+            <span style={{ color: 'var(--color-text)', fontWeight: 500 }}>ein Gespräch über Ihr Projekt.</span>
           </p>
           <a href="#contact" className="btn-accent text-sm flex-shrink-0">
-            Start your project
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+            Kostenloses Erstgespräch
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
               <path d="M7 17L17 7M17 7H7M17 7v10" />
             </svg>
           </a>

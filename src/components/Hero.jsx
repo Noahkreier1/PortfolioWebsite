@@ -11,9 +11,9 @@ const item = {
 }
 
 const STATS = [
-  { value: '20+', label: 'Projekte' },
-  { value: '98%', label: 'Kundenbindung' },
-  { value: '1-2 Wo.', label: 'Lieferzeit' },
+  { value: '20+', label: 'Projekte umgesetzt' },
+  { value: '1–2 Wo.', label: 'bis zum Launch' },
+  { value: 'Fixpreis', label: 'ab Offerte garantiert' },
 ]
 
 const SHOWCASE = [
@@ -238,7 +238,7 @@ export default function Hero() {
                 <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-accent" />
               </span>
               <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 11, fontWeight: 500, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--color-text-muted)' }}>
-                Schweizer Digitalagentur · Zürich
+                Schweizer Webagentur · Winterthur ZH
               </span>
             </motion.div>
 
@@ -257,18 +257,18 @@ export default function Hero() {
               variants={item}
               style={{ fontFamily: 'Inter, sans-serif', fontSize: '1.05rem', color: 'var(--color-text-muted)', lineHeight: 1.65, maxWidth: 460, marginBottom: '2.5rem' }}
             >
-              Premium Design und Entwicklung für Schweizer Unternehmen, die wachsen wollen. Gebaut für Resultate, nicht nur fürs Auge.
+              Individuelles Design und saubere Entwicklung für Schweizer KMU: zum garantierten Fixpreis, in ein bis zwei Wochen online. Kein Baukasten, kein Agentur-Overhead.
             </motion.p>
 
             {/* CTAs */}
             <motion.div variants={item} className="flex flex-wrap gap-3 mb-10">
               <a href="#contact" className="btn-accent">
-                Termin buchen
+                Kostenloses Erstgespräch
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                   <path d="M7 17L17 7M17 7H7M17 7v10" />
                 </svg>
               </a>
-              <a href="#work" className="btn-outline">Projekte ansehen</a>
+              <a href="#work" className="btn-outline">Referenzen ansehen</a>
             </motion.div>
 
             {/* Inline stats */}

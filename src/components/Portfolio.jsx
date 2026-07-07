@@ -1,5 +1,6 @@
 import { motion, useInView } from 'framer-motion'
 import { useRef, useState } from 'react'
+import BeforeAfter from './BeforeAfter'
 
 const projects = [
   {
@@ -157,22 +158,24 @@ export default function Portfolio() {
         <div ref={ref} className="flex items-end justify-between mb-10">
           <div>
             <motion.p initial={{ opacity: 0, y: 10 }} animate={inView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.5 }} className="section-label mb-3">Unsere Arbeiten</motion.p>
+              transition={{ duration: 0.5 }} className="section-label mb-3">Referenzen</motion.p>
             <motion.h2 initial={{ opacity: 0, y: 14 }} animate={inView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.6, delay: 0.1 }}
               className="font-display"
               style={{ fontWeight: 500, letterSpacing: '-0.035em', fontSize: 'clamp(2rem, 3.8vw, 3rem)', color: 'var(--color-text)', lineHeight: 1.05 }}>
-              Ausgewählte <em className="font-display-italic" style={{ fontWeight: 500 }}>Projekte</em>
+              Sehen Sie selbst, <em className="font-display-italic" style={{ fontWeight: 500 }}>was wir liefern</em>
             </motion.h2>
           </div>
           <motion.a href="#contact" initial={{ opacity: 0 }} animate={inView ? { opacity: 1 } : {}}
             transition={{ delay: 0.2 }}
             style={{ fontFamily: 'Inter, sans-serif', fontSize: 13, color: 'var(--color-text-muted)' }}
             className="hidden sm:inline-flex items-center gap-1.5 hover:text-text-primary transition-colors duration-200 flex-shrink-0">
-            Projekt starten
+            Erstgespräch buchen
             <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M7 17L17 7M17 7H7M17 7v10" /></svg>
           </motion.a>
         </div>
+
+        <BeforeAfter />
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {projects.map((p, i) => <ProjectCard key={p.id} project={p} index={i} />)}

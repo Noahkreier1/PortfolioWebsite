@@ -2,9 +2,10 @@ import { Link } from 'react-router-dom'
 import { COMPANY } from '../data/company'
 
 const navLinks = [
-  { label: 'Projekte', href: '/#work' },
+  { label: 'Referenzen', href: '/#work' },
+  { label: 'Ablauf', href: '/#process' },
   { label: 'Leistungen', href: '/#services' },
-  { label: 'Preis', href: '/#preis' },
+  { label: 'Preise', href: '/#preis' },
   { label: 'Über uns', href: '/#about' },
   { label: 'Kontakt', href: '/#contact' },
 ]

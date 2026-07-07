@@ -200,7 +200,7 @@ export default function Pricing() {
             transition={{ delay: 0.2 }}
             style={{ fontFamily: 'Inter, sans-serif', fontSize: 15, color: 'var(--color-text-muted)', lineHeight: 1.6 }}
           >
-            Konfigurieren Sie Ihr Projekt. Sehen Sie die Preisspanne live. Keine versteckten Kosten, keine Überraschungen.
+            Stellen Sie Ihr Projekt zusammen und sehen Sie die Preisspanne sofort. Nach dem Erstgespräch wird daraus eine Festofferte, und dieser Preis gilt.
           </motion.p>
         </div>
 
@@ -259,7 +259,7 @@ export default function Pricing() {
               <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 11, color: 'var(--color-text-faint)', marginTop: 8, lineHeight: 1.5 }}>
                 {design === 'template' && 'Modernes Template, angepasst auf Ihre Marke.'}
                 {design === 'custom' && 'Komplett individuell entworfen, kein Template.'}
-                {design === 'premium' && 'Maßgeschneidert mit Brand-Identity, Illustrationen und Motion-Design.'}
+                {design === 'premium' && 'Individuell entworfen, inklusive Brand-Identity, Illustrationen und Motion-Design.'}
               </p>
             </div>
 
@@ -325,7 +325,7 @@ export default function Pricing() {
               </li>
               <li style={{ display: 'flex', gap: 8 }}>
                 <span style={{ color: 'var(--color-accent)' }}>✓</span>
-                Lieferung in 1-2 Wochen
+                Online in 1–2 Wochen
               </li>
               <li style={{ display: 'flex', gap: 8 }}>
                 <span style={{ color: 'var(--color-accent)' }}>✓</span>

@@ -5,25 +5,25 @@ const services = [
   {
     number: '01',
     title: 'Webdesign',
-    description: 'Schöne, funktionale Interfaces, entworfen rund um Ihre Nutzer und Geschäftsziele. Jedes Detail ist bewusst gesetzt.',
+    description: 'Individuelles Design, das Ihr Angebot klar positioniert und Besucher gezielt zur Anfrage führt. Kein Template von der Stange.',
     icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6"><rect x="3" y="3" width="18" height="18" rx="3" /><path d="M3 9h18M9 21V9" /></svg>,
   },
   {
     number: '02',
     title: 'Web-Entwicklung',
-    description: 'Sauberer, schneller und wartbarer Code. Wir bauen mit modernen Frameworks, die mit Ihrem Unternehmen wachsen.',
+    description: 'Von Hand entwickelt statt zusammengeklickt: schnelle Ladezeiten, saubere Technik, Bestwerte bei Google. Wächst mit Ihrem Unternehmen mit.',
     icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6"><polyline points="16 18 22 12 16 6" /><polyline points="8 6 2 12 8 18" /></svg>,
   },
   {
     number: '03',
     title: 'Conversion-Optimierung',
-    description: 'Datenbasierte Verbesserungen, die Besucher zu Kunden machen. Wir testen, messen und iterieren.',
+    description: 'Wir prüfen, wo Besucher abspringen, und verbessern gezielt: Struktur, Texte, Call-to-Actions. Gemessen statt geraten.',
     icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17" /><polyline points="16 7 22 7 22 13" /></svg>,
   },
   {
     number: '04',
     title: 'Markenidentität',
-    description: 'Logo, Farben, Typografie. Eine stimmige visuelle Identität, die im Gedächtnis bleibt.',
+    description: 'Logo, Farben, Typografie: ein stimmiger Auftritt, der auf der Webseite, in Offerten und auf Social Media wiedererkennbar ist.',
     icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6"><circle cx="12" cy="12" r="10" /><circle cx="12" cy="12" r="3" /></svg>,
   },
 ]
@@ -44,7 +44,7 @@ export default function Services() {
               transition={{ duration: 0.6, delay: 0.1 }}
               className="font-display"
               style={{ fontWeight: 500, letterSpacing: '-0.035em', fontSize: 'clamp(2rem, 3.8vw, 3rem)', color: 'var(--color-text)', lineHeight: 1.05 }}>
-              Vier Leistungen.<br /><em className="font-display-italic" style={{ fontWeight: 500 }}>Aussergewöhnlich</em> gut umgesetzt.
+              Vier Leistungen.<br />Alles <em className="font-display-italic" style={{ fontWeight: 500 }}>aus einer Hand.</em>
             </motion.h2>
           </div>
         </div>

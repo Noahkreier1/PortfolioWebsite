@@ -4,9 +4,10 @@ import { Link, useLocation } from 'react-router-dom'
 import ThemeToggle from './ThemeToggle'
 
 const links = [
-  { label: 'Projekte', anchor: '#work' },
+  { label: 'Referenzen', anchor: '#work' },
+  { label: 'Ablauf', anchor: '#process' },
   { label: 'Leistungen', anchor: '#services' },
-  { label: 'Preis', anchor: '#preis' },
+  { label: 'Preise', anchor: '#preis' },
   { label: 'Über uns', anchor: '#about' },
 ]
 
@@ -69,7 +70,7 @@ export default function Navbar() {
             className="hidden md:inline-flex items-center gap-2 bg-accent text-bg font-semibold text-xs px-5 py-2.5 rounded-full transition-all duration-300 hover:gap-3"
             style={{ fontFamily: 'Inter, sans-serif' }}
           >
-            Termin buchen
+            Erstgespräch buchen
             <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
               <path d="M7 17L17 7M17 7H7M17 7v10" />
             </svg>
@@ -114,7 +115,7 @@ export default function Navbar() {
                 initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}
                 className="mt-2 btn-accent self-start"
               >
-                Termin buchen
+                Erstgespräch buchen
               </motion.a>
             </div>
           </motion.div>

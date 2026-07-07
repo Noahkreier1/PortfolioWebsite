@@ -3,8 +3,8 @@ import { useRef } from 'react'
 
 const facts = [
   { value: '20+', label: 'Projekte umgesetzt' },
-  { value: '4 J.', label: 'Am Markt' },
-  { value: 'ZH', label: 'Zürich' },
+  { value: '24h', label: 'Antwortzeit' },
+  { value: 'ZH', label: 'Winterthur, Zürich' },
 ]
 
 const team = [
@@ -81,10 +81,10 @@ export default function About() {
             <motion.p initial={{ opacity: 0, y: 12 }} animate={inView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.6, delay: 0.18 }}
               style={{ fontFamily: 'Inter, sans-serif', fontSize: '0.95rem', color: 'var(--color-text-muted)', lineHeight: 1.75, maxWidth: 420 }}>
-              Wir sind ein fokussiertes Team aus Designern und Entwicklern in Zürich.
-              Jedes Projekt wird individuell gebaut. Keine Templates, keine Abkürzungen.
-              Wir verbinden Schweizer Präzision mit modernem Design für Webseiten,
-              die echte Geschäftsergebnisse liefern.
+              Omnia Digital sind Noah und Leon: zwei ausgebildete Applikationsentwickler
+              aus Winterthur. Bei uns sprechen Sie direkt mit den Leuten, die Ihre
+              Webseite entwerfen und bauen. Keine Projektleiter-Schichten, keine
+              weitergereichten Aufträge, keine Templates.
             </motion.p>
           </div>
 
