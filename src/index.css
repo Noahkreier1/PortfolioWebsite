@@ -84,23 +84,20 @@ body {
 ::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 2px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--color-border-strong); }
 
-/* ─── Editorial display font ─── */
+/* ─── Display font — Grotesk im Schweizer Stil (Helvetica-Tradition) ─── */
 
 .font-display {
-  font-family: 'Fraunces', Georgia, serif;
-  font-optical-sizing: auto;
-  font-variation-settings: 'opsz' 144, 'SOFT' 50;
-  font-feature-settings: 'ss01';
-  letter-spacing: -0.025em;
+  font-family: 'Inter Tight', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  letter-spacing: -0.03em;
+  /* Variable-Font-Achse übersteuert die inline font-weights (500) zentral */
+  font-variation-settings: 'wght' 640;
 }
 
 .font-display-italic {
-  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-family: 'Inter Tight', 'Helvetica Neue', Helvetica, Arial, sans-serif;
   font-style: italic;
-  font-weight: 600;
-  /* Cormorant hat eine kleinere x-Höhe als Fraunces — leicht kompensieren */
-  font-size: 1.08em;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.03em;
+  font-variation-settings: 'wght' 640;
 }
 
 /* ─── Utilities ─── */
