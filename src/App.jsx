@@ -5,6 +5,10 @@ import Home from './pages/Home'
 import Impressum from './pages/Impressum'
 import Datenschutz from './pages/Datenschutz'
 import AGB from './pages/AGB'
+import HeroV1 from './heroes/HeroV1'
+import HeroV2 from './heroes/HeroV2'
+import HeroV3 from './heroes/HeroV3'
+import HeroV4 from './heroes/HeroV4'
 
 export default function App() {
   return (
@@ -19,6 +23,11 @@ export default function App() {
           <Route path="/impressum" element={<Impressum />} />
           <Route path="/datenschutz" element={<Datenschutz />} />
           <Route path="/agb" element={<AGB />} />
+          {/* Hero-Varianten zum Vergleich — nach Entscheid wieder entfernen */}
+          <Route path="/v1" element={<HeroV1 />} />
+          <Route path="/v2" element={<HeroV2 />} />
+          <Route path="/v3" element={<HeroV3 />} />
+          <Route path="/v4" element={<HeroV4 />} />
         </Routes>
         <CookieConsent />
       </div>
