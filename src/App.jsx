@@ -9,6 +9,10 @@ import HeroV1 from './heroes/HeroV1'
 import HeroV2 from './heroes/HeroV2'
 import HeroV3 from './heroes/HeroV3'
 import HeroV4 from './heroes/HeroV4'
+import HeroV5 from './heroes/HeroV5'
+import HeroV6 from './heroes/HeroV6'
+import HeroV7 from './heroes/HeroV7'
+import HeroV8 from './heroes/HeroV8'
 
 export default function App() {
   return (
@@ -28,6 +32,10 @@ export default function App() {
           <Route path="/v2" element={<HeroV2 />} />
           <Route path="/v3" element={<HeroV3 />} />
           <Route path="/v4" element={<HeroV4 />} />
+          <Route path="/v5" element={<HeroV5 />} />
+          <Route path="/v6" element={<HeroV6 />} />
+          <Route path="/v7" element={<HeroV7 />} />
+          <Route path="/v8" element={<HeroV8 />} />
         </Routes>
         <CookieConsent />
       </div>
