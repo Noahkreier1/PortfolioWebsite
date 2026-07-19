@@ -53,16 +53,16 @@ export default function HeroV6() {
 
         <h1
           className="font-display"
-          style={{ fontSize: 'clamp(2.9rem, 9.5vw, 9rem)', lineHeight: 0.96, letterSpacing: '-0.035em', margin: 0, textTransform: 'uppercase' }}
+          style={{ fontSize: 'clamp(2.5rem, 7.6vw, 7.6rem)', lineHeight: 0.96, letterSpacing: '-0.035em', margin: 0, textTransform: 'uppercase' }}
         >
           <motion.span variants={snap} custom={2} initial="hidden" animate="show" style={{ display: 'block' }}>
-            Wir bauen
+            Design that
           </motion.span>
           <motion.span variants={snap} custom={3} initial="hidden" animate="show" style={{ display: 'block' }}>
-            Webseiten, die
+            elevates your
           </motion.span>
           <motion.span variants={snap} custom={4} initial="hidden" animate="show" style={{ display: 'inline-block', background: 'var(--color-accent)', color: 'var(--color-bg)', padding: '0 0.12em', marginTop: '0.05em' }}>
-            verkaufen.
+            digital presence
           </motion.span>
         </h1>
 

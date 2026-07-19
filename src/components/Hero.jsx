@@ -246,10 +246,10 @@ export default function Hero() {
             <motion.h1
               variants={item}
               className="font-display"
-              style={{ fontWeight: 500, lineHeight: 1.02, letterSpacing: '-0.035em', fontSize: 'clamp(2.2rem, 6.4vw, 5.4rem)', color: 'var(--color-text)', marginBottom: '1.25rem' }}
+              style={{ fontWeight: 500, lineHeight: 1.02, letterSpacing: '-0.035em', fontSize: 'clamp(2rem, 5.6vw, 4.6rem)', color: 'var(--color-text)', marginBottom: '1.25rem' }}
             >
-              Wir bauen Webseiten,<br />
-              die <em className="font-display-italic" style={{ color: 'var(--color-accent)', fontWeight: 500 }}>verkaufen.</em>
+              Design that <em className="font-display-italic" style={{ color: 'var(--color-accent)', fontWeight: 500 }}>elevates</em><br />
+              your digital presence
             </motion.h1>
 
             {/* Subline */}

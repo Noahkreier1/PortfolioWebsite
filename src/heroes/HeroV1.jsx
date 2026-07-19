@@ -52,23 +52,21 @@ export default function HeroV1() {
       <div className="flex-1 flex flex-col justify-center px-5 sm:px-10 py-12">
         <h1
           className="font-display"
-          style={{ fontSize: 'clamp(3.2rem, 11.5vw, 12.5rem)', lineHeight: 0.94, letterSpacing: '-0.04em', margin: 0 }}
+          style={{ fontSize: 'clamp(2.8rem, 9vw, 10rem)', lineHeight: 0.96, letterSpacing: '-0.04em', margin: 0 }}
         >
-          <RevealLine index={0}>Wir bauen</RevealLine>
-          <RevealLine index={1} style={{ marginLeft: 'clamp(2rem, 12vw, 14rem)' }}>
-            Webseiten,
-          </RevealLine>
-          <RevealLine index={2}>
-            die{' '}
+          <RevealLine index={0}>Design that</RevealLine>
+          <RevealLine index={1} style={{ marginLeft: 'clamp(2rem, 10vw, 12rem)' }}>
             <span
               style={{
                 color: 'transparent',
                 WebkitTextStroke: '2px var(--color-accent)',
               }}
             >
-              verkaufen.
-            </span>
+              elevates
+            </span>{' '}
+            your
           </RevealLine>
+          <RevealLine index={2}>digital presence</RevealLine>
         </h1>
 
         {/* Versetzter Absatz rechts */}

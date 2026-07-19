@@ -103,16 +103,16 @@ export default function HeroV8() {
           style={{ fontSize: 'clamp(2.9rem, 9vw, 9rem)', lineHeight: 1.02, letterSpacing: '-0.04em', margin: 0 }}
         >
           <span style={{ display: 'block', overflow: 'hidden' }}>
-            <motion.span {...lineIn(0.15)} style={{ display: 'block' }}>Wir bauen</motion.span>
+            <motion.span {...lineIn(0.15)} style={{ display: 'block' }}>Design that</motion.span>
           </span>
           <span style={{ display: 'block', overflow: 'hidden', paddingBottom: '0.08em' }}>
             <motion.span {...lineIn(0.28)} style={{ display: 'block' }}>
-              Webseiten, <InlineWindow /> die
+              <span style={{ color: 'var(--color-accent)' }}>elevates</span> <InlineWindow /> your
             </motion.span>
           </span>
           <span style={{ display: 'block', overflow: 'hidden' }}>
             <motion.span {...lineIn(0.41)} style={{ display: 'block' }}>
-              <span style={{ color: 'var(--color-accent)' }}>verkaufen.</span>
+              digital presence
             </motion.span>
           </span>
         </h1>

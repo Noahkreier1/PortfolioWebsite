@@ -63,7 +63,7 @@ export default function HeroV4() {
               transition={{ duration: 0.95, delay: 0.35, ease: [0.22, 1, 0.36, 1] }}
               style={{ fontSize: 'clamp(2.6rem, 7vw, 7rem)', lineHeight: 0.98, letterSpacing: '-0.04em', margin: 0 }}
             >
-              Wir bauen<br />Webseiten,<br />die <span style={{ color: 'var(--color-accent)' }}>verkaufen.</span>
+              Design that<br /><span style={{ color: 'var(--color-accent)' }}>elevates</span> your<br />digital presence
             </motion.h1>
           </div>
           <motion.p

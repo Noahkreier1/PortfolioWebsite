@@ -119,7 +119,7 @@ export default function HeroV7() {
                 textShadow: '0 2px 24px var(--color-bg), 0 0 8px var(--color-bg)',
               }}
             >
-              Webseiten,<br />die <span style={{ color: 'var(--color-accent)' }}>verkaufen.</span>
+              Design that <span style={{ color: 'var(--color-accent)' }}>elevates</span><br />your digital presence
             </motion.h1>
           </div>
           <motion.div

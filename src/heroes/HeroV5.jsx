@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom'
    Buchstaben reagieren auf Cursor-Nähe mit ihrem variablen Schriftgewicht;
    auf Touch-Geräten läuft eine autonome Gewichts-Welle. */
 
-const LINES = ['Wir bauen', 'Webseiten,', 'die verkaufen.']
+const LINES = ['Design that', 'elevates your', 'digital presence']
 const BASE_W = 520
 const MAX_W = 800
 const RADIUS = 260
@@ -29,7 +29,7 @@ function KineticLine({ text, lineIdx }) {
               whiteSpace: 'pre',
               fontVariationSettings: `'wght' ${BASE_W}`,
               transition: 'font-variation-settings 0.35s cubic-bezier(0.22, 1, 0.36, 1), color 0.35s ease',
-              color: lineIdx === 2 && i >= 4 ? 'var(--color-accent)' : 'inherit',
+              color: lineIdx === 1 && i <= 7 ? 'var(--color-accent)' : 'inherit',
             }}
           >
             {ch === ' ' ? ' ' : ch}
@@ -132,7 +132,7 @@ export default function HeroV5() {
       <div className="flex-1 flex flex-col justify-center px-5 sm:px-10">
         <h1
           className="font-display"
-          style={{ fontSize: 'clamp(3rem, 10.5vw, 10.5rem)', lineHeight: 0.98, letterSpacing: '-0.04em', margin: 0, userSelect: 'none' }}
+          style={{ fontSize: 'clamp(2.6rem, 8.5vw, 8.5rem)', lineHeight: 0.98, letterSpacing: '-0.04em', margin: 0, userSelect: 'none' }}
         >
           {LINES.map((l, i) => <KineticLine key={l} text={l} lineIdx={i} />)}
         </h1>

@@ -57,7 +57,7 @@ export default function HeroV2() {
 
       {/* Headline unten links, CTA unten rechts */}
       <div className="relative z-10 px-5 sm:px-10 pb-8 sm:pb-12 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-8">
-        <div style={{ maxWidth: 680 }}>
+        <div style={{ maxWidth: 820 }}>
           <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 0.6 }}
@@ -72,9 +72,9 @@ export default function HeroV2() {
               initial={{ y: '105%' }}
               animate={{ y: 0 }}
               transition={{ duration: 1, delay: 0.35, ease: [0.22, 1, 0.36, 1] }}
-              style={{ fontSize: 'clamp(2.8rem, 7vw, 6.2rem)', lineHeight: 0.98, letterSpacing: '-0.04em', margin: 0 }}
+              style={{ fontSize: 'clamp(2.4rem, 5.5vw, 5rem)', lineHeight: 1.0, letterSpacing: '-0.04em', margin: 0 }}
             >
-              Webseiten,<br />die <span style={{ color: '#C4A46A' }}>verkaufen.</span>
+              Design that <span style={{ color: '#C4A46A' }}>elevates</span><br />your digital presence
             </motion.h1>
           </div>
           <motion.p

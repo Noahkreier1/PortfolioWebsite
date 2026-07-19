@@ -65,7 +65,7 @@ export default function HeroV3() {
             transition={{ duration: 0.9, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
             style={{ fontSize: 'clamp(2.4rem, 5.5vw, 4.6rem)', lineHeight: 1.02, letterSpacing: '-0.035em', margin: 0, maxWidth: 900 }}
           >
-            Wir bauen Webseiten, die <span style={{ color: 'var(--color-accent)' }}>verkaufen</span> — zum Fixpreis, in 1–2 Wochen.
+            Design that <span style={{ color: 'var(--color-accent)' }}>elevates</span> your digital presence — zum Fixpreis, in 1–2 Wochen.
           </motion.h1>
         </div>
       </div>
