@@ -1,11 +1,12 @@
 import Navbar from '../components/Navbar'
-import Hero from '../components/Hero'
+import Hero, { HeroStats } from '../components/Hero'
 import Portfolio from '../components/Portfolio'
+import BeforeAfter from '../components/BeforeAfter'
 import Process from '../components/Process'
 import WhyUs from '../components/WhyUs'
 import Services from '../components/Services'
 import Pricing from '../components/Pricing'
-import About from '../components/About'
+import About, { Team } from '../components/About'
 import WebsiteAudit from '../components/WebsiteAudit'
 import FAQ from '../components/FAQ'
 import CTA from '../components/CTA'
@@ -17,12 +18,15 @@ export default function Home() {
       <Navbar />
       <main>
         <Hero />
+        <HeroStats />
         <Portfolio />
+        <BeforeAfter />
         <Process />
         <WhyUs />
         <Services />
         <Pricing />
         <About />
+        <Team />
         <WebsiteAudit />
         <FAQ />
         <CTA />

@@ -32,10 +32,10 @@ function CompareSlider({ before, after, altBefore, altAfter }) {
       onPointerMove={onPointerMove}
       onPointerUp={stopDragging}
       onPointerCancel={stopDragging}
-      className="relative w-full select-none overflow-hidden rounded-xl"
+      className="relative w-full select-none overflow-hidden"
       style={{
         aspectRatio: '16/9',
-        border: '1px solid var(--color-border-strong)',
+        borderRadius: 20,
         touchAction: 'none',
         background: 'var(--color-surface-2)',
       }}
@@ -59,13 +59,12 @@ function CompareSlider({ before, after, altBefore, altAfter }) {
       </div>
 
       {/* Trennlinie + Griff */}
-      <div style={{ position: 'absolute', top: 0, bottom: 0, left: `${pos}%`, width: 2, background: 'var(--color-accent)', transform: 'translateX(-1px)', boxShadow: '0 0 12px rgba(0,0,0,0.35)' }}>
+      <div style={{ position: 'absolute', top: 0, bottom: 0, left: `${pos}%`, width: 2, background: 'var(--color-accent)', transform: 'translateX(-1px)' }}>
         <div style={{
           position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)',
-          width: 38, height: 38, borderRadius: '50%',
+          width: 40, height: 40, borderRadius: '50%',
           background: 'var(--color-accent)', color: 'var(--color-bg)',
           display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 2,
-          boxShadow: '0 4px 16px rgba(0,0,0,0.3)',
         }}>
           <svg width="9" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M15 18l-6-6 6-6" /></svg>
           <svg width="9" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M9 18l6-6-6-6" /></svg>
@@ -89,20 +88,35 @@ const HIGHLIGHTS = [
   'Konzept bis Launch aus einer Hand',
 ]
 
+/* Case Study als eigenes Kapitel: Kopf zentriert, Slider gross und freigestellt, Highlights darunter */
 export default function BeforeAfter() {
   const ref = useRef(null)
   const inView = useInView(ref, { once: true, margin: '-60px' })
 
   return (
-    <div ref={ref} className="mb-14">
-      <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-12 items-center">
+    <section id="case" className="section" style={{ background: 'var(--color-bg)' }}>
+      <div ref={ref} className="container-page">
 
-        {/* Slider — nimmt den grösseren Teil ein */}
+        <div className="section-head">
+          <motion.p initial={{ opacity: 0, y: 10 }} animate={inView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.5 }} className="section-label">Case Study</motion.p>
+          <motion.h2 initial={{ opacity: 0, y: 14 }} animate={inView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.6, delay: 0.1 }}
+            className="font-display h-section">
+            InspireDay: vom Template zum <em className="font-display-italic" style={{ fontWeight: 500, color: 'var(--color-accent)' }}>Verkaufsauftritt.</em>
+          </motion.h2>
+          <motion.p initial={{ opacity: 0 }} animate={inView ? { opacity: 1 } : {}}
+            transition={{ delay: 0.2 }} className="lead">
+            Konferenz für Persönlichkeitsentwicklung in Zürich. Die alte Seite erklärte wenig und verkaufte kaum Tickets. Wir haben Positionierung, Design und Struktur neu aufgebaut.
+          </motion.p>
+        </div>
+
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 24 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.7, ease: [0.25, 0.1, 0.25, 1] }}
-          className="lg:col-span-3"
+          transition={{ duration: 0.8, delay: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
+          className="mx-auto"
+          style={{ maxWidth: 980 }}
         >
           <CompareSlider
             before="/before-after/inspireday-before.jpg"
@@ -110,46 +124,32 @@ export default function BeforeAfter() {
             altBefore="InspireDay Webseite vor dem Redesign"
             altAfter="InspireDay Webseite nach dem Redesign durch Omnia Digital"
           />
-          <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 11, color: 'var(--color-text-faint)', marginTop: 10, textAlign: 'center' }}>
+          <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 13, color: 'var(--color-text-faint)', marginTop: 24, textAlign: 'center' }}>
             Regler ziehen und vergleichen
           </p>
         </motion.div>
 
-        {/* Kontext */}
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6, delay: 0.15 }}
-          className="lg:col-span-2"
+        <ul
+          className="grid grid-cols-1 md:grid-cols-3 gap-12 text-center mx-auto"
+          style={{ listStyle: 'none', padding: 0, maxWidth: 980, marginTop: 'clamp(96px, 10vw, 128px)' }}
         >
-          <p className="section-label mb-3">Case Study</p>
-          <h3 className="font-display" style={{ fontWeight: 500, fontSize: 'clamp(1.5rem, 2.6vw, 2rem)', color: 'var(--color-text)', letterSpacing: '-0.03em', lineHeight: 1.1, marginBottom: 12 }}>
-            InspireDay: vom Template zum <em className="font-display-italic" style={{ fontWeight: 500, color: 'var(--color-accent)' }}>Verkaufsauftritt</em>
-          </h3>
-          <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 14, color: 'var(--color-text-muted)', lineHeight: 1.7, marginBottom: 18 }}>
-            Konferenz für Persönlichkeitsentwicklung in Zürich. Die alte Seite erklärte wenig und verkaufte kaum Tickets. Wir haben Positionierung, Design und Struktur neu aufgebaut.
-          </p>
-          <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 22 }}>
-            {HIGHLIGHTS.map((h) => (
-              <li key={h} style={{ display: 'flex', gap: 10, alignItems: 'flex-start', fontFamily: 'Inter, sans-serif', fontSize: 13, color: 'var(--color-text-muted)', lineHeight: 1.5 }}>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ color: 'var(--color-accent)', flexShrink: 0, marginTop: 3 }}>
-                  <polyline points="20 6 9 17 4 12" />
-                </svg>
-                {h}
-              </li>
-            ))}
-          </ul>
-          <a
-            href="https://www.inspireday.ch"
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{ fontFamily: 'Inter, sans-serif', fontSize: 13, fontWeight: 600, color: 'var(--color-accent)', display: 'inline-flex', alignItems: 'center', gap: 6 }}
-          >
+          {HIGHLIGHTS.map((h) => (
+            <li key={h} style={{ fontFamily: 'Inter, sans-serif', fontSize: 16, color: 'var(--color-text-muted)', lineHeight: 1.6 }}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ color: 'var(--color-accent)', margin: '0 auto 16px', display: 'block' }}>
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+              {h}
+            </li>
+          ))}
+        </ul>
+
+        <div className="text-center" style={{ marginTop: 64 }}>
+          <a href="https://www.inspireday.ch" target="_blank" rel="noopener noreferrer" className="btn-link">
             inspireday.ch live ansehen
-            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M7 17L17 7M17 7H7M17 7v10" /></svg>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M7 17L17 7M17 7H7M17 7v10" /></svg>
           </a>
-        </motion.div>
+        </div>
       </div>
-    </div>
+    </section>
   )
 }

@@ -39,10 +39,9 @@ export default function Navbar() {
       style={{
         background: scrolled ? 'color-mix(in srgb, var(--color-bg) 88%, transparent)' : 'transparent',
         backdropFilter: scrolled ? 'blur(18px)' : 'none',
-        borderBottom: scrolled ? '1px solid var(--color-border)' : '1px solid transparent',
-      }}
+              }}
     >
-      <nav className="max-w-6xl mx-auto px-6 h-14 flex items-center justify-between">
+      <nav className="container-page h-14 flex items-center justify-between">
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2 group">
           <div className="w-6 h-6 rounded flex items-center justify-center flex-shrink-0 bg-accent transition-transform duration-300 group-hover:rotate-12">
@@ -54,7 +53,7 @@ export default function Navbar() {
         </Link>
 
         {/* Desktop nav */}
-        <div className="hidden md:flex items-center gap-7">
+        <div className="hidden md:flex items-center gap-8 lg:gap-10">
           {links.map((l) => (
             <a key={l.label} href={navHref(l.anchor)} className="nav-link">
               {l.label}
@@ -98,9 +97,9 @@ export default function Navbar() {
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.3 }}
-            className="md:hidden overflow-hidden bg-surface border-t border-border"
+            className="md:hidden overflow-hidden bg-surface"
           >
-            <div className="px-6 py-7 flex flex-col gap-5">
+            <div className="px-6 py-12 flex flex-col gap-6">
               {links.map((l, i) => (
                 <motion.a key={l.label} href={navHref(l.anchor)} onClick={() => setMenuOpen(false)}
                   initial={{ opacity: 0, x: -12 }} animate={{ opacity: 1, x: 0 }}
@@ -113,7 +112,7 @@ export default function Navbar() {
               ))}
               <motion.a href={navHref('#contact')} onClick={() => setMenuOpen(false)}
                 initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}
-                className="mt-2 btn-accent self-start"
+                className="mt-4 btn-accent self-start"
               >
                 Erstgespräch buchen
               </motion.a>

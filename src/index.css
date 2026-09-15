@@ -70,10 +70,6 @@ body {
   transition: background-color 0.4s ease, color 0.4s ease;
 }
 
-@media (pointer: fine) {
-  * { cursor: none !important; }
-}
-
 ::selection {
   background: var(--color-accent);
   color: var(--color-bg);
@@ -100,19 +96,58 @@ body {
   font-variation-settings: 'wght' 640;
 }
 
+/* ─── Layout rhythm — 8px base scale (8 16 24 32 48 64 96 128 160 200) ─── */
+
+.container-page {
+  width: 100%;
+  max-width: 1120px;
+  margin-inline: auto;
+  padding-inline: 24px;
+}
+@media (min-width: 768px) {
+  .container-page { padding-inline: 40px; }
+}
+
+/* Each section is its own chapter: 96 → 128 → 160px */
+.section { padding-block: 96px; }
+@media (min-width: 768px) { .section { padding-block: 128px; } }
+@media (min-width: 1024px) { .section { padding-block: 160px; } }
+
+/* Quiet, closing chapters: 128 → 160 → 200px */
+.section-xl { padding-block: 128px; }
+@media (min-width: 768px) { .section-xl { padding-block: 160px; } }
+@media (min-width: 1024px) { .section-xl { padding-block: 200px; } }
+
+.section-head {
+  text-align: center;
+  max-width: 760px;
+  margin-inline: auto;
+  margin-bottom: 64px;
+}
+@media (min-width: 1024px) { .section-head { margin-bottom: 96px; } }
+.section-head .section-label { justify-content: center; margin-bottom: 16px; }
+.section-head .lead { margin: 24px auto 0; max-width: 600px; }
+
+.h-section {
+  font-weight: 500;
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  line-height: 1.1;
+  letter-spacing: -0.028em;
+  color: var(--color-text);
+}
+
+.lead {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: clamp(1.0625rem, 1.5vw, 1.25rem);
+  line-height: 1.55;
+  color: var(--color-text-muted);
+}
+
 /* ─── Utilities ─── */
 
 .section-label {
-  @apply flex items-center gap-3 text-xs font-medium tracking-[0.25em] uppercase;
+  @apply flex items-center text-[13px] font-medium tracking-[0.18em] uppercase;
   color: var(--color-text-muted);
-}
-.section-label::before {
-  content: '';
-  display: block;
-  width: 24px;
-  height: 1px;
-  background: currentColor;
-  flex-shrink: 0;
 }
 
 .bg-grid {
@@ -147,40 +182,60 @@ body {
 .nav-link:hover::after { width: 100%; }
 
 /* Buttons */
+/* Buttons — understated pills, 16px / 32px padding */
 .btn-accent {
-  @apply relative inline-flex items-center gap-2 font-body font-semibold text-sm px-8 py-4 rounded-full overflow-hidden;
+  @apply relative inline-flex items-center gap-2 font-body font-medium rounded-full overflow-hidden;
+  font-size: 15px;
+  padding: 16px 32px;
   background: var(--color-accent);
   color: var(--color-bg);
-  transition: gap 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
+  transition: gap 0.3s ease, opacity 0.3s ease;
 }
 .btn-accent:hover {
-  box-shadow: 0 8px 32px var(--color-accent-soft);
-  gap: 14px;
+  opacity: 0.9;
+  gap: 12px;
 }
 
 .btn-outline {
-  @apply inline-flex items-center gap-2 font-body font-medium text-sm px-8 py-4 rounded-full;
-  border: 1px solid var(--color-border);
+  @apply inline-flex items-center gap-2 font-body font-medium rounded-full;
+  font-size: 15px;
+  padding: 16px 32px;
+  border: 1px solid var(--color-border-strong);
   color: var(--color-text);
-  transition: border-color 0.3s ease, background 0.3s ease;
+  transition: background 0.3s ease;
 }
 .btn-outline:hover {
-  border-color: var(--color-accent-soft);
   background: var(--color-accent-glow);
 }
 
-/* Project cards */
+/* Text link CTA — "Mehr erfahren ›" */
+.btn-link {
+  @apply inline-flex items-center gap-1.5 font-body font-medium;
+  font-size: 15px;
+  color: var(--color-accent);
+  transition: gap 0.3s ease;
+}
+.btn-link:hover {
+  gap: 10px;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+/* Project cards — image isolated, text sits below on the page, no box */
 .project-card {
   position: relative;
-  overflow: hidden;
-  border-radius: 16px;
-  border: 1px solid var(--color-border);
-  background: var(--color-surface);
-  transition: border-color 0.35s ease, transform 0.4s cubic-bezier(0.25,0.1,0.25,1);
+  display: block;
 }
-.project-card:hover {
-  border-color: var(--color-accent);
-  transform: translateY(-4px);
+.project-card-media {
+  position: relative;
+  overflow: hidden;
+  border-radius: 20px;
+}
+.project-card-media img {
+  transition: transform 0.7s cubic-bezier(0.25,0.1,0.25,1), opacity 0.5s ease !important;
+}
+.project-card:hover .project-card-media img {
+  transform: scale(1.02);
 }
 .project-card-overlay {
   position: absolute;
@@ -194,41 +249,6 @@ body {
   z-index: 2;
 }
 .project-card:hover .project-card-overlay { opacity: 1; }
-
-/* Service cards */
-.service-card {
-  padding: 2rem;
-  border: 1px solid var(--color-border);
-  border-radius: 16px;
-  background: var(--color-surface);
-  transition: border-color 0.3s ease, background 0.3s ease;
-  position: relative;
-  overflow: hidden;
-}
-.service-card:hover {
-  border-color: var(--color-accent-soft);
-  background: var(--color-surface-2);
-}
-.service-card::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, var(--color-accent), transparent);
-  transform: scaleX(0);
-  transition: transform 0.4s ease;
-}
-.service-card:hover::before { transform: scaleX(1); }
-
-/* Team cards */
-.team-card {
-  background: var(--color-bg-soft) !important;
-  border-color: var(--color-border) !important;
-}
-.team-card:hover {
-  border-color: var(--color-accent-soft) !important;
-  transform: translateY(-3px);
-}
 
 /* Matterhorn sketch — theme-aware blend */
 .matterhorn-photo {

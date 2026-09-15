@@ -67,11 +67,12 @@ function Toggle({ active, onChange, children }) {
     <button
       type="button"
       onClick={() => onChange(!active)}
-      className="rounded-xl text-left"
+      className="text-left"
       style={{
-        background: active ? 'var(--color-accent-glow)' : 'var(--color-surface)',
-        border: `1px solid ${active ? 'var(--color-accent)' : 'var(--color-border)'}`,
-        padding: '14px 16px',
+        background: active ? 'var(--color-accent-glow)' : 'var(--color-bg)',
+        border: `1px solid ${active ? 'var(--color-accent-soft)' : 'transparent'}`,
+        borderRadius: 16,
+        padding: '16px 20px',
         fontFamily: 'Inter, sans-serif',
         color: active ? 'var(--color-text)' : 'var(--color-text-muted)',
         cursor: 'pointer',
@@ -109,11 +110,10 @@ function SegmentedControl({ value, options, onChange }) {
       style={{
         display: 'grid',
         gridTemplateColumns: `repeat(${options.length}, 1fr)`,
-        gap: 6,
+        gap: 4,
         padding: 4,
-        background: 'var(--color-surface)',
-        border: '1px solid var(--color-border)',
-        borderRadius: 12,
+        background: 'var(--color-bg)',
+        borderRadius: 999,
       }}
     >
       {options.map((opt) => {
@@ -124,14 +124,14 @@ function SegmentedControl({ value, options, onChange }) {
             type="button"
             onClick={() => onChange(opt.value)}
             style={{
-              padding: '10px 12px',
-              borderRadius: 8,
+              padding: '12px 16px',
+              borderRadius: 999,
               border: 'none',
               background: active ? 'var(--color-accent)' : 'transparent',
               color: active ? 'var(--color-bg)' : 'var(--color-text-muted)',
               fontFamily: 'Inter, sans-serif',
-              fontSize: 12,
-              fontWeight: active ? 700 : 500,
+              fontSize: 14,
+              fontWeight: active ? 600 : 500,
               letterSpacing: '0.01em',
               cursor: 'pointer',
               transition: 'background 0.2s ease, color 0.2s ease',
@@ -166,45 +166,37 @@ export default function Pricing() {
   return (
     <section
       id="preis"
-      className="py-14 sm:py-20 border-t border-border"
+      className="section"
       style={{ background: 'var(--color-bg)' }}
     >
-      <div className="max-w-6xl mx-auto px-5 sm:px-6" ref={ref}>
+      <div className="container-page" ref={ref}>
 
         {/* Header */}
-        <div className="text-center mb-12 max-w-2xl mx-auto">
+        <div className="section-head">
           <motion.p
             initial={{ opacity: 0, y: 10 }} animate={inView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.5 }}
-            className="section-label justify-center mb-4"
+            className="section-label"
           >
             Transparente Preise
           </motion.p>
           <motion.h2
             initial={{ opacity: 0, y: 14 }} animate={inView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.6, delay: 0.1 }}
-            className="font-display"
-            style={{
-              fontWeight: 500,
-              letterSpacing: '-0.035em',
-              fontSize: 'clamp(2rem, 3.8vw, 3rem)',
-              color: 'var(--color-text)',
-              lineHeight: 1.05,
-              marginBottom: '1rem',
-            }}
+            className="font-display h-section"
           >
             Was kostet <em className="font-display-italic" style={{ fontWeight: 500 }}>Ihre</em> Webseite?
           </motion.h2>
           <motion.p
             initial={{ opacity: 0 }} animate={inView ? { opacity: 1 } : {}}
             transition={{ delay: 0.2 }}
-            style={{ fontFamily: 'Inter, sans-serif', fontSize: 15, color: 'var(--color-text-muted)', lineHeight: 1.6 }}
+            className="lead"
           >
             Stellen Sie Ihr Projekt zusammen und sehen Sie die Preisspanne sofort. Nach dem Erstgespräch wird daraus eine Festofferte, und dieser Preis gilt.
           </motion.p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 lg:gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-12">
 
           {/* Configurator (left) */}
           <motion.div
@@ -212,16 +204,15 @@ export default function Pricing() {
             transition={{ duration: 0.6, delay: 0.25 }}
             className="lg:col-span-3"
             style={{
-              background: 'var(--color-surface)',
-              border: '1px solid var(--color-border)',
-              borderRadius: 16,
-              padding: '24px 24px 28px',
+              background: 'var(--color-bg-soft)',
+              borderRadius: 28,
+              padding: 'clamp(24px, 4vw, 48px)',
             }}
           >
             {/* Pages slider */}
-            <div className="mb-7">
-              <div className="flex items-baseline justify-between mb-3">
-                <label style={{ fontFamily: 'Inter, sans-serif', fontSize: 13, fontWeight: 600, color: 'var(--color-text)', letterSpacing: '-0.01em' }}>
+            <div style={{ marginBottom: 48 }}>
+              <div className="flex items-baseline justify-between" style={{ marginBottom: 16 }}>
+                <label style={{ fontFamily: 'Inter, sans-serif', fontSize: 15, fontWeight: 600, color: 'var(--color-text)', letterSpacing: '-0.01em' }}>
                   Seitenanzahl
                 </label>
                 <span className="font-display" style={{ fontWeight: 600, fontSize: 22, color: 'var(--color-accent)', lineHeight: 1, letterSpacing: '-0.02em' }}>
@@ -237,14 +228,14 @@ export default function Pricing() {
                 className="pricing-slider"
                 style={{ width: '100%' }}
               />
-              <div className="flex justify-between mt-2" style={{ fontFamily: 'Inter, sans-serif', fontSize: 10, color: 'var(--color-text-faint)', letterSpacing: '0.04em' }}>
+              <div className="flex justify-between" style={{ marginTop: 8, fontFamily: 'Inter, sans-serif', fontSize: 12, color: 'var(--color-text-faint)', letterSpacing: '0.04em' }}>
                 <span>1</span><span>20+</span>
               </div>
             </div>
 
             {/* Design tier */}
-            <div className="mb-7">
-              <label style={{ fontFamily: 'Inter, sans-serif', fontSize: 13, fontWeight: 600, color: 'var(--color-text)', letterSpacing: '-0.01em', display: 'block', marginBottom: 10 }}>
+            <div style={{ marginBottom: 48 }}>
+              <label style={{ fontFamily: 'Inter, sans-serif', fontSize: 15, fontWeight: 600, color: 'var(--color-text)', letterSpacing: '-0.01em', display: 'block', marginBottom: 16 }}>
                 Design-Niveau
               </label>
               <SegmentedControl
@@ -256,7 +247,7 @@ export default function Pricing() {
                   { value: 'premium', label: 'Premium' },
                 ]}
               />
-              <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 11, color: 'var(--color-text-faint)', marginTop: 8, lineHeight: 1.5 }}>
+              <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 14, color: 'var(--color-text-muted)', marginTop: 16, lineHeight: 1.5, textAlign: 'center' }}>
                 {design === 'template' && 'Modernes Template, angepasst auf Ihre Marke.'}
                 {design === 'custom' && 'Komplett individuell entworfen, kein Template.'}
                 {design === 'premium' && 'Individuell entworfen, inklusive Brand-Identity, Illustrationen und Motion-Design.'}
@@ -264,7 +255,7 @@ export default function Pricing() {
             </div>
 
             {/* Features grid */}
-            <label style={{ fontFamily: 'Inter, sans-serif', fontSize: 13, fontWeight: 600, color: 'var(--color-text)', letterSpacing: '-0.01em', display: 'block', marginBottom: 10 }}>
+            <label style={{ fontFamily: 'Inter, sans-serif', fontSize: 15, fontWeight: 600, color: 'var(--color-text)', letterSpacing: '-0.01em', display: 'block', marginBottom: 16 }}>
               Module
             </label>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -282,19 +273,18 @@ export default function Pricing() {
             transition={{ duration: 0.6, delay: 0.35 }}
             className="lg:col-span-2"
             style={{
-              background: 'var(--color-surface)',
-              border: '1px solid var(--color-accent-soft)',
-              borderRadius: 16,
-              padding: '24px',
+              background: 'var(--color-bg-soft)',
+              borderRadius: 28,
+              padding: 'clamp(24px, 4vw, 48px)',
               display: 'flex',
               flexDirection: 'column',
-              gap: 16,
+              gap: 32,
               position: 'sticky',
-              top: 80,
+              top: 96,
               height: 'fit-content',
             }}
           >
-            <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 11, fontWeight: 500, color: 'var(--color-text-muted)', letterSpacing: '0.18em', textTransform: 'uppercase' }}>
+            <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 13, fontWeight: 500, color: 'var(--color-text-muted)', letterSpacing: '0.18em', textTransform: 'uppercase', marginBottom: -16 }}>
               Ihre Preisspanne
             </p>
 
@@ -307,14 +297,12 @@ export default function Pricing() {
               <div className="font-display" style={{ fontWeight: 600, fontSize: 'clamp(2.4rem, 5vw, 3.4rem)', color: 'var(--color-text)', lineHeight: 1, letterSpacing: '-0.03em' }}>
                 {formatCHF(lo)}
               </div>
-              <div style={{ fontFamily: 'Inter, sans-serif', fontSize: 13, color: 'var(--color-text-muted)', marginTop: 6, letterSpacing: '0.01em' }}>
-                bis <span className="font-display" style={{ fontWeight: 600, color: 'var(--color-accent)', fontSize: 16, letterSpacing: '-0.02em' }}>{formatCHF(hi)}</span>
+              <div style={{ fontFamily: 'Inter, sans-serif', fontSize: 15, color: 'var(--color-text-muted)', marginTop: 12, letterSpacing: '0.01em' }}>
+                bis <span className="font-display" style={{ fontWeight: 600, color: 'var(--color-accent)', fontSize: 18, letterSpacing: '-0.02em' }}>{formatCHF(hi)}</span>
               </div>
             </motion.div>
 
-            <div style={{ height: 1, background: 'var(--color-border)', margin: '4px 0' }} />
-
-            <ul style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, color: 'var(--color-text-muted)', lineHeight: 1.7, listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 4 }}>
+            <ul style={{ fontFamily: 'Inter, sans-serif', fontSize: 15, color: 'var(--color-text-muted)', lineHeight: 1.5, listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 12 }}>
               <li style={{ display: 'flex', gap: 8 }}>
                 <span style={{ color: 'var(--color-accent)' }}>✓</span>
                 Fixpreis-Garantie ab Briefing
@@ -333,14 +321,14 @@ export default function Pricing() {
               </li>
             </ul>
 
-            <a href="#contact" className="btn-accent" style={{ justifyContent: 'center', fontSize: 13, padding: '12px 16px' }}>
+            <a href="#contact" className="btn-accent" style={{ justifyContent: 'center' }}>
               Festofferte anfragen
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                 <path d="M7 17L17 7M17 7H7M17 7v10" />
               </svg>
             </a>
 
-            <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 11, color: 'var(--color-text-faint)', lineHeight: 1.6, textAlign: 'center', margin: 0 }}>
+            <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 13, color: 'var(--color-text-faint)', lineHeight: 1.6, textAlign: 'center', margin: '-8px 0 0' }}>
               Schätzung basierend auf vergleichbaren Projekten. Finale Offerte nach Briefing-Gespräch.
             </p>
           </motion.div>

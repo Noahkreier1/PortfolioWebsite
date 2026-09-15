@@ -1,6 +1,5 @@
 import { motion, useInView } from 'framer-motion'
 import { useRef, useState } from 'react'
-import BeforeAfter from './BeforeAfter'
 
 const projects = [
   {
@@ -116,32 +115,31 @@ function ProjectCard({ project, index }) {
       initial={{ opacity: 0, y: 24 }}
       animate={inView ? { opacity: 1, y: 0 } : {}}
       transition={{ duration: 0.6, delay: index * 0.08, ease: [0.25, 0.1, 0.25, 1] }}
-      className="project-card group block"
+      className="project-card group"
     >
-      <div className="relative overflow-hidden rounded-t-[15px]">
+      <div className="project-card-media">
         <ProjectVisual project={project} />
 
         {/* Hover overlay (desktop) */}
-        <div className="project-card-overlay rounded-t-[15px]">
-          <span style={{ color: '#C4A46A', fontFamily: 'Inter, sans-serif', fontWeight: 600, fontSize: 13, letterSpacing: '0.04em', display: 'flex', alignItems: 'center', gap: 6 }}>
+        <div className="project-card-overlay">
+          <span style={{ color: '#C4A46A', fontFamily: 'Inter, sans-serif', fontWeight: 600, fontSize: 15, display: 'flex', alignItems: 'center', gap: 8 }}>
             {project.url ? 'Webseite besuchen' : 'Projekt ansehen'}
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M7 17L17 7M17 7H7M17 7v10" /></svg>
           </span>
         </div>
       </div>
 
-      <div className="px-5 py-4">
-        <div className="flex items-center justify-between mb-1.5">
-          <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 11, color: 'var(--color-text-faint)', fontWeight: 500 }}>{project.id}</span>
-          <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 11, color: 'var(--color-text-muted)' }}>{project.category}</span>
-        </div>
+      <div style={{ paddingTop: 32 }}>
+        <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 13, color: 'var(--color-text-muted)', letterSpacing: '0.02em', marginBottom: 8 }}>
+          {project.category}
+        </p>
         <h3
           className="font-display group-hover:text-accent transition-colors duration-300"
-          style={{ fontWeight: 500, fontSize: '1.25rem', color: 'var(--color-text)', marginBottom: 4, letterSpacing: '-0.02em' }}
+          style={{ fontWeight: 500, fontSize: '1.625rem', lineHeight: 1.2, color: 'var(--color-text)', marginBottom: 12, letterSpacing: '-0.02em' }}
         >
           {project.name}
         </h3>
-        <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 13, color: 'var(--color-text-muted)', lineHeight: 1.5 }}>{project.description}</p>
+        <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 16, color: 'var(--color-text-muted)', lineHeight: 1.6, maxWidth: '44ch' }}>{project.description}</p>
       </div>
     </Wrapper>
   )
@@ -152,32 +150,20 @@ export default function Portfolio() {
   const inView = useInView(ref, { once: true, margin: '-60px' })
 
   return (
-    <section id="work" className="py-14 sm:py-20 border-t border-border" style={{ background: 'var(--color-bg)' }}>
-      <div className="max-w-6xl mx-auto px-6">
+    <section id="work" className="section" style={{ background: 'var(--color-bg-soft)' }}>
+      <div className="container-page">
 
-        <div ref={ref} className="flex items-end justify-between mb-10">
-          <div>
-            <motion.p initial={{ opacity: 0, y: 10 }} animate={inView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.5 }} className="section-label mb-3">Referenzen</motion.p>
-            <motion.h2 initial={{ opacity: 0, y: 14 }} animate={inView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.6, delay: 0.1 }}
-              className="font-display"
-              style={{ fontWeight: 500, letterSpacing: '-0.035em', fontSize: 'clamp(2rem, 3.8vw, 3rem)', color: 'var(--color-text)', lineHeight: 1.05 }}>
-              Sehen Sie selbst, <em className="font-display-italic" style={{ fontWeight: 500 }}>was wir liefern</em>
-            </motion.h2>
-          </div>
-          <motion.a href="#contact" initial={{ opacity: 0 }} animate={inView ? { opacity: 1 } : {}}
-            transition={{ delay: 0.2 }}
-            style={{ fontFamily: 'Inter, sans-serif', fontSize: 13, color: 'var(--color-text-muted)' }}
-            className="hidden sm:inline-flex items-center gap-1.5 hover:text-text-primary transition-colors duration-200 flex-shrink-0">
-            Erstgespräch buchen
-            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M7 17L17 7M17 7H7M17 7v10" /></svg>
-          </motion.a>
+        <div ref={ref} className="section-head">
+          <motion.p initial={{ opacity: 0, y: 10 }} animate={inView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.5 }} className="section-label">Referenzen</motion.p>
+          <motion.h2 initial={{ opacity: 0, y: 14 }} animate={inView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.6, delay: 0.1 }}
+            className="font-display h-section">
+            Sehen Sie selbst, <em className="font-display-italic" style={{ fontWeight: 500 }}>was wir liefern.</em>
+          </motion.h2>
         </div>
 
-        <BeforeAfter />
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-20 lg:gap-y-24">
           {projects.map((p, i) => <ProjectCard key={p.id} project={p} index={i} />)}
         </div>
       </div>

@@ -31,16 +31,16 @@ const faqs = [
 function FaqItem({ faq, open, onToggle }) {
   return (
     <div
-      className="rounded-xl overflow-hidden"
-      style={{ background: 'var(--color-surface)', border: `1px solid ${open ? 'var(--color-accent-soft)' : 'var(--color-border)'}`, transition: 'border-color 0.25s ease' }}
+      className="overflow-hidden"
+      style={{ background: 'var(--color-bg-soft)', borderRadius: 20 }}
     >
       <button
         onClick={onToggle}
         aria-expanded={open}
-        className="w-full flex items-center justify-between gap-4 text-left"
-        style={{ padding: '18px 22px', background: 'transparent', border: 'none', cursor: 'pointer' }}
+        className="w-full flex items-center justify-between gap-6 text-left"
+        style={{ padding: 'clamp(20px, 3vw, 28px) clamp(24px, 4vw, 36px)', background: 'transparent', border: 'none', cursor: 'pointer' }}
       >
-        <span style={{ fontFamily: 'Inter, sans-serif', fontWeight: 600, fontSize: 15, color: 'var(--color-text)', letterSpacing: '-0.01em', lineHeight: 1.4 }}>
+        <span style={{ fontFamily: 'Inter, sans-serif', fontWeight: 600, fontSize: 17, color: 'var(--color-text)', letterSpacing: '-0.01em', lineHeight: 1.4 }}>
           {faq.q}
         </span>
         <motion.span
@@ -62,7 +62,7 @@ function FaqItem({ faq, open, onToggle }) {
             transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
             style={{ overflow: 'hidden' }}
           >
-            <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 14, color: 'var(--color-text-muted)', lineHeight: 1.7, padding: '0 22px 20px' }}>
+            <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 16, color: 'var(--color-text-muted)', lineHeight: 1.6, padding: '0 clamp(24px, 4vw, 36px) 32px', maxWidth: '64ch' }}>
               {faq.a}
             </p>
           </motion.div>
@@ -78,46 +78,43 @@ export default function FAQ() {
   const [openIdx, setOpenIdx] = useState(0)
 
   return (
-    <section id="faq" className="py-14 sm:py-20 border-t border-border" style={{ background: 'var(--color-bg)' }}>
-      <div className="max-w-6xl mx-auto px-6" ref={ref}>
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-10 lg:gap-16">
+    <section id="faq" className="section" style={{ background: 'var(--color-bg)' }}>
+      <div className="container-page" ref={ref}>
 
-          {/* Header links */}
-          <div className="lg:col-span-2">
-            <motion.p initial={{ opacity: 0, y: 10 }} animate={inView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.5 }} className="section-label mb-3">Häufige Fragen</motion.p>
-            <motion.h2 initial={{ opacity: 0, y: 14 }} animate={inView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.6, delay: 0.1 }}
-              className="font-display"
-              style={{ fontWeight: 500, letterSpacing: '-0.035em', fontSize: 'clamp(2rem, 3.8vw, 3rem)', color: 'var(--color-text)', lineHeight: 1.05, marginBottom: '1rem' }}>
-              Was Sie <em className="font-display-italic" style={{ fontWeight: 500 }}>wissen wollen</em>
-            </motion.h2>
-            <motion.p initial={{ opacity: 0 }} animate={inView ? { opacity: 1 } : {}}
-              transition={{ delay: 0.2 }}
-              style={{ fontFamily: 'Inter, sans-serif', fontSize: 14, color: 'var(--color-text-muted)', lineHeight: 1.7, maxWidth: 340 }}>
-              Ihre Frage ist nicht dabei? Schreiben Sie uns, Sie erhalten innert 24 Stunden eine Antwort.
-            </motion.p>
-            <motion.a initial={{ opacity: 0 }} animate={inView ? { opacity: 1 } : {}}
-              transition={{ delay: 0.3 }}
-              href="mailto:hello@omniadigital.ch"
-              style={{ fontFamily: 'Inter, sans-serif', fontSize: 13, fontWeight: 600, color: 'var(--color-accent)', display: 'inline-flex', alignItems: 'center', gap: 6, marginTop: 14 }}>
-              hello@omniadigital.ch
-              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M7 17L17 7M17 7H7M17 7v10" /></svg>
-            </motion.a>
-          </div>
-
-          {/* Fragen rechts */}
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            animate={inView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="lg:col-span-3 flex flex-col gap-3"
-          >
-            {faqs.map((faq, i) => (
-              <FaqItem key={i} faq={faq} open={openIdx === i} onToggle={() => setOpenIdx(openIdx === i ? -1 : i)} />
-            ))}
-          </motion.div>
+        <div className="section-head">
+          <motion.p initial={{ opacity: 0, y: 10 }} animate={inView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.5 }} className="section-label">Häufige Fragen</motion.p>
+          <motion.h2 initial={{ opacity: 0, y: 14 }} animate={inView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.6, delay: 0.1 }}
+            className="font-display h-section">
+            Was Sie <em className="font-display-italic" style={{ fontWeight: 500 }}>wissen wollen.</em>
+          </motion.h2>
         </div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={inView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.6, delay: 0.2 }}
+          className="flex flex-col gap-3 mx-auto"
+          style={{ maxWidth: 820 }}
+        >
+          {faqs.map((faq, i) => (
+            <FaqItem key={i} faq={faq} open={openIdx === i} onToggle={() => setOpenIdx(openIdx === i ? -1 : i)} />
+          ))}
+        </motion.div>
+
+        <motion.div initial={{ opacity: 0 }} animate={inView ? { opacity: 1 } : {}}
+          transition={{ delay: 0.3 }}
+          className="text-center"
+          style={{ marginTop: 'clamp(64px, 8vw, 96px)' }}>
+          <p className="lead mx-auto" style={{ maxWidth: 480, marginBottom: 16 }}>
+            Ihre Frage ist nicht dabei? Schreiben Sie uns, Sie erhalten innert 24 Stunden eine Antwort.
+          </p>
+          <a href="mailto:hello@omniadigital.ch" className="btn-link">
+            hello@omniadigital.ch
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M7 17L17 7M17 7H7M17 7v10" /></svg>
+          </a>
+        </motion.div>
       </div>
     </section>
   )

@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react'
-import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from 'framer-motion'
+import { useEffect, useRef, useState } from 'react'
+import { motion, AnimatePresence, useInView, useMotionValue, useSpring, useTransform } from 'framer-motion'
 
 const stagger = {
   hidden: {},
@@ -71,8 +71,8 @@ function BrowserMockup() {
   const mouseY = useMotionValue(0)
   const springX = useSpring(mouseX, { stiffness: 200, damping: 22 })
   const springY = useSpring(mouseY, { stiffness: 200, damping: 22 })
-  const rotateY = useTransform(springX, [-1, 1], [-7, 7])
-  const rotateX = useTransform(springY, [-1, 1], [5, -5])
+  const rotateY = useTransform(springX, [-1, 1], [-3, 3])
+  const rotateX = useTransform(springY, [-1, 1], [2, -2])
 
   const handleMouseMove = (e) => {
     const rect = e.currentTarget.getBoundingClientRect()
@@ -92,32 +92,31 @@ function BrowserMockup() {
 
   return (
     <motion.div
-      initial={{ opacity: 0, x: 20 }}
-      animate={{ opacity: 1, x: 0 }}
-      transition={{ duration: 1, delay: 0.45, ease: [0.25, 0.1, 0.25, 1] }}
-      className="relative hidden lg:block w-[360px] flex-shrink-0"
-      style={{ perspective: 1400 }}
+      initial={{ opacity: 0, y: 32 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 1, delay: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
+      className="relative mx-auto w-full"
+      style={{ maxWidth: 960, perspective: 1600, marginTop: 'clamp(96px, 11vw, 144px)' }}
       onMouseMove={handleMouseMove}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
       <motion.div
-        className="rounded-xl overflow-hidden"
+        className="overflow-hidden"
         style={{
-          border: '1px solid var(--color-border-strong)',
-          background: 'var(--color-surface)',
-          boxShadow: 'var(--shadow-soft)',
+          borderRadius: 20,
+          background: 'var(--color-bg-soft)',
           rotateX,
           rotateY,
           transformStyle: 'preserve-3d',
         }}
       >
         {/* Chrome bar */}
-        <div style={{ background: 'var(--color-surface-2)', padding: '10px 14px', borderBottom: '1px solid var(--color-border)', display: 'flex', alignItems: 'center', gap: 5 }}>
+        <div style={{ padding: '14px 20px', display: 'flex', alignItems: 'center', gap: 8 }}>
           {[0, 1, 2].map((i) => (
-            <span key={i} style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--color-border-strong)', display: 'inline-block' }} />
+            <span key={i} style={{ width: 10, height: 10, borderRadius: '50%', background: 'var(--color-text-veryfaint)', display: 'inline-block', flexShrink: 0 }} />
           ))}
-          <div style={{ flex: 1, height: 22, borderRadius: 4, marginLeft: 10, background: 'var(--color-bg-soft)', display: 'flex', alignItems: 'center', paddingLeft: 9, overflow: 'hidden' }}>
+          <div style={{ flex: 1, maxWidth: 360, height: 28, borderRadius: 999, margin: '0 auto', background: 'var(--color-bg)', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
             <AnimatePresence mode="wait">
               <motion.span
                 key={active.label}
@@ -125,16 +124,17 @@ function BrowserMockup() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -4 }}
                 transition={{ duration: 0.3 }}
-                style={{ fontSize: 10, color: 'var(--color-text-muted)', fontFamily: 'Inter, sans-serif', whiteSpace: 'nowrap' }}
+                style={{ fontSize: 12, color: 'var(--color-text-muted)', fontFamily: 'Inter, sans-serif', whiteSpace: 'nowrap' }}
               >
                 {active.label}
               </motion.span>
             </AnimatePresence>
           </div>
+          <span className="hidden sm:block" style={{ width: 46, flexShrink: 0 }} />
         </div>
 
         {/* Screenshot canvas */}
-        <div style={{ height: 260, position: 'relative', overflow: 'hidden', background: 'var(--color-bg-soft)' }}>
+        <div style={{ aspectRatio: '16/9', position: 'relative', overflow: 'hidden', background: 'var(--color-bg-soft)' }}>
           {SHOWCASE.map((p, i) => (
             <motion.img
               key={p.url}
@@ -148,7 +148,7 @@ function BrowserMockup() {
                 inset: 0,
                 width: '100%',
                 height: '100%',
-                objectFit: 'contain',
+                objectFit: 'cover',
                 objectPosition: 'top center',
               }}
             />
@@ -156,53 +156,42 @@ function BrowserMockup() {
         </div>
       </motion.div>
 
-      {/* Floating metric badge — animates per project */}
-      <div style={{ position: 'absolute', bottom: -16, left: -18 }}>
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={active.metric + active.metricLabel}
-            initial={{ opacity: 0, y: 10, scale: 0.92 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -6, scale: 0.96 }}
-            transition={{ duration: 0.35, ease: [0.25, 0.1, 0.25, 1] }}
-            style={{
-              background: 'var(--color-surface)',
-              border: '1px solid var(--color-border-strong)',
-              borderRadius: 12,
-              padding: '12px 16px',
-              boxShadow: 'var(--shadow-card)',
-              minWidth: 140,
-            }}
-          >
-            <div style={{ color: 'var(--color-accent)', fontFamily: 'Inter, sans-serif', fontWeight: 700, fontSize: 20, lineHeight: 1 }}>
-              {active.metric}
-            </div>
-            <div style={{ color: 'var(--color-text-muted)', fontFamily: 'Inter, sans-serif', fontSize: 10, marginTop: 4, letterSpacing: '0.02em', whiteSpace: 'nowrap' }}>
-              {active.metricLabel}
-            </div>
-          </motion.div>
-        </AnimatePresence>
-      </div>
+      {/* Caption — metric per project, then progress dots */}
+      <div className="flex flex-col items-center" style={{ marginTop: 40, gap: 24 }}>
+        <div style={{ height: 24 }}>
+          <AnimatePresence mode="wait">
+            <motion.p
+              key={active.metric + active.metricLabel}
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -6 }}
+              transition={{ duration: 0.35, ease: [0.25, 0.1, 0.25, 1] }}
+              style={{ fontFamily: 'Inter, sans-serif', fontSize: 15, color: 'var(--color-text-muted)', whiteSpace: 'nowrap' }}
+            >
+              <span style={{ color: 'var(--color-accent)', fontWeight: 600 }}>{active.metric}</span> {active.metricLabel}
+            </motion.p>
+          </AnimatePresence>
+        </div>
 
-      {/* Progress dots — click to jump */}
-      <div style={{ position: 'absolute', bottom: -34, right: 4, display: 'flex', gap: 6, alignItems: 'center' }}>
-        {SHOWCASE.map((_, i) => (
-          <button
-            key={i}
-            onClick={() => setActiveIdx(i)}
-            aria-label={`Projekt ${i + 1} anzeigen`}
-            style={{
-              width: i === activeIdx ? 22 : 6,
-              height: 6,
-              borderRadius: 3,
-              background: i === activeIdx ? 'var(--color-accent)' : 'var(--color-border-strong)',
-              border: 'none',
-              cursor: 'pointer',
-              padding: 0,
-              transition: 'width 0.4s cubic-bezier(0.25,0.1,0.25,1), background 0.3s ease',
-            }}
-          />
-        ))}
+        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+          {SHOWCASE.map((_, i) => (
+            <button
+              key={i}
+              onClick={() => setActiveIdx(i)}
+              aria-label={`Projekt ${i + 1} anzeigen`}
+              style={{
+                width: i === activeIdx ? 24 : 8,
+                height: 8,
+                borderRadius: 4,
+                background: i === activeIdx ? 'var(--color-accent)' : 'var(--color-text-veryfaint)',
+                border: 'none',
+                cursor: 'pointer',
+                padding: 0,
+                transition: 'width 0.4s cubic-bezier(0.25,0.1,0.25,1), background 0.3s ease',
+              }}
+            />
+          ))}
+        </div>
       </div>
     </motion.div>
   )
@@ -210,87 +199,90 @@ function BrowserMockup() {
 
 export default function Hero() {
   return (
-    <section id="hero" className="relative min-h-[92vh] flex flex-col overflow-hidden" style={{ background: 'var(--color-bg)' }}>
-      <div className="absolute inset-0 bg-grid pointer-events-none" />
+    <section id="hero" className="relative overflow-hidden" style={{ background: 'var(--color-bg)' }}>
+      <div
+        className="container-page text-center"
+        style={{ paddingTop: 'clamp(160px, 22vh, 224px)', paddingBottom: 'clamp(96px, 11vw, 160px)' }}
+      >
+        <motion.div variants={stagger} initial="hidden" animate="show" className="mx-auto" style={{ maxWidth: 960 }}>
 
-      {/* Swiss cross watermark */}
-      <div className="absolute right-[6%] top-[10%] pointer-events-none select-none hidden lg:block" style={{ opacity: 0.05 }}>
-        <svg width="420" height="420" viewBox="0 0 420 420">
-          <rect x="147" y="52" width="126" height="316" rx="12" fill="currentColor" style={{ color: 'var(--color-text)' }} />
-          <rect x="52" y="147" width="316" height="126" rx="12" fill="currentColor" style={{ color: 'var(--color-text)' }} />
-        </svg>
-      </div>
-
-      {/* Ambient glow */}
-      <div className="absolute top-0 right-0 pointer-events-none" style={{ width: 480, height: 480, background: 'radial-gradient(circle at 70% 25%, var(--color-accent-glow) 0%, transparent 65%)' }} />
-
-      {/* Content */}
-      <div className="relative z-10 flex-1 flex items-center max-w-6xl mx-auto px-5 sm:px-6 w-full pt-20 sm:pt-24 pb-12 sm:pb-16">
-        <div className="w-full flex items-center justify-between gap-12">
-
-          {/* Text */}
-          <motion.div variants={stagger} initial="hidden" animate="show" className="max-w-[600px] w-full">
-
-            {/* Badge */}
-            <motion.div variants={item} className="flex items-center gap-2.5 mb-7">
-              <span className="relative flex h-1.5 w-1.5">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-50" />
-                <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-accent" />
-              </span>
-              <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 11, fontWeight: 500, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--color-text-muted)' }}>
-                Schweizer Webagentur · Winterthur ZH
-              </span>
-            </motion.div>
-
-            {/* Headline */}
-            <motion.h1
-              variants={item}
-              className="font-display"
-              style={{ fontWeight: 500, lineHeight: 1.02, letterSpacing: '-0.035em', fontSize: 'clamp(2rem, 5.6vw, 4.6rem)', color: 'var(--color-text)', marginBottom: '1.25rem' }}
-            >
-              Design that <em className="font-display-italic" style={{ color: 'var(--color-accent)', fontWeight: 500 }}>elevates</em><br />
-              your digital presence
-            </motion.h1>
-
-            {/* Subline */}
-            <motion.p
-              variants={item}
-              style={{ fontFamily: 'Inter, sans-serif', fontSize: '1.05rem', color: 'var(--color-text-muted)', lineHeight: 1.65, maxWidth: 460, marginBottom: '2.5rem' }}
-            >
-              Individuelles Design und saubere Entwicklung für Schweizer KMU: zum garantierten Fixpreis, in ein bis zwei Wochen online. Kein Baukasten, kein Agentur-Overhead.
-            </motion.p>
-
-            {/* CTAs */}
-            <motion.div variants={item} className="flex flex-wrap gap-3 mb-10">
-              <a href="#contact" className="btn-accent">
-                Kostenloses Erstgespräch
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                  <path d="M7 17L17 7M17 7H7M17 7v10" />
-                </svg>
-              </a>
-              <a href="#work" className="btn-outline">Referenzen ansehen</a>
-            </motion.div>
-
-            {/* Inline stats */}
-            <motion.div variants={item} className="flex items-center gap-x-5 gap-y-3 flex-wrap">
-              {STATS.map((s, i) => (
-                <div key={i} className="flex items-center gap-x-5">
-                  {i > 0 && <div className="hidden sm:block w-px h-7 bg-border" />}
-                  <div>
-                    <div style={{ fontFamily: 'Inter, sans-serif', fontWeight: 700, fontSize: '1.1rem', color: 'var(--color-text)', lineHeight: 1.1 }}>{s.value}</div>
-                    <div style={{ fontFamily: 'Inter, sans-serif', fontSize: 11, color: 'var(--color-text-muted)', marginTop: 2 }}>{s.label}</div>
-                  </div>
-                </div>
-              ))}
-            </motion.div>
+          {/* Eyebrow */}
+          <motion.div variants={item} className="flex items-center justify-center gap-3" style={{ marginBottom: 32 }}>
+            <span className="relative flex h-1.5 w-1.5">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-50" />
+              <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-accent" />
+            </span>
+            <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 13, fontWeight: 500, letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--color-text-muted)' }}>
+              Schweizer Webagentur<span className="hidden sm:inline"> · Winterthur ZH</span>
+            </span>
           </motion.div>
 
-          <BrowserMockup />
+          {/* Headline */}
+          <motion.h1
+            variants={item}
+            className="font-display"
+            style={{ fontWeight: 500, lineHeight: 1.08, letterSpacing: '-0.035em', fontSize: 'clamp(2.75rem, 6.6vw, 5.5rem)', color: 'var(--color-text)', marginBottom: 32 }}
+          >
+            Design that <em className="font-display-italic" style={{ color: 'var(--color-accent)', fontWeight: 500 }}>elevates</em><br className="hidden sm:block" />{' '}
+            your digital presence
+          </motion.h1>
+
+          {/* Subline */}
+          <motion.p
+            variants={item}
+            className="lead mx-auto"
+            style={{ fontSize: 'clamp(1.125rem, 1.6vw, 1.375rem)', maxWidth: 600, marginBottom: 48 }}
+          >
+            Individuelles Design und saubere Entwicklung für Schweizer KMU: zum garantierten Fixpreis, in ein bis zwei Wochen online.
+          </motion.p>
+
+          {/* CTAs — one primary, one quiet text link */}
+          <motion.div variants={item} className="flex flex-col sm:flex-row items-center justify-center gap-6 sm:gap-10">
+            <a href="#contact" className="btn-accent">
+              Kostenloses Erstgespräch
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <path d="M7 17L17 7M17 7H7M17 7v10" />
+              </svg>
+            </a>
+            <a href="#work" className="btn-link">
+              Referenzen ansehen
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M9 18l6-6-6-6" /></svg>
+            </a>
+          </motion.div>
+        </motion.div>
+
+        <BrowserMockup />
+      </div>
+    </section>
+  )
+}
+
+/* Stats as their own quiet chapter — three numbers, nothing else */
+export function HeroStats() {
+  const ref = useRef(null)
+  const inView = useInView(ref, { once: true, margin: '-80px' })
+
+  return (
+    <section id="stats" className="section" style={{ background: 'var(--color-bg)', paddingTop: 0 }}>
+      <div ref={ref} className="container-page">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-16 sm:gap-8 text-center mx-auto" style={{ maxWidth: 980 }}>
+          {STATS.map((s, i) => (
+            <motion.div
+              key={s.label}
+              initial={{ opacity: 0, y: 16 }}
+              animate={inView ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.7, delay: i * 0.1, ease: [0.25, 0.1, 0.25, 1] }}
+            >
+              <div className="font-display" style={{ fontWeight: 500, fontSize: 'clamp(2.75rem, 5vw, 4rem)', lineHeight: 1.1, letterSpacing: '-0.03em', color: 'var(--color-text)' }}>
+                {s.value}
+              </div>
+              <div style={{ fontFamily: 'Inter, sans-serif', fontSize: 15, color: 'var(--color-text-muted)', marginTop: 12 }}>
+                {s.label}
+              </div>
+            </motion.div>
+          ))}
         </div>
       </div>
-
-      {/* Bottom border */}
-      <div className="h-px w-full flex-shrink-0" style={{ background: 'var(--color-border)' }} />
     </section>
   )
 }

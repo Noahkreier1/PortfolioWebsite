@@ -117,9 +117,9 @@ function ScoreBar({ label, value, delay }) {
   const barColor = value < 30 ? '#9A4848' : value < 55 ? '#806840' : '#7A8848'
   return (
     <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
-        <span style={{ fontFamily: 'Inter', fontSize: 12, color: 'var(--color-text-muted)' }}>{label}</span>
-        <span style={{ fontFamily: 'Inter', fontSize: 12, color: 'var(--color-text-muted)', fontWeight: 600, fontVariantNumeric: 'tabular-nums' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
+        <span style={{ fontFamily: 'Inter', fontSize: 14, color: 'var(--color-text-muted)' }}>{label}</span>
+        <span style={{ fontFamily: 'Inter', fontSize: 14, color: 'var(--color-text-muted)', fontWeight: 600, fontVariantNumeric: 'tabular-nums' }}>
           {value}<span style={{ color: 'var(--color-text-subtle)' }}>/100</span>
         </span>
       </div>
@@ -145,10 +145,10 @@ function IdleState({ url, setUrl, onAnalyze, error }) {
       initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -8, scale: 0.97 }}
       transition={{ duration: 0.35 }}
-      className="rounded-2xl p-5 sm:p-7"
-      style={{ background: 'var(--color-bg-soft)', border: '1px solid var(--color-border)' }}
+      className="p-6 sm:p-10"
+      style={{ background: 'var(--color-bg)', borderRadius: 28 }}
     >
-      <p style={{ fontFamily: 'Inter', fontSize: 11, color: 'var(--color-text-faint)', textTransform: 'uppercase', letterSpacing: '0.18em', marginBottom: 14 }}>
+      <p style={{ fontFamily: 'Inter', fontSize: 11, color: 'var(--color-text-faint)', textTransform: 'uppercase', letterSpacing: "0.18em", marginBottom: 16 }}>
         Ihre aktuelle Webseiten-URL
       </p>
       <div className="flex flex-col sm:flex-row" style={{ gap: 8 }}>
@@ -164,10 +164,10 @@ function IdleState({ url, setUrl, onAnalyze, error }) {
             flex: 1,
             background: 'var(--color-bg)',
             border: `1px solid ${borderColor}`,
-            borderRadius: 10,
-            padding: '12px 14px',
-            fontFamily: 'Inter, sans-serif',
-            fontSize: 14,
+            borderRadius: 999,
+            padding: "16px 24px",
+            fontFamily: "Inter, sans-serif",
+            fontSize: 16,
             color: 'var(--color-text)',
             outline: 'none',
             transition: 'border-color 0.2s ease',
@@ -180,14 +180,13 @@ function IdleState({ url, setUrl, onAnalyze, error }) {
             background: canSubmit ? 'var(--color-accent)' : 'var(--color-surface)',
             color: canSubmit ? 'var(--color-bg)' : 'var(--color-text-subtle)',
             border: 'none',
-            borderRadius: 10,
-            padding: '12px 22px',
-            fontFamily: 'Inter, sans-serif',
-            fontWeight: 700,
-            fontSize: 13,
+            borderRadius: 999,
+            padding: "16px 32px",
+            fontFamily: "Inter, sans-serif",
+            fontWeight: 600,
+            fontSize: 15,
             cursor: canSubmit ? 'pointer' : 'not-allowed',
-            transition: 'background 0.25s ease, color 0.25s ease, box-shadow 0.25s ease',
-            boxShadow: canSubmit ? '0 4px 20px rgba(196,164,106,0.15)' : 'none',
+            transition: "background 0.25s ease, color 0.25s ease",
             whiteSpace: 'nowrap',
             letterSpacing: '-0.01em',
           }}
@@ -200,7 +199,7 @@ function IdleState({ url, setUrl, onAnalyze, error }) {
           <motion.p key="err"
             initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            style={{ fontFamily: 'Inter', fontSize: 11, color: '#B86A4A', marginTop: 12 }}
+            style={{ fontFamily: 'Inter', fontSize: 13, color: "#B86A4A", marginTop: 16 }}
           >
             {error}
           </motion.p>
@@ -208,7 +207,7 @@ function IdleState({ url, setUrl, onAnalyze, error }) {
           <motion.p key="hint"
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            style={{ fontFamily: 'Inter', fontSize: 11, color: 'var(--color-text-veryfaint)', marginTop: 12 }}
+            style={{ fontFamily: 'Inter', fontSize: 13, color: "var(--color-text-faint)", marginTop: 16 }}
           >
             Dauert ca. 10 Sekunden · Keine E-Mail nötig · 100% kostenlos
           </motion.p>
@@ -224,11 +223,11 @@ function ScanningState({ cleanUrl, stepsDone, progress }) {
       initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.35 }}
-      className="rounded-2xl p-5 sm:p-7"
-      style={{ background: 'var(--color-bg-soft)', border: '1px solid var(--color-border)' }}
+      className="p-6 sm:p-10"
+      style={{ background: 'var(--color-bg)', borderRadius: 28 }}
     >
       {/* Scanning header */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 9, marginBottom: 20 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 28 }}>
         <motion.div
           animate={{ rotate: 360 }}
           transition={{ duration: 1.2, repeat: Infinity, ease: 'linear' }}
@@ -240,7 +239,7 @@ function ScanningState({ cleanUrl, stepsDone, progress }) {
       </div>
 
       {/* Progress bar */}
-      <div style={{ height: 3, background: 'var(--color-surface-2)', borderRadius: 2, marginBottom: 24, overflow: 'hidden' }}>
+      <div style={{ height: 3, background: 'var(--color-surface-2)', borderRadius: 2, marginBottom: 32, overflow: 'hidden' }}>
         <motion.div
           style={{ height: '100%', background: 'linear-gradient(90deg, #8B6A30, #C4A46A)', borderRadius: 2 }}
           animate={{ width: `${progress}%` }}
@@ -249,7 +248,7 @@ function ScanningState({ cleanUrl, stepsDone, progress }) {
       </div>
 
       {/* Steps */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 11 }}>
+      <div style={{ display: 'flex', flexDirection: "column", gap: 16 }}>
         {STEPS.map((step, i) => (
           <motion.div key={i}
             initial={{ opacity: 0.15 }}
@@ -304,11 +303,11 @@ function ResultsState({ scores, cleanUrl, onReset }) {
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.45, ease: [0.25, 0.1, 0.25, 1] }}
-      className="rounded-2xl p-5 sm:p-7"
-      style={{ background: 'var(--color-bg-soft)', border: `1px solid var(--color-border)` }}
+      className="p-6 sm:p-10"
+      style={{ background: 'var(--color-bg)', borderRadius: 28 }}
     >
       {/* Header — grade + meta */}
-      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 22 }}>
+      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: "space-between", marginBottom: 32 }}>
         <div>
           <p style={{ fontFamily: 'Inter', fontSize: 11, color: 'var(--color-text-faint)', textTransform: 'uppercase', letterSpacing: '0.18em', marginBottom: 5 }}>
             Webseiten-Score
@@ -340,7 +339,7 @@ function ResultsState({ scores, cleanUrl, onReset }) {
       </div>
 
       {/* Score bars */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 20 }}>
+      <div style={{ display: 'flex', flexDirection: "column", gap: 20, marginBottom: 32 }}>
         {METRICS.map(({ key, label }, i) => (
           <ScoreBar key={key} label={label} value={scores[key]} delay={0.25 + i * 0.1} />
         ))}
@@ -348,22 +347,21 @@ function ResultsState({ scores, cleanUrl, onReset }) {
 
       {/* Verdict */}
       <div style={{
-        background: 'var(--color-bg)',
-        border: '1px solid var(--color-border)',
-        borderRadius: 10,
-        padding: '12px 16px',
-        marginBottom: 16,
+        background: "var(--color-bg-soft)",
+        borderRadius: 16,
+        padding: "20px 24px",
+        marginBottom: 32,
       }}>
-        <p style={{ fontFamily: 'Inter', fontSize: 13, color: 'var(--color-text-muted)', lineHeight: 1.65, fontStyle: 'italic' }}>
+        <p style={{ fontFamily: 'Inter', fontSize: 15, color: "var(--color-text-muted)", lineHeight: 1.6, fontStyle: "italic" }}>
           "{verdict}"
         </p>
       </div>
 
       {/* CTAs */}
-      <div style={{ display: 'flex', gap: 8 }}>
+      <div style={{ display: "flex", gap: 12 }}>
         <a href="#contact"
           className="btn-accent"
-          style={{ flex: 1, justifyContent: 'center', fontSize: 13, padding: '11px 16px', textAlign: 'center' }}
+          style={{ flex: 1, justifyContent: "center", padding: "16px 24px", textAlign: "center" }}
         >
           Kostenloses Audit anfordern
           <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
@@ -375,9 +373,9 @@ function ResultsState({ scores, cleanUrl, onReset }) {
             background: 'transparent',
             border: '1px solid var(--color-border)',
             borderRadius: 99,
-            padding: '11px 16px',
-            fontFamily: 'Inter',
-            fontSize: 12,
+            padding: "16px 24px",
+            fontFamily: "Inter",
+            fontSize: 15,
             color: 'var(--color-text-faint)',
             cursor: 'pointer',
             transition: 'border-color 0.2s, color 0.2s',
@@ -446,19 +444,21 @@ export default function WebsiteAudit() {
 
   return (
     <section
+      id="audit"
       ref={sectionRef}
-      style={{ background: 'var(--color-bg-soft)', borderTop: '1px solid var(--color-border)', borderBottom: '1px solid var(--color-border)' }}
-      className="py-14 sm:py-20 overflow-hidden"
+      style={{ background: 'var(--color-bg-soft)' }}
+      className="section overflow-hidden"
     >
-      <div className="max-w-6xl mx-auto px-6">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+      <div className="container-page">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-center">
 
           {/* Left — copy */}
           <div>
             <motion.p
               initial={{ opacity: 0, y: 10 }} animate={inView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.5 }}
-              className="section-label mb-4"
+              className="section-label"
+              style={{ marginBottom: 16 }}
             >
               Kostenlose Webseiten-Analyse
             </motion.p>
@@ -466,8 +466,8 @@ export default function WebsiteAudit() {
             <motion.h2
               initial={{ opacity: 0, y: 14 }} animate={inView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.6, delay: 0.1 }}
-              className="font-display"
-              style={{ fontWeight: 500, letterSpacing: '-0.035em', fontSize: 'clamp(2rem, 3.8vw, 3rem)', color: 'var(--color-text)', lineHeight: 1.05, marginBottom: '1rem' }}
+              className="font-display h-section"
+              style={{ marginBottom: 32, fontSize: 'clamp(2.5rem, 4.2vw, 3.5rem)' }}
             >
               Wie schneidet Ihre<br /><em className="font-display-italic" style={{ fontWeight: 500 }}>Webseite</em> wirklich ab?
             </motion.h2>
@@ -475,7 +475,8 @@ export default function WebsiteAudit() {
             <motion.p
               initial={{ opacity: 0, y: 12 }} animate={inView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.6, delay: 0.18 }}
-              style={{ fontFamily: 'Inter, sans-serif', fontSize: '0.95rem', color: 'var(--color-text-muted)', lineHeight: 1.75, maxWidth: 400, marginBottom: '1.5rem' }}
+              className="lead"
+              style={{ maxWidth: 440, marginBottom: 48 }}
             >
               Geben Sie Ihre URL ein. Wir prüfen Design, Ladezeit, Conversion-Setup und SEO. Wir zeigen Ihnen genau, wo Sie Kunden verlieren.
             </motion.p>
@@ -484,16 +485,16 @@ export default function WebsiteAudit() {
             <motion.div
               initial={{ opacity: 0 }} animate={inView ? { opacity: 1 } : {}}
               transition={{ delay: 0.35 }}
-              style={{ display: 'flex', flexDirection: 'column', gap: 8 }}
+              style={{ display: 'flex', flexDirection: 'column', gap: 16 }}
             >
               {[
                 'Schweizer KMU erzielen im Schnitt 34/100',
                 'Die Top-3-Probleme kosten 60%+ der Leads',
                 'Wir haben diese Probleme 20+ mal gelöst',
               ].map((t, i) => (
-                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
-                  <div style={{ width: 4, height: 4, borderRadius: '50%', background: 'var(--color-accent)', flexShrink: 0, opacity: 0.5 }} />
-                  <span style={{ fontFamily: 'Inter', fontSize: 12, color: 'var(--color-text-faint)' }}>{t}</span>
+                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                  <div style={{ width: 5, height: 5, borderRadius: '50%', background: 'var(--color-accent)', flexShrink: 0 }} />
+                  <span style={{ fontFamily: 'Inter', fontSize: 15, color: 'var(--color-text-muted)' }}>{t}</span>
                 </div>
               ))}
             </motion.div>
@@ -521,25 +522,20 @@ export default function WebsiteAudit() {
               )}
             </AnimatePresence>
 
-            {/* Alternative: persönliche Analyse statt automatischem Scan */}
-            <div
-              className="rounded-2xl mt-3 p-5 flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-5"
-              style={{ background: 'var(--color-bg)', border: '1px dashed var(--color-border-strong)' }}
-            >
-              <div style={{ flex: 1 }}>
-                <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 13, fontWeight: 600, color: 'var(--color-text)', marginBottom: 3 }}>
-                  Lieber von Menschen geprüft?
-                </p>
-                <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, color: 'var(--color-text-muted)', lineHeight: 1.55 }}>
-                  Überspringen Sie den Scanner: Wir analysieren Ihre Webseite persönlich und senden Ihnen innert 24h die drei wichtigsten Verbesserungen. Kostenlos &amp; unverbindlich.
-                </p>
-              </div>
+            {/* Alternative: persönliche Analyse statt automatischem Scan — unboxed, separated by space */}
+            <div style={{ marginTop: 48, paddingInline: 8 }}>
+              <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 16, fontWeight: 600, color: 'var(--color-text)', marginBottom: 8 }}>
+                Lieber von Menschen geprüft?
+              </p>
+              <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 15, color: 'var(--color-text-muted)', lineHeight: 1.6, marginBottom: 16 }}>
+                Wir analysieren Ihre Webseite persönlich und senden Ihnen innert 24h die drei wichtigsten Verbesserungen. Kostenlos &amp; unverbindlich.
+              </p>
               <a
                 href={`mailto:${COMPANY.email}?subject=${encodeURIComponent('Kostenlose Webseiten-Analyse innert 24h')}&body=${encodeURIComponent('Guten Tag\n\nBitte analysieren Sie meine Webseite persönlich: ' + (url.trim() || '[Ihre URL]') + '\n\nFirma / Branche (optional):\n\nFreundliche Grüsse')}`}
-                style={{ fontFamily: 'Inter, sans-serif', fontSize: 13, fontWeight: 600, color: 'var(--color-accent)', display: 'inline-flex', alignItems: 'center', gap: 6, whiteSpace: 'nowrap', flexShrink: 0 }}
+                className="btn-link"
               >
                 Analyse innert 24h anfordern
-                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M7 17L17 7M17 7H7M17 7v10" /></svg>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M7 17L17 7M17 7H7M17 7v10" /></svg>
               </a>
             </div>
           </motion.div>

@@ -1,5 +1,4 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
-import CustomCursor from './components/CustomCursor'
 import CookieConsent from './components/CookieConsent'
 import Home from './pages/Home'
 import Impressum from './pages/Impressum'
@@ -21,7 +20,6 @@ export default function App() {
         className="text-text-primary min-h-screen"
         style={{ fontFamily: 'Inter, system-ui, sans-serif', background: 'var(--color-bg)' }}
       >
-        <CustomCursor />
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/impressum" element={<Impressum />} />
