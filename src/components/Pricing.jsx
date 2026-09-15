@@ -1,79 +1,71 @@
-import { useMemo, useState, useRef } from 'react'
-import { motion, useInView } from 'framer-motion'
+import { useMemo, useRef, useState } from 'react'
+import { track } from '@vercel/analytics'
+import { setRequestContext } from '../lib/requestContext'
+import { ArrowUpRight } from './Icons'
 
-/* ─── Pricing logic ─── */
-// Returns a CHF range [min, max] based on current configurator state.
-// Calibrated for high-volume / bulk strategy: standard projects 1-5k,
-// fully loaded max around 5-8k.
+/* ─── Preislogik ─── */
+// Liefert eine CHF-Spanne [min, max] für die aktuelle Auswahl.
+// Kalibriert auf Standardprojekte zwischen CHF 1'000 und 5'000.
 function computePrice({ pages, ecommerce, design, copywriting, animations, seo, maintenance }) {
-  // Base: minimal 1-page template-style site
   let lo = 700
   let hi = 1200
 
-  // Pages: each additional page adds cost
   const extra = Math.max(0, pages - 1)
   lo += extra * 80
   hi += extra * 100
 
-  // E-Commerce module
-  if (ecommerce) {
-    lo += 700
-    hi += 1200
-  }
+  if (ecommerce) { lo += 700; hi += 1200 }
 
-  // Design tier
-  if (design === 'custom') {
-    lo += 400
-    hi += 700
-  } else if (design === 'premium') {
-    lo += 1000
-    hi += 1700
-  }
+  if (design === 'custom') { lo += 400; hi += 700 }
+  else if (design === 'branding') { lo += 1000; hi += 1700 }
 
-  // Copywriting
-  if (copywriting) {
-    lo += 200
-    hi += 400
-  }
+  if (copywriting) { lo += 200; hi += 400 }
+  if (animations) { lo += 300; hi += 600 }
+  if (seo) { lo += 200; hi += 400 }
+  if (maintenance) { lo += 400; hi += 600 }
 
-  // Animations / interactive elements
-  if (animations) {
-    lo += 300
-    hi += 600
-  }
-
-  // SEO foundation
-  if (seo) {
-    lo += 200
-    hi += 400
-  }
-
-  // Maintenance (annual support package)
-  if (maintenance) {
-    lo += 400
-    hi += 600
-  }
-
-  // Round to nearest 100 for a clean look
   return [Math.round(lo / 100) * 100, Math.round(hi / 100) * 100]
 }
 
-const formatCHF = (n) =>
-  "CHF " + new Intl.NumberFormat('de-CH', { maximumFractionDigits: 0 }).format(n)
+const formatCHF = (n) => 'CHF ' + new Intl.NumberFormat('de-CH', { maximumFractionDigits: 0 }).format(n)
 
-/* ─── UI building blocks ─── */
-function Toggle({ active, onChange, children }) {
+const DESIGN_OPTIONS = [
+  { value: 'basis', label: 'Basis', description: 'Bewährter Aufbau, gestaltet in Ihrer Marke.' },
+  { value: 'custom', label: 'Individuell', description: 'Komplett individuell entworfen.' },
+  { value: 'branding', label: 'Mit Branding', description: 'Individuell entworfen, inklusive Logo, Markenauftritt, Illustrationen und Animationen.' },
+]
+
+const MODULES = [
+  { key: 'ecommerce', label: 'E-Commerce / Shop' },
+  { key: 'animations', label: 'Animationen & Interaktion' },
+  { key: 'copywriting', label: 'Texte (Copywriting)' },
+  { key: 'seo', label: 'SEO-Grundlagen' },
+  { key: 'maintenance', label: 'Wartung (12 Monate)' },
+]
+
+const INCLUDED = [
+  'Verbindlicher Fixpreis ab Offerte',
+  'Hosting und Domain im ersten Jahr inklusive',
+  'Online in ein bis zwei Wochen ab Auftrag',
+  '30 Tage Anpassungen nach Launch inklusive',
+]
+
+const labelStyle = { fontSize: 15, fontWeight: 600, color: 'var(--color-text)', display: 'block', marginBottom: 16 }
+
+function Toggle({ id, active, onChange, children }) {
   return (
     <button
+      id={id}
       type="button"
+      role="switch"
+      aria-checked={active}
       onClick={() => onChange(!active)}
       className="text-left"
       style={{
-        background: active ? 'var(--color-accent-glow)' : 'var(--color-bg)',
+        background: active ? 'var(--color-accent-glow)' : 'var(--color-bg-soft)',
         border: `1px solid ${active ? 'var(--color-accent-soft)' : 'transparent'}`,
         borderRadius: 16,
         padding: '16px 20px',
-        fontFamily: 'Inter, sans-serif',
         color: active ? 'var(--color-text)' : 'var(--color-text-muted)',
         cursor: 'pointer',
         transition: 'background 0.2s ease, border-color 0.2s ease, color 0.2s ease',
@@ -81,15 +73,17 @@ function Toggle({ active, onChange, children }) {
         alignItems: 'center',
         gap: 12,
         width: '100%',
+        fontSize: 15,
+        fontWeight: 500,
       }}
     >
-      <div
+      <span
+        aria-hidden="true"
         style={{
-          width: 18, height: 18, borderRadius: 5,
+          width: 18, height: 18, borderRadius: 5, flexShrink: 0,
           background: active ? 'var(--color-accent)' : 'transparent',
           border: `1.5px solid ${active ? 'var(--color-accent)' : 'var(--color-border-strong)'}`,
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          flexShrink: 0,
           transition: 'background 0.2s ease, border-color 0.2s ease',
         }}
       >
@@ -98,182 +92,132 @@ function Toggle({ active, onChange, children }) {
             <polyline points="20 6 9 17 4 12" />
           </svg>
         )}
-      </div>
-      <span style={{ fontSize: 14, fontWeight: 500, letterSpacing: '-0.01em' }}>{children}</span>
+      </span>
+      {children}
     </button>
   )
 }
 
-function SegmentedControl({ value, options, onChange }) {
-  return (
-    <div
-      style={{
-        display: 'grid',
-        gridTemplateColumns: `repeat(${options.length}, 1fr)`,
-        gap: 4,
-        padding: 4,
-        background: 'var(--color-bg)',
-        borderRadius: 999,
-      }}
-    >
-      {options.map((opt) => {
-        const active = value === opt.value
-        return (
-          <button
-            key={opt.value}
-            type="button"
-            onClick={() => onChange(opt.value)}
-            style={{
-              padding: '12px 16px',
-              borderRadius: 999,
-              border: 'none',
-              background: active ? 'var(--color-accent)' : 'transparent',
-              color: active ? 'var(--color-bg)' : 'var(--color-text-muted)',
-              fontFamily: 'Inter, sans-serif',
-              fontSize: 14,
-              fontWeight: active ? 600 : 500,
-              letterSpacing: '0.01em',
-              cursor: 'pointer',
-              transition: 'background 0.2s ease, color 0.2s ease',
-            }}
-          >
-            {opt.label}
-          </button>
-        )
-      })}
-    </div>
-  )
-}
-
-/* ─── Main component ─── */
 export default function Pricing() {
-  const ref = useRef(null)
-  const inView = useInView(ref, { once: true, margin: '-60px' })
-
   const [pages, setPages] = useState(5)
-  const [ecommerce, setEcommerce] = useState(false)
-  const [design, setDesign] = useState('custom') // 'template' | 'custom' | 'premium'
-  const [copywriting, setCopywriting] = useState(false)
-  const [animations, setAnimations] = useState(true)
-  const [seo, setSeo] = useState(true)
-  const [maintenance, setMaintenance] = useState(false)
+  const [design, setDesign] = useState('custom')
+  const [modules, setModules] = useState({ ecommerce: false, animations: true, copywriting: false, seo: true, maintenance: false })
+  const tracked = useRef(false)
 
-  const [lo, hi] = useMemo(
-    () => computePrice({ pages, ecommerce, design, copywriting, animations, seo, maintenance }),
-    [pages, ecommerce, design, copywriting, animations, seo, maintenance]
-  )
+  const [lo, hi] = useMemo(() => computePrice({ pages, design, ...modules }), [pages, design, modules])
+
+  const markUsed = () => {
+    if (tracked.current) return
+    tracked.current = true
+    track('pricing_used')
+  }
+
+  const selectedDesign = DESIGN_OPTIONS.find((o) => o.value === design)
+
+  const sendToContact = () => {
+    const chosen = MODULES.filter((m) => modules[m.key]).map((m) => m.label)
+    setRequestContext(
+      `Preisrechner: ${pages} ${pages === 1 ? 'Seite' : 'Seiten'} · Design ${selectedDesign.label} · Module: ${chosen.length ? chosen.join(', ') : 'keine'} · Richtpreis ${formatCHF(lo)} bis ${formatCHF(hi)}`
+    )
+    track('cta_click', { location: 'pricing' })
+  }
 
   return (
-    <section
-      id="preis"
-      className="section"
-      style={{ background: 'var(--color-bg)' }}
-    >
-      <div className="container-page" ref={ref}>
-
-        {/* Header */}
+    <section id="preis" className="section" style={{ background: 'var(--color-bg-soft)' }}>
+      <div className="container-page">
         <div className="section-head">
-          <motion.p
-            initial={{ opacity: 0, y: 10 }} animate={inView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.5 }}
-            className="section-label"
-          >
-            Transparente Preise
-          </motion.p>
-          <motion.h2
-            initial={{ opacity: 0, y: 14 }} animate={inView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.6, delay: 0.1 }}
-            className="font-display h-section"
-          >
-            Was kostet <em className="font-display-italic" style={{ fontWeight: 500 }}>Ihre</em> Webseite?
-          </motion.h2>
-          <motion.p
-            initial={{ opacity: 0 }} animate={inView ? { opacity: 1 } : {}}
-            transition={{ delay: 0.2 }}
-            className="lead"
-          >
-            Stellen Sie Ihr Projekt zusammen und sehen Sie die Preisspanne sofort. Nach dem Erstgespräch wird daraus eine Festofferte, und dieser Preis gilt.
-          </motion.p>
+          <h2 className="font-display h-section">Was Ihre Webseite kostet</h2>
+          <p className="lead">
+            Stellen Sie Ihr Projekt zusammen und sehen Sie die Preisspanne sofort. Nach dem Erstgespräch
+            erhalten Sie eine Festofferte, und dieser Preis gilt.
+          </p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-12">
-
-          {/* Configurator (left) */}
-          <motion.div
-            initial={{ opacity: 0, x: -12 }} animate={inView ? { opacity: 1, x: 0 } : {}}
-            transition={{ duration: 0.6, delay: 0.25 }}
-            className="lg:col-span-3"
-            style={{
-              background: 'var(--color-bg-soft)',
-              borderRadius: 28,
-              padding: 'clamp(24px, 4vw, 48px)',
-            }}
-          >
-            {/* Pages slider */}
+          {/* Konfigurator */}
+          <div className="lg:col-span-3" style={{ background: 'var(--color-bg)', borderRadius: 28, padding: 'clamp(24px, 4vw, 48px)' }}>
             <div style={{ marginBottom: 48 }}>
               <div className="flex items-baseline justify-between" style={{ marginBottom: 16 }}>
-                <label style={{ fontFamily: 'Inter, sans-serif', fontSize: 15, fontWeight: 600, color: 'var(--color-text)', letterSpacing: '-0.01em' }}>
-                  Seitenanzahl
-                </label>
-                <span className="font-display" style={{ fontWeight: 600, fontSize: 22, color: 'var(--color-accent)', lineHeight: 1, letterSpacing: '-0.02em' }}>
-                  {pages}<span style={{ fontSize: 14, color: 'var(--color-text-muted)', fontWeight: 500, marginLeft: 4 }}>{pages === 1 ? 'Seite' : 'Seiten'}</span>
+                <label htmlFor="pricing-pages" style={{ ...labelStyle, marginBottom: 0 }}>Seitenanzahl</label>
+                <span className="font-display" style={{ fontSize: 24, color: 'var(--color-accent)', lineHeight: 1 }}>
+                  {pages}
+                  <span style={{ fontFamily: 'var(--font-body)', fontSize: 14, color: 'var(--color-text-muted)', fontWeight: 500, marginLeft: 6, letterSpacing: 0 }}>
+                    {pages === 1 ? 'Seite' : 'Seiten'}
+                  </span>
                 </span>
               </div>
               <input
+                id="pricing-pages"
                 type="range"
                 min={1}
                 max={20}
                 value={pages}
-                onChange={(e) => setPages(parseInt(e.target.value, 10))}
+                onChange={(e) => { setPages(parseInt(e.target.value, 10)); markUsed() }}
                 className="pricing-slider"
                 style={{ width: '100%' }}
               />
-              <div className="flex justify-between" style={{ marginTop: 8, fontFamily: 'Inter, sans-serif', fontSize: 12, color: 'var(--color-text-faint)', letterSpacing: '0.04em' }}>
+              <div className="flex justify-between" style={{ marginTop: 8, fontSize: 12, color: 'var(--color-text-faint)' }}>
                 <span>1</span><span>20+</span>
               </div>
             </div>
 
-            {/* Design tier */}
             <div style={{ marginBottom: 48 }}>
-              <label style={{ fontFamily: 'Inter, sans-serif', fontSize: 15, fontWeight: 600, color: 'var(--color-text)', letterSpacing: '-0.01em', display: 'block', marginBottom: 16 }}>
-                Design-Niveau
-              </label>
-              <SegmentedControl
-                value={design}
-                onChange={setDesign}
-                options={[
-                  { value: 'template', label: 'Template' },
-                  { value: 'custom', label: 'Individuell' },
-                  { value: 'premium', label: 'Premium' },
-                ]}
-              />
-              <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 14, color: 'var(--color-text-muted)', marginTop: 16, lineHeight: 1.5, textAlign: 'center' }}>
-                {design === 'template' && 'Modernes Template, angepasst auf Ihre Marke.'}
-                {design === 'custom' && 'Komplett individuell entworfen, kein Template.'}
-                {design === 'premium' && 'Individuell entworfen, inklusive Brand-Identity, Illustrationen und Motion-Design.'}
-              </p>
+              <span id="pricing-design-label" style={labelStyle}>Design</span>
+              <div
+                role="radiogroup"
+                aria-labelledby="pricing-design-label"
+                style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 4, padding: 4, background: 'var(--color-bg-soft)', borderRadius: 999 }}
+              >
+                {DESIGN_OPTIONS.map((opt) => {
+                  const active = design === opt.value
+                  return (
+                    <button
+                      key={opt.value}
+                      id={`pricing-design-${opt.value}`}
+                      type="button"
+                      role="radio"
+                      aria-checked={active}
+                      onClick={() => { setDesign(opt.value); markUsed() }}
+                      style={{
+                        padding: '12px 8px',
+                        borderRadius: 999,
+                        border: 'none',
+                        background: active ? 'var(--color-accent)' : 'transparent',
+                        color: active ? 'var(--color-bg)' : 'var(--color-text-muted)',
+                        fontSize: 14,
+                        fontWeight: active ? 600 : 500,
+                        cursor: 'pointer',
+                        transition: 'background 0.2s ease, color 0.2s ease',
+                      }}
+                    >
+                      {opt.label}
+                    </button>
+                  )
+                })}
+              </div>
+              <p style={{ fontSize: 14, color: 'var(--color-text-muted)', marginTop: 16 }}>{selectedDesign.description}</p>
             </div>
 
-            {/* Features grid */}
-            <label style={{ fontFamily: 'Inter, sans-serif', fontSize: 15, fontWeight: 600, color: 'var(--color-text)', letterSpacing: '-0.01em', display: 'block', marginBottom: 16 }}>
-              Module
-            </label>
+            <span style={labelStyle}>Module</span>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <Toggle active={ecommerce} onChange={setEcommerce}>E-Commerce / Shop</Toggle>
-              <Toggle active={animations} onChange={setAnimations}>Animationen & Interaktion</Toggle>
-              <Toggle active={copywriting} onChange={setCopywriting}>Texte (Copywriting)</Toggle>
-              <Toggle active={seo} onChange={setSeo}>SEO-Grundlagen</Toggle>
-              <Toggle active={maintenance} onChange={setMaintenance}>Wartung (12 Monate)</Toggle>
+              {MODULES.map((m) => (
+                <Toggle
+                  key={m.key}
+                  id={`pricing-module-${m.key}`}
+                  active={modules[m.key]}
+                  onChange={(v) => { setModules((prev) => ({ ...prev, [m.key]: v })); markUsed() }}
+                >
+                  {m.label}
+                </Toggle>
+              ))}
             </div>
-          </motion.div>
+          </div>
 
-          {/* Price summary (right) */}
-          <motion.div
-            initial={{ opacity: 0, x: 12 }} animate={inView ? { opacity: 1, x: 0 } : {}}
-            transition={{ duration: 0.6, delay: 0.35 }}
+          {/* Zusammenfassung */}
+          <div
             className="lg:col-span-2"
             style={{
-              background: 'var(--color-bg-soft)',
+              background: 'var(--color-bg)',
               borderRadius: 28,
               padding: 'clamp(24px, 4vw, 48px)',
               display: 'flex',
@@ -284,55 +228,30 @@ export default function Pricing() {
               height: 'fit-content',
             }}
           >
-            <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 13, fontWeight: 500, color: 'var(--color-text-muted)', letterSpacing: '0.18em', textTransform: 'uppercase', marginBottom: -16 }}>
-              Ihre Preisspanne
-            </p>
-
-            <motion.div
-              key={`${lo}-${hi}`}
-              initial={{ opacity: 0, y: 6 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3 }}
-            >
-              <div className="font-display" style={{ fontWeight: 600, fontSize: 'clamp(2.4rem, 5vw, 3.4rem)', color: 'var(--color-text)', lineHeight: 1, letterSpacing: '-0.03em' }}>
+            <div aria-live="polite">
+              <p style={{ fontSize: 15, color: 'var(--color-text-muted)', marginBottom: 8 }}>Ihre Preisspanne</p>
+              <p className="font-display" style={{ fontSize: 'clamp(2.4rem, 5vw, 3.25rem)', color: 'var(--color-text)', lineHeight: 1.05, fontVariantNumeric: 'tabular-nums' }}>
                 {formatCHF(lo)}
-              </div>
-              <div style={{ fontFamily: 'Inter, sans-serif', fontSize: 15, color: 'var(--color-text-muted)', marginTop: 12, letterSpacing: '0.01em' }}>
-                bis <span className="font-display" style={{ fontWeight: 600, color: 'var(--color-accent)', fontSize: 18, letterSpacing: '-0.02em' }}>{formatCHF(hi)}</span>
-              </div>
-            </motion.div>
+              </p>
+              <p style={{ fontSize: 15, color: 'var(--color-text-muted)', marginTop: 8 }}>
+                bis <span className="font-display" style={{ color: 'var(--color-accent)', fontSize: 20, fontVariantNumeric: 'tabular-nums' }}>{formatCHF(hi)}</span>
+              </p>
+            </div>
 
-            <ul style={{ fontFamily: 'Inter, sans-serif', fontSize: 15, color: 'var(--color-text-muted)', lineHeight: 1.5, listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 12 }}>
-              <li style={{ display: 'flex', gap: 8 }}>
-                <span style={{ color: 'var(--color-accent)' }}>✓</span>
-                Fixpreis-Garantie ab Briefing
-              </li>
-              <li style={{ display: 'flex', gap: 8 }}>
-                <span style={{ color: 'var(--color-accent)' }}>✓</span>
-                Hosting und Domain inklusive im 1. Jahr
-              </li>
-              <li style={{ display: 'flex', gap: 8 }}>
-                <span style={{ color: 'var(--color-accent)' }}>✓</span>
-                Online in 1–2 Wochen
-              </li>
-              <li style={{ display: 'flex', gap: 8 }}>
-                <span style={{ color: 'var(--color-accent)' }}>✓</span>
-                30-Tage Anpassungs-Garantie
-              </li>
+            <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 12, fontSize: 15, color: 'var(--color-text)' }}>
+              {INCLUDED.map((item) => <li key={item}>{item}</li>)}
             </ul>
 
-            <a href="#contact" className="btn-accent" style={{ justifyContent: 'center' }}>
+            <a href="#contact" className="btn-accent" onClick={sendToContact}>
               Festofferte anfragen
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                <path d="M7 17L17 7M17 7H7M17 7v10" />
-              </svg>
+              <ArrowUpRight />
             </a>
 
-            <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 13, color: 'var(--color-text-faint)', lineHeight: 1.6, textAlign: 'center', margin: '-8px 0 0' }}>
-              Schätzung basierend auf vergleichbaren Projekten. Finale Offerte nach Briefing-Gespräch.
+            <p style={{ fontSize: 13, color: 'var(--color-text-faint)', lineHeight: 1.6, marginTop: -8 }}>
+              Richtpreis aus vergleichbaren Projekten. Die verbindliche Festofferte erhalten Sie nach dem Erstgespräch.
+              Ihre Auswahl wird ins Kontaktformular übernommen.
             </p>
-          </motion.div>
-
+          </div>
         </div>
       </div>
     </section>

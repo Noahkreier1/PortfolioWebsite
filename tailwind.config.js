@@ -14,9 +14,9 @@ export default {
         accent: 'var(--color-accent)',
       },
       fontFamily: {
-        display: ['Fraunces', 'Georgia', 'serif'],
-        heading: ['Inter', 'system-ui', 'sans-serif'],
-        body: ['Inter', 'system-ui', 'sans-serif'],
+        display: ['"Inter Tight Variable"', '"Helvetica Neue"', 'Arial', 'sans-serif'],
+        body: ['"Inter Variable"', '"Helvetica Neue"', 'Arial', 'sans-serif'],
+        label: ['Archivo', '"Helvetica Neue"', 'Arial', 'sans-serif'],
       },
       animation: {
         ticker: 'ticker 55s linear infinite',

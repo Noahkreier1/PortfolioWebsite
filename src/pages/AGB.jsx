@@ -3,7 +3,7 @@ import { COMPANY } from '../data/company'
 
 export default function AGB() {
   return (
-    <LegalLayout title="Allgemeine Geschäftsbedingungen" lastUpdated="Mai 2026">
+    <LegalLayout title="Allgemeine Geschäftsbedingungen" lastUpdated="September 2026">
       <section>
         <h2>1. Geltungsbereich</h2>
         <p>
@@ -23,11 +23,11 @@ export default function AGB() {
       <section>
         <h2>2. Vertragsabschluss</h2>
         <p>
-          Offerten der Auftragnehmerin sind unverbindlich und können jederzeit
-          angepasst werden. Ein Vertrag kommt durch schriftliche Bestätigung der
-          Offerte durch die Kundin oder den Kunden zustande (per E-Mail
-          ausreichend) oder durch Beginn der Leistungserbringung nach beidseitiger
-          Abstimmung.
+          Offerten der Auftragnehmerin sind während 30 Tagen ab Ausstellung
+          verbindlich. Der offerierte Preis ist ein Fixpreis für den in der Offerte
+          beschriebenen Leistungsumfang. Ein Vertrag kommt durch schriftliche
+          Bestätigung der Offerte durch die Kundin oder den Kunden zustande (per
+          E-Mail ausreichend).
         </p>
       </section>
 
@@ -35,9 +35,9 @@ export default function AGB() {
         <h2>3. Leistungsumfang</h2>
         <p>
           Der konkrete Leistungsumfang ergibt sich aus der jeweiligen Offerte
-          beziehungsweise dem Briefing-Protokoll. Nicht ausdrücklich vereinbarte
-          Leistungen werden zusätzlich nach Aufwand zum jeweils gültigen
-          Stundensatz verrechnet.
+          beziehungsweise dem Briefing-Protokoll. Leistungen ausserhalb dieses
+          Umfangs werden nur erbracht und verrechnet, wenn die Kundin oder der
+          Kunde vorgängig eine schriftliche Zusatzofferte bestätigt hat.
         </p>
         <p>
           Die Auftragnehmerin ist berechtigt, geeignete Dritte (z.B. Freelancer,
@@ -81,11 +81,11 @@ export default function AGB() {
       <section>
         <h2>6. Lieferfristen</h2>
         <p>
-          Vereinbarte Lieferfristen sind Richtwerte und gelten ab Erhalt aller
-          notwendigen Informationen und Inhalte. Verzögerungen aus höherer
+          Der in der Offerte vereinbarte Liefertermin ist verbindlich, sofern die
+          Kundschaft die notwendigen Informationen und Inhalte gemäss dem
+          vereinbarten Zeitplan zur Verfügung stellt. Verzögerungen aus höherer
           Gewalt, durch Drittanbieter oder durch verspätete Mitwirkung der
-          Kundschaft berechtigen die Auftragnehmerin zur entsprechenden
-          Verlängerung der Frist.
+          Kundschaft verschieben den Liefertermin entsprechend.
         </p>
       </section>
 
@@ -97,9 +97,9 @@ export default function AGB() {
           gilt die Leistung als abgenommen.
         </p>
         <p>
-          Im Rahmen der Abnahme können bis zu zwei Korrekturschlaufen mit
-          geringfügigen Anpassungen kostenlos durchgeführt werden. Darüber
-          hinausgehende Anpassungen werden nach Aufwand verrechnet.
+          Während 30 Tagen nach dem Launch sind Anpassungen im Rahmen des
+          offerierten Leistungsumfangs inbegriffen. Darüber hinausgehende
+          Änderungen werden nur nach schriftlicher Zusatzofferte ausgeführt.
         </p>
       </section>
 

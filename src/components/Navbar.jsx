@@ -1,26 +1,34 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Link, useLocation } from 'react-router-dom'
-import ThemeToggle from './ThemeToggle'
 
 const links = [
   { label: 'Referenzen', anchor: '#work' },
   { label: 'Ablauf', anchor: '#process' },
-  { label: 'Leistungen', anchor: '#services' },
   { label: 'Preise', anchor: '#preis' },
   { label: 'Über uns', anchor: '#about' },
+  { label: 'FAQ', anchor: '#faq' },
 ]
+
+export function Wordmark({ size = 17 }) {
+  return (
+    <span className="font-display" style={{ fontSize: size, color: 'var(--color-text)', letterSpacing: '-0.02em', whiteSpace: 'nowrap' }}>
+      Omnia Digital
+    </span>
+  )
+}
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
-  const location = useLocation()
-  const onHome = location.pathname === '/'
-  // From legal pages, prefix anchor links with "/" to navigate back to home
+  const { pathname } = useLocation()
+  const onHome = pathname === '/'
+  // Von Unterseiten zurück zur Startseite mit Anker
   const navHref = (anchor) => (onHome ? anchor : `/${anchor}`)
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 50)
+    onScroll()
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
@@ -31,61 +39,52 @@ export default function Navbar() {
   }, [menuOpen])
 
   return (
-    <motion.header
-      initial={{ y: -16, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
-      className="fixed top-0 left-0 right-0 z-50 transition-all duration-400"
+    <header
+      className="fixed top-0 left-0 right-0 z-50"
       style={{
-        background: scrolled ? 'color-mix(in srgb, var(--color-bg) 88%, transparent)' : 'transparent',
+        background: scrolled || menuOpen ? 'color-mix(in srgb, var(--color-bg) 92%, transparent)' : 'transparent',
         backdropFilter: scrolled ? 'blur(18px)' : 'none',
-              }}
+        transition: 'background 0.3s ease',
+      }}
     >
-      <nav className="container-page h-14 flex items-center justify-between">
-        {/* Logo */}
-        <Link to="/" className="flex items-center gap-2 group">
-          <div className="w-6 h-6 rounded flex items-center justify-center flex-shrink-0 bg-accent transition-transform duration-300 group-hover:rotate-12">
-            <span style={{ fontFamily: 'Inter, sans-serif', fontWeight: 800, color: 'var(--color-bg)', fontSize: 11, lineHeight: 1 }}>O</span>
-          </div>
-          <span style={{ fontFamily: 'Inter, sans-serif', fontWeight: 700, fontSize: 15, letterSpacing: '-0.01em', color: 'var(--color-text)' }}>
-            Omnia<span style={{ color: 'var(--color-text-muted)', fontWeight: 400 }}> Digital</span>
-          </span>
+      <nav className="container-page h-16 flex items-center justify-between" aria-label="Hauptnavigation">
+        <Link to="/" aria-label="Omnia Digital, zur Startseite">
+          <Wordmark />
         </Link>
 
-        {/* Desktop nav */}
-        <div className="hidden md:flex items-center gap-8 lg:gap-10">
+        <div className="hidden lg:flex items-center gap-6 xl:gap-10">
           {links.map((l) => (
-            <a key={l.label} href={navHref(l.anchor)} className="nav-link">
-              {l.label}
-            </a>
+            <a key={l.label} href={navHref(l.anchor)} className="nav-link">{l.label}</a>
           ))}
+          <Link
+            to="/website-check"
+            className="nav-link"
+            aria-current={pathname === '/website-check' ? 'page' : undefined}
+            style={pathname === '/website-check' ? { color: 'var(--color-text)' } : undefined}
+          >
+            Website-Check
+          </Link>
         </div>
 
-        {/* CTA */}
         <div className="flex items-center gap-3">
-          <ThemeToggle />
           <a
             href={navHref('#contact')}
-            className="hidden md:inline-flex items-center gap-2 bg-accent text-bg font-semibold text-xs px-5 py-2.5 rounded-full transition-all duration-300 hover:gap-3"
-            style={{ fontFamily: 'Inter, sans-serif' }}
+            className="hidden lg:inline-flex items-center rounded-full"
+            style={{ background: 'var(--color-accent)', color: 'var(--color-bg)', fontWeight: 500, fontSize: 14, padding: '10px 20px' }}
           >
-            Erstgespräch buchen
-            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-              <path d="M7 17L17 7M17 7H7M17 7v10" />
-            </svg>
+            Erstgespräch vereinbaren
           </a>
 
           <button
             onClick={() => setMenuOpen(!menuOpen)}
-            className="md:hidden flex flex-col gap-1.5 p-2 -mr-2"
-            aria-label="Toggle menu"
+            className="lg:hidden flex flex-col gap-1.5 p-2 -mr-2"
+            aria-label={menuOpen ? 'Menü schliessen' : 'Menü öffnen'}
+            aria-expanded={menuOpen}
+            aria-controls="mobile-menu"
           >
-            <motion.span className="block w-5 h-px bg-text-primary origin-center"
-              animate={menuOpen ? { rotate: 45, y: 3.5 } : { rotate: 0, y: 0 }} transition={{ duration: 0.22 }} />
-            <motion.span className="block w-5 h-px bg-text-primary"
-              animate={menuOpen ? { opacity: 0 } : { opacity: 1 }} transition={{ duration: 0.18 }} />
-            <motion.span className="block w-5 h-px bg-text-primary origin-center"
-              animate={menuOpen ? { rotate: -45, y: -3.5 } : { rotate: 0, y: 0 }} transition={{ duration: 0.22 }} />
+            <span className="block w-5 h-px origin-center" style={{ background: 'var(--color-text)', transform: menuOpen ? 'translateY(3.5px) rotate(45deg)' : 'none', transition: 'transform 0.22s ease' }} />
+            <span className="block w-5 h-px" style={{ background: 'var(--color-text)', opacity: menuOpen ? 0 : 1, transition: 'opacity 0.18s ease' }} />
+            <span className="block w-5 h-px origin-center" style={{ background: 'var(--color-text)', transform: menuOpen ? 'translateY(-3.5px) rotate(-45deg)' : 'none', transition: 'transform 0.22s ease' }} />
           </button>
         </div>
       </nav>
@@ -93,33 +92,30 @@ export default function Navbar() {
       <AnimatePresence>
         {menuOpen && (
           <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.3 }}
-            className="md:hidden overflow-hidden bg-surface"
+            id="mobile-menu"
+            initial={{ height: 0 }}
+            animate={{ height: 'auto' }}
+            exit={{ height: 0 }}
+            transition={{ duration: 0.25 }}
+            className="lg:hidden overflow-hidden"
+            style={{ background: 'var(--color-bg)' }}
           >
-            <div className="px-6 py-12 flex flex-col gap-6">
-              {links.map((l, i) => (
-                <motion.a key={l.label} href={navHref(l.anchor)} onClick={() => setMenuOpen(false)}
-                  initial={{ opacity: 0, x: -12 }} animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: i * 0.06 }}
-                  className="text-xl font-bold text-text-primary"
-                  style={{ fontFamily: 'Inter, sans-serif' }}
-                >
+            <div className="container-page flex flex-col gap-6" style={{ paddingBlock: 40 }}>
+              {links.map((l) => (
+                <a key={l.label} href={navHref(l.anchor)} onClick={() => setMenuOpen(false)} className="font-display" style={{ fontSize: 24, color: 'var(--color-text)' }}>
                   {l.label}
-                </motion.a>
+                </a>
               ))}
-              <motion.a href={navHref('#contact')} onClick={() => setMenuOpen(false)}
-                initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}
-                className="mt-4 btn-accent self-start"
-              >
-                Erstgespräch buchen
-              </motion.a>
+              <Link to="/website-check" onClick={() => setMenuOpen(false)} className="font-display" style={{ fontSize: 24, color: 'var(--color-text)' }}>
+                Website-Check
+              </Link>
+              <a href={navHref('#contact')} onClick={() => setMenuOpen(false)} className="btn-accent self-start" style={{ marginTop: 16 }}>
+                Erstgespräch vereinbaren
+              </a>
             </div>
           </motion.div>
         )}
       </AnimatePresence>
-    </motion.header>
+    </header>
   )
 }

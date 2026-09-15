@@ -1,547 +1,248 @@
-import { useState, useRef } from 'react'
-import { motion, AnimatePresence, useInView } from 'framer-motion'
-import { COMPANY } from '../data/company'
+import { useEffect, useRef, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { track } from '@vercel/analytics'
+import { setRequestContext } from '../lib/requestContext'
+import { ArrowUpRight } from './Icons'
 
-/* ─── URL validation ─── */
-function validateUrl(input) {
-  const raw = input.trim().toLowerCase()
-  if (!raw) return 'Bitte geben Sie eine URL ein'
-  const cleaned = raw.replace(/^https?:\/\//, '').replace(/^www\./, '').replace(/\/.*$/, '')
-  if (!cleaned.includes('.')) return 'Bitte mit Domain-Endung (z.B. .ch, .com)'
-  if (cleaned.length < 4) return 'Diese URL scheint zu kurz zu sein'
-  const domainRegex = /^([a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,24}$/
-  if (!domainRegex.test(cleaned)) return 'Das sieht nicht wie eine gültige URL aus'
-  return null
-}
+/* Echter Website-Check über Google PageSpeed Insights (Lighthouse).
+   Ohne eigenen API-Schlüssel teilt man sich ein öffentliches Tageskontingent,
+   das oft ausgeschöpft ist. Schlüssel als VITE_PSI_API_KEY hinterlegen
+   (in der Google Cloud Console auf die eigene Domain beschränken). */
+const API = 'https://www.googleapis.com/pagespeedonline/v5/runPagespeed'
+const API_KEY = import.meta.env.VITE_PSI_API_KEY
 
-/* ─── Scoring ─── */
-const METRIC_KEYS = ['design', 'speed', 'conversion', 'seo']
-
-function generateScores(url) {
-  const seed = url.split('').reduce((acc, c, i) => acc + c.charCodeAt(0) * (i + 1), 73)
-
-  // Tier drives overall quality — 30% poor, 45% below average, 25% decent.
-  const tierRoll = seed % 20
-  let base
-  if (tierRoll < 6)       base = [18, 38]   // poor
-  else if (tierRoll < 15) base = [32, 58]   // below average
-  else                    base = [50, 72]   // decent but improvable
-
-  // One area gets penalized hardest, one gets boosted (different keys).
-  const weak = seed % 4
-  let strong = (Math.floor(seed / 7) + 1) % 4
-  if (strong === weak) strong = (strong + 1) % 4
-
-  const out = {}
-  METRIC_KEYS.forEach((key, i) => {
-    let s = base[0] + ((seed * (i + 2)) % (base[1] - base[0] + 1))
-    if (i === weak)   s = Math.max(11, s - 16)
-    if (i === strong) s = Math.min(89, s + 14)
-    out[key] = s
-  })
-  out._weak = METRIC_KEYS[weak]
-  return out
-}
-
-function calcOverall(s) {
-  return Math.round(s.design * 0.28 + s.speed * 0.25 + s.conversion * 0.3 + s.seo * 0.17)
-}
-
-function getGrade(n) {
-  if (n < 25) return { letter: 'F',  color: '#B84040' }
-  if (n < 35) return { letter: 'D',  color: '#B86040' }
-  if (n < 45) return { letter: 'D+', color: '#A88040' }
-  if (n < 55) return { letter: 'C',  color: '#9A9040' }
-  if (n < 65) return { letter: 'C+', color: '#909048' }
-  if (n < 75) return { letter: 'B−', color: '#80A058' }
-  return       { letter: 'B',        color: '#70B068' }
-}
-
-/* ─── Content ─── */
-const STEPS = [
-  'Analysiere Design-Qualität',
-  'Messe Ladegeschwindigkeit',
-  'Bewerte Mobile-Erlebnis',
-  'Prüfe Conversion-Elemente',
-  'Prüfe SEO-Grundlagen',
-]
-const STEP_MS = [1500, 1700, 1500, 1800, 1300]
-
-const METRICS = [
-  { key: 'design',     label: 'Design & Klarheit' },
-  { key: 'speed',      label: 'Ladegeschwindigkeit' },
-  { key: 'conversion', label: 'Conversion-Setup' },
-  { key: 'seo',        label: 'SEO-Grundlagen' },
+const CATEGORIES = [
+  { key: 'performance', label: 'Ladegeschwindigkeit (Handy)' },
+  { key: 'seo', label: 'SEO-Grundlagen' },
+  { key: 'accessibility', label: 'Barrierefreiheit' },
+  { key: 'best-practices', label: 'Technische Qualität' },
 ]
 
-const WEAK_LABEL = {
-  design:     'das Design',
-  speed:      'die Ladegeschwindigkeit',
-  conversion: 'das Conversion-Setup',
-  seo:        'die SEO-Grundlagen',
-}
-
-const VERDICTS_BY_WEAK = {
-  design: [
-    'Besucher entscheiden in 50ms, ob eine Webseite vertrauenswürdig wirkt. Ihre fällt durch.',
-    'Ein veraltetes Design signalisiert jedem Besucher: veraltetes Unternehmen.',
-  ],
-  speed: [
-    'Die meisten Besucher springen nach 4 Sekunden ab, bevor sie Ihr Angebot überhaupt sehen.',
-    'Jede Sekunde Ladezeit kostet ~7% Conversions. Sie verlieren bares Geld.',
-  ],
-  conversion: [
-    'Ihre Mitbewerber konvertieren den Traffic, für den Sie zahlen.',
-    'Sie investieren in Ads, schicken den Traffic aber auf eine Seite, die nicht abschliesst.',
-  ],
-  seo: [
-    'Google kann nicht ranken, was es nicht versteht. Ihre Grundlagen brauchen Arbeit.',
-    'Mitbewerber ranken über Ihnen, weil deren SEO-Basics sitzen. Ihre nicht.',
-  ],
-}
-
-function getVerdict(scores, overall) {
-  const weak = scores._weak
-  if (overall >= 60) {
-    return `Solide Grundlage, aber ${WEAK_LABEL[weak]} hält Sie vom nächsten Level ab.`
+function normalizeUrl(input) {
+  let raw = input.trim()
+  if (!raw) return { error: 'Bitte geben Sie eine Adresse ein, z. B. ihrefirma.ch.' }
+  if (!/^https?:\/\//i.test(raw)) raw = `https://${raw}`
+  try {
+    const u = new URL(raw)
+    if (!/\.[a-z]{2,}$/i.test(u.hostname)) return { error: 'Die Adresse braucht eine Domain-Endung, z. B. .ch oder .com.' }
+    return { url: u.toString(), host: u.hostname.replace(/^www\./, '') }
+  } catch {
+    return { error: 'Das sieht nicht wie eine gültige Webadresse aus.' }
   }
-  if (overall >= 45) {
-    return `Stellenweise solide, aber ${WEAK_LABEL[weak]} kostet Sie jede Woche Kunden.`
-  }
-  const list = VERDICTS_BY_WEAK[weak]
-  return list[overall % list.length]
 }
 
-/* ─── Sub-components ─── */
-function ScoreBar({ label, value, delay }) {
-  const barColor = value < 30 ? '#9A4848' : value < 55 ? '#806840' : '#7A8848'
+async function runCheck(url) {
+  const params = new URLSearchParams({ url, strategy: 'mobile', locale: 'de' })
+  CATEGORIES.forEach((c) => params.append('category', c.key))
+  if (API_KEY) params.set('key', API_KEY)
+
+  const res = await fetch(`${API}?${params}`)
+  const json = await res.json().catch(() => ({}))
+  if (!res.ok) {
+    const err = new Error(json?.error?.message || 'PageSpeed-Fehler')
+    err.status = res.status
+    throw err
+  }
+
+  const lh = json.lighthouseResult
+  const audits = lh.audits
+  const scores = Object.fromEntries(CATEGORIES.map((c) => [c.key, Math.round((lh.categories[c.key]?.score ?? 0) * 100)]))
+
+  const vitals = [
+    { label: 'Hauptinhalt sichtbar (LCP)', value: audits['largest-contentful-paint']?.displayValue },
+    { label: 'Blockierzeit (TBT)', value: audits['total-blocking-time']?.displayValue },
+    { label: 'Layout-Verschiebung (CLS)', value: audits['cumulative-layout-shift']?.displayValue },
+  ].filter((v) => v.value)
+
+  // Grösste Bremsen: zuerst Lighthouse-«Opportunities», sonst schlecht bewertete Performance-Audits
+  let issues = Object.values(audits)
+    .filter((a) => a.details?.type === 'opportunity' && a.score !== null && a.score < 0.9 && a.details.overallSavingsMs > 100)
+    .sort((a, b) => b.details.overallSavingsMs - a.details.overallSavingsMs)
+  if (!issues.length) {
+    issues = (lh.categories.performance?.auditRefs || [])
+      .map((ref) => audits[ref.id])
+      .filter((a) => a && a.score !== null && a.score < 0.5)
+  }
+
+  return {
+    scores,
+    vitals,
+    issues: issues.slice(0, 3).map((a) => ({ title: a.title, value: a.displayValue })),
+  }
+}
+
+const scoreColor = (s) => (s >= 90 ? 'var(--color-good)' : s >= 50 ? 'var(--color-warn)' : 'var(--color-bad)')
+
+function ScoreRow({ label, value }) {
   return (
     <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
-        <span style={{ fontFamily: 'Inter', fontSize: 14, color: 'var(--color-text-muted)' }}>{label}</span>
-        <span style={{ fontFamily: 'Inter', fontSize: 14, color: 'var(--color-text-muted)', fontWeight: 600, fontVariantNumeric: 'tabular-nums' }}>
-          {value}<span style={{ color: 'var(--color-text-subtle)' }}>/100</span>
+      <div className="flex justify-between" style={{ marginBottom: 8, fontSize: 15 }}>
+        <span style={{ color: 'var(--color-text)' }}>{label}</span>
+        <span style={{ fontWeight: 600, color: scoreColor(value), fontVariantNumeric: 'tabular-nums' }}>
+          {value}<span style={{ color: 'var(--color-text-faint)', fontWeight: 400 }}> / 100</span>
         </span>
       </div>
-      <div style={{ height: 5, background: 'var(--color-surface-2)', borderRadius: 3, overflow: 'hidden' }}>
-        <motion.div
-          initial={{ width: 0 }}
-          animate={{ width: `${value}%` }}
-          transition={{ duration: 1, delay, ease: [0.25, 0.1, 0.25, 1] }}
-          style={{ height: '100%', borderRadius: 3, background: barColor }}
-        />
+      <div style={{ height: 6, background: 'var(--color-border)', borderRadius: 3, overflow: 'hidden' }}>
+        <div style={{ width: `${value}%`, height: '100%', background: scoreColor(value), borderRadius: 3 }} />
       </div>
     </div>
   )
 }
 
-/* ─── States ─── */
-function IdleState({ url, setUrl, onAnalyze, error }) {
-  const [focused, setFocused] = useState(false)
-  const canSubmit = url.trim().length >= 4
-  const borderColor = error ? 'rgba(184,96,64,0.55)' : focused ? 'rgba(196,164,106,0.5)' : 'var(--color-border)'
-  return (
-    <motion.div key="idle"
-      initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -8, scale: 0.97 }}
-      transition={{ duration: 0.35 }}
-      className="p-6 sm:p-10"
-      style={{ background: 'var(--color-bg)', borderRadius: 28 }}
-    >
-      <p style={{ fontFamily: 'Inter', fontSize: 11, color: 'var(--color-text-faint)', textTransform: 'uppercase', letterSpacing: "0.18em", marginBottom: 16 }}>
-        Ihre aktuelle Webseiten-URL
-      </p>
-      <div className="flex flex-col sm:flex-row" style={{ gap: 8 }}>
-        <input
-          value={url}
-          onChange={e => setUrl(e.target.value)}
-          onKeyDown={e => e.key === 'Enter' && onAnalyze()}
-          onFocus={() => setFocused(true)}
-          onBlur={() => setFocused(false)}
-          placeholder="ihrewebseite.ch"
-          autoComplete="off"
-          style={{
-            flex: 1,
-            background: 'var(--color-bg)',
-            border: `1px solid ${borderColor}`,
-            borderRadius: 999,
-            padding: "16px 24px",
-            fontFamily: "Inter, sans-serif",
-            fontSize: 16,
-            color: 'var(--color-text)',
-            outline: 'none',
-            transition: 'border-color 0.2s ease',
-          }}
-        />
-        <button
-          onClick={onAnalyze}
-          disabled={!canSubmit}
-          style={{
-            background: canSubmit ? 'var(--color-accent)' : 'var(--color-surface)',
-            color: canSubmit ? 'var(--color-bg)' : 'var(--color-text-subtle)',
-            border: 'none',
-            borderRadius: 999,
-            padding: "16px 32px",
-            fontFamily: "Inter, sans-serif",
-            fontWeight: 600,
-            fontSize: 15,
-            cursor: canSubmit ? 'pointer' : 'not-allowed',
-            transition: "background 0.25s ease, color 0.25s ease",
-            whiteSpace: 'nowrap',
-            letterSpacing: '-0.01em',
-          }}
-        >
-          Analysieren →
-        </button>
-      </div>
-      <AnimatePresence mode="wait" initial={false}>
-        {error ? (
-          <motion.p key="err"
-            initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            style={{ fontFamily: 'Inter', fontSize: 13, color: "#B86A4A", marginTop: 16 }}
-          >
-            {error}
-          </motion.p>
-        ) : (
-          <motion.p key="hint"
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            style={{ fontFamily: 'Inter', fontSize: 13, color: "var(--color-text-faint)", marginTop: 16 }}
-          >
-            Dauert ca. 10 Sekunden · Keine E-Mail nötig · 100% kostenlos
-          </motion.p>
-        )}
-      </AnimatePresence>
-    </motion.div>
-  )
-}
-
-function ScanningState({ cleanUrl, stepsDone, progress }) {
-  return (
-    <motion.div key="scanning"
-      initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.35 }}
-      className="p-6 sm:p-10"
-      style={{ background: 'var(--color-bg)', borderRadius: 28 }}
-    >
-      {/* Scanning header */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 28 }}>
-        <motion.div
-          animate={{ rotate: 360 }}
-          transition={{ duration: 1.2, repeat: Infinity, ease: 'linear' }}
-          style={{ width: 14, height: 14, border: '2px solid var(--color-border)', borderTopColor: 'var(--color-accent)', borderRadius: '50%', flexShrink: 0 }}
-        />
-        <span style={{ fontFamily: 'Inter', fontSize: 13, color: 'var(--color-text-muted)' }}>
-          Scanne <span style={{ color: 'var(--color-text)', fontWeight: 600 }}>{cleanUrl}</span>
-        </span>
-      </div>
-
-      {/* Progress bar */}
-      <div style={{ height: 3, background: 'var(--color-surface-2)', borderRadius: 2, marginBottom: 32, overflow: 'hidden' }}>
-        <motion.div
-          style={{ height: '100%', background: 'linear-gradient(90deg, #8B6A30, #C4A46A)', borderRadius: 2 }}
-          animate={{ width: `${progress}%` }}
-          transition={{ duration: 0.5, ease: 'easeOut' }}
-        />
-      </div>
-
-      {/* Steps */}
-      <div style={{ display: 'flex', flexDirection: "column", gap: 16 }}>
-        {STEPS.map((step, i) => (
-          <motion.div key={i}
-            initial={{ opacity: 0.15 }}
-            animate={{ opacity: i <= stepsDone ? 1 : 0.2 }}
-            style={{ display: 'flex', alignItems: 'center', gap: 10 }}
-          >
-            {/* Icon */}
-            <div style={{ width: 18, height: 18, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              {i < stepsDone ? (
-                <motion.svg
-                  initial={{ scale: 0, rotate: -30 }}
-                  animate={{ scale: 1, rotate: 0 }}
-                  transition={{ type: 'spring', stiffness: 300, damping: 18 }}
-                  width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ color: 'var(--color-accent)' }}
-                >
-                  <polyline points="20 6 9 17 4 12" />
-                </motion.svg>
-              ) : i === stepsDone ? (
-                <motion.div
-                  animate={{ rotate: 360 }}
-                  transition={{ duration: 0.9, repeat: Infinity, ease: 'linear' }}
-                  style={{ width: 13, height: 13, border: '1.5px solid var(--color-border-strong)', borderTopColor: 'var(--color-accent)', borderRadius: '50%' }}
-                />
-              ) : (
-                <div style={{ width: 4, height: 4, borderRadius: '50%', background: 'var(--color-border)', margin: '0 auto' }} />
-              )}
-            </div>
-
-            <span style={{
-              fontFamily: 'Inter', fontSize: 13,
-              color: i < stepsDone ? 'var(--color-text-muted)' : i === stepsDone ? 'var(--color-text)' : 'var(--color-text-veryfaint)',
-              fontWeight: i === stepsDone ? 500 : 400,
-              transition: 'color 0.3s ease',
-            }}>
-              {step}
-            </span>
-          </motion.div>
-        ))}
-      </div>
-    </motion.div>
-  )
-}
-
-function ResultsState({ scores, cleanUrl, onReset }) {
-  const overall = calcOverall(scores)
-  const { letter, color: gradeColor } = getGrade(overall)
-  const verdict = getVerdict(scores, overall)
-
-  return (
-    <motion.div key="results"
-      initial={{ opacity: 0, scale: 0.97 }}
-      animate={{ opacity: 1, scale: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.45, ease: [0.25, 0.1, 0.25, 1] }}
-      className="p-6 sm:p-10"
-      style={{ background: 'var(--color-bg)', borderRadius: 28 }}
-    >
-      {/* Header — grade + meta */}
-      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: "space-between", marginBottom: 32 }}>
-        <div>
-          <p style={{ fontFamily: 'Inter', fontSize: 11, color: 'var(--color-text-faint)', textTransform: 'uppercase', letterSpacing: '0.18em', marginBottom: 5 }}>
-            Webseiten-Score
-          </p>
-          <p style={{ fontFamily: 'Inter', fontSize: 13, color: 'var(--color-text-muted)' }}>{cleanUrl}</p>
-        </div>
-
-        {/* The dramatic grade */}
-        <motion.div
-          initial={{ scale: 0.3, opacity: 0, rotate: -15 }}
-          animate={{ scale: 1, opacity: 1, rotate: 0 }}
-          transition={{ duration: 0.55, delay: 0.15, type: 'spring', stiffness: 220, damping: 18 }}
-          style={{ textAlign: 'center', lineHeight: 1 }}
-        >
-          <div style={{
-            fontFamily: 'Inter',
-            fontWeight: 900,
-            fontSize: '3.2rem',
-            color: gradeColor,
-            letterSpacing: '-0.05em',
-            lineHeight: 1,
-          }}>
-            {letter}
-          </div>
-          <div style={{ fontFamily: 'Inter', fontSize: 10, color: 'var(--color-text-faint)', marginTop: 4, fontVariantNumeric: 'tabular-nums' }}>
-            {overall} / 100
-          </div>
-        </motion.div>
-      </div>
-
-      {/* Score bars */}
-      <div style={{ display: 'flex', flexDirection: "column", gap: 20, marginBottom: 32 }}>
-        {METRICS.map(({ key, label }, i) => (
-          <ScoreBar key={key} label={label} value={scores[key]} delay={0.25 + i * 0.1} />
-        ))}
-      </div>
-
-      {/* Verdict */}
-      <div style={{
-        background: "var(--color-bg-soft)",
-        borderRadius: 16,
-        padding: "20px 24px",
-        marginBottom: 32,
-      }}>
-        <p style={{ fontFamily: 'Inter', fontSize: 15, color: "var(--color-text-muted)", lineHeight: 1.6, fontStyle: "italic" }}>
-          "{verdict}"
-        </p>
-      </div>
-
-      {/* CTAs */}
-      <div style={{ display: "flex", gap: 12 }}>
-        <a href="#contact"
-          className="btn-accent"
-          style={{ flex: 1, justifyContent: "center", padding: "16px 24px", textAlign: "center" }}
-        >
-          Kostenloses Audit anfordern
-          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-            <path d="M7 17L17 7M17 7H7M17 7v10" />
-          </svg>
-        </a>
-        <button onClick={onReset}
-          style={{
-            background: 'transparent',
-            border: '1px solid var(--color-border)',
-            borderRadius: 99,
-            padding: "16px 24px",
-            fontFamily: "Inter",
-            fontSize: 15,
-            color: 'var(--color-text-faint)',
-            cursor: 'pointer',
-            transition: 'border-color 0.2s, color 0.2s',
-            letterSpacing: '0.01em',
-          }}
-          onMouseEnter={e => { e.target.style.borderColor = 'var(--color-border-strong)'; e.target.style.color = 'var(--color-text-muted)' }}
-          onMouseLeave={e => { e.target.style.borderColor = 'var(--color-border)'; e.target.style.color = 'var(--color-text-faint)' }}
-        >
-          Nochmal
-        </button>
-      </div>
-    </motion.div>
-  )
-}
-
-/* ─── Main component ─── */
-export default function WebsiteAudit() {
-  const sectionRef = useRef(null)
-  const inView = useInView(sectionRef, { once: true, margin: '-60px' })
-
-  const [url, setUrl] = useState('')
+export default function WebsiteAudit({ initialUrl = '' }) {
+  const navigate = useNavigate()
+  const [input, setInput] = useState(initialUrl)
+  const [target, setTarget] = useState(null)
+  const [phase, setPhase] = useState('idle') // idle | loading | result | error
   const [error, setError] = useState(null)
-  const [phase, setPhase] = useState('idle')
-  const [stepsDone, setStepsDone] = useState(0)
-  const [progress, setProgress] = useState(0)
-  const [scores, setScores] = useState(null)
-  const [cleanUrl, setCleanUrl] = useState('')
+  const [result, setResult] = useState(null)
 
-  const handleAnalyze = () => {
-    const validationError = validateUrl(url)
-    if (validationError) {
-      setError(validationError)
+  const startCheck = async (value) => {
+    const normalized = normalizeUrl(value)
+    if (normalized.error) {
+      setError(normalized.error)
+      setPhase('idle')
       return
     }
     setError(null)
-    const raw = url.trim().toLowerCase()
-    const display = raw.replace(/^https?:\/\//, '').replace(/\/$/, '').split('/')[0]
-    setCleanUrl(display)
-    setScores(generateScores(raw))
-    setPhase('scanning')
-    setStepsDone(0)
-    setProgress(0)
-
-    const total = STEP_MS.reduce((a, b) => a + b, 0)
-    let elapsed = 0
-    const runStep = (i) => {
-      if (i >= STEPS.length) { setTimeout(() => setPhase('results'), 350); return }
-      setTimeout(() => {
-        elapsed += STEP_MS[i]
-        setStepsDone(i + 1)
-        setProgress(Math.round((elapsed / total) * 100))
-        runStep(i + 1)
-      }, STEP_MS[i])
+    setTarget(normalized)
+    setPhase('loading')
+    track('website_check_started')
+    try {
+      setResult(await runCheck(normalized.url))
+      setPhase('result')
+    } catch (err) {
+      setError(
+        err.status === 429
+          ? 'Das Messkontingent von Google ist im Moment ausgeschöpft. Versuchen Sie es später nochmals, oder lassen Sie uns Ihre Seite persönlich prüfen.'
+          : 'Die Seite konnte nicht gemessen werden. Prüfen Sie die Adresse, oder lassen Sie uns Ihre Seite persönlich prüfen.'
+      )
+      setPhase('error')
     }
-    runStep(0)
   }
 
-  const handleReset = () => {
-    setPhase('idle')
-    setUrl('')
-    setError(null)
-    setStepsDone(0)
-    setProgress(0)
-    setScores(null)
+  const onSubmit = (e) => {
+    e.preventDefault()
+    startCheck(input)
   }
+
+  // Vom Einstieg auf der Startseite: Messung sofort starten (Ref verhindert Doppelstart im StrictMode)
+  const autoStarted = useRef(false)
+  useEffect(() => {
+    if (!initialUrl || autoStarted.current) return
+    autoStarted.current = true
+    startCheck(initialUrl)
+  }, [initialUrl])
+
+  const requestPersonal = () => {
+    const summary = result
+      ? CATEGORIES.map((c) => `${c.label} ${result.scores[c.key]}/100`).join(', ')
+      : 'Messung nicht möglich'
+    setRequestContext(`Website-Check für ${target?.host || input}: ${summary}. Bitte persönlich einschätzen.`)
+    track('cta_click', { location: 'website_check' })
+    navigate('/#contact')
+  }
+
+  const panel = { background: 'var(--color-bg-soft)', borderRadius: 28, padding: 'clamp(24px, 4vw, 48px)' }
 
   return (
-    <section
-      id="audit"
-      ref={sectionRef}
-      style={{ background: 'var(--color-bg-soft)' }}
-      className="section overflow-hidden"
-    >
-      <div className="container-page">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-center">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 32 }}>
+      <form onSubmit={onSubmit} style={panel} noValidate>
+        <div className="field">
+          <label htmlFor="check-url">Adresse Ihrer Webseite</label>
+          <div className="flex flex-col sm:flex-row gap-3">
+            <input
+              id="check-url"
+              name="url"
+              type="text"
+              inputMode="url"
+              autoComplete="url"
+              placeholder="ihrefirma.ch"
+              value={input}
+              onChange={(e) => { setInput(e.target.value); if (error && phase !== 'error') setError(null) }}
+              aria-invalid={Boolean(error && phase === 'idle')}
+              aria-describedby="check-hint"
+              disabled={phase === 'loading'}
+            />
+            <button type="submit" className="btn-accent" disabled={phase === 'loading'} style={{ whiteSpace: 'nowrap' }}>
+              {phase === 'loading' ? 'Misst …' : 'Seite messen'}
+            </button>
+          </div>
+          <p id="check-hint" style={{ fontSize: 14, color: error && phase === 'idle' ? 'var(--color-bad)' : 'var(--color-text-faint)' }}>
+            {error && phase === 'idle' ? error : 'Kostenlos, ohne E-Mail. Die Messung läuft über Google PageSpeed Insights.'}
+          </p>
+        </div>
+      </form>
 
-          {/* Left — copy */}
+      {phase === 'loading' && (
+        <div style={panel} role="status">
+          <p style={{ marginBottom: 16 }}>
+            Google misst gerade <strong style={{ fontWeight: 600 }}>{target.host}</strong>. Das dauert meist 20 bis 60 Sekunden.
+          </p>
+          <div className="progress-indeterminate" />
+        </div>
+      )}
+
+      {phase === 'error' && (
+        <div style={panel} role="alert">
+          <p style={{ marginBottom: 24 }}>{error}</p>
+          <button type="button" className="btn-accent" onClick={requestPersonal}>
+            Persönliche Prüfung anfragen
+            <ArrowUpRight />
+          </button>
+        </div>
+      )}
+
+      {phase === 'result' && result && (
+        <div style={{ ...panel, display: 'flex', flexDirection: 'column', gap: 40 }}>
           <div>
-            <motion.p
-              initial={{ opacity: 0, y: 10 }} animate={inView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.5 }}
-              className="section-label"
-              style={{ marginBottom: 16 }}
-            >
-              Kostenlose Webseiten-Analyse
-            </motion.p>
-
-            <motion.h2
-              initial={{ opacity: 0, y: 14 }} animate={inView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.6, delay: 0.1 }}
-              className="font-display h-section"
-              style={{ marginBottom: 32, fontSize: 'clamp(2.5rem, 4.2vw, 3.5rem)' }}
-            >
-              Wie schneidet Ihre<br /><em className="font-display-italic" style={{ fontWeight: 500 }}>Webseite</em> wirklich ab?
-            </motion.h2>
-
-            <motion.p
-              initial={{ opacity: 0, y: 12 }} animate={inView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.6, delay: 0.18 }}
-              className="lead"
-              style={{ maxWidth: 440, marginBottom: 48 }}
-            >
-              Geben Sie Ihre URL ein. Wir prüfen Design, Ladezeit, Conversion-Setup und SEO. Wir zeigen Ihnen genau, wo Sie Kunden verlieren.
-            </motion.p>
-
-            {/* Micro trust signals */}
-            <motion.div
-              initial={{ opacity: 0 }} animate={inView ? { opacity: 1 } : {}}
-              transition={{ delay: 0.35 }}
-              style={{ display: 'flex', flexDirection: 'column', gap: 16 }}
-            >
-              {[
-                'Schweizer KMU erzielen im Schnitt 34/100',
-                'Die Top-3-Probleme kosten 60%+ der Leads',
-                'Wir haben diese Probleme 20+ mal gelöst',
-              ].map((t, i) => (
-                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                  <div style={{ width: 5, height: 5, borderRadius: '50%', background: 'var(--color-accent)', flexShrink: 0 }} />
-                  <span style={{ fontFamily: 'Inter', fontSize: 15, color: 'var(--color-text-muted)' }}>{t}</span>
-                </div>
-              ))}
-            </motion.div>
+            <p className="meta-line" style={{ marginBottom: 8 }}>Ergebnis · Handy-Ansicht</p>
+            <h2 className="font-display" style={{ fontSize: '1.75rem', lineHeight: 1.2 }}>{target.host}</h2>
           </div>
 
-          {/* Right — interactive widget */}
-          <motion.div
-            initial={{ opacity: 0, x: 18 }} animate={inView ? { opacity: 1, x: 0 } : {}}
-            transition={{ duration: 0.7, delay: 0.28 }}
-          >
-            <AnimatePresence mode="wait">
-              {phase === 'idle' && (
-                <IdleState
-                  url={url}
-                  setUrl={(v) => { setUrl(v); if (error) setError(null) }}
-                  onAnalyze={handleAnalyze}
-                  error={error}
-                />
-              )}
-              {phase === 'scanning' && (
-                <ScanningState cleanUrl={cleanUrl} stepsDone={stepsDone} progress={progress} />
-              )}
-              {phase === 'results' && scores && (
-                <ResultsState scores={scores} cleanUrl={cleanUrl} onReset={handleReset} />
-              )}
-            </AnimatePresence>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+            {CATEGORIES.map((c) => <ScoreRow key={c.key} label={c.label} value={result.scores[c.key]} />)}
+          </div>
 
-            {/* Alternative: persönliche Analyse statt automatischem Scan — unboxed, separated by space */}
-            <div style={{ marginTop: 48, paddingInline: 8 }}>
-              <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 16, fontWeight: 600, color: 'var(--color-text)', marginBottom: 8 }}>
-                Lieber von Menschen geprüft?
-              </p>
-              <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 15, color: 'var(--color-text-muted)', lineHeight: 1.6, marginBottom: 16 }}>
-                Wir analysieren Ihre Webseite persönlich und senden Ihnen innert 24h die drei wichtigsten Verbesserungen. Kostenlos &amp; unverbindlich.
-              </p>
-              <a
-                href={`mailto:${COMPANY.email}?subject=${encodeURIComponent('Kostenlose Webseiten-Analyse innert 24h')}&body=${encodeURIComponent('Guten Tag\n\nBitte analysieren Sie meine Webseite persönlich: ' + (url.trim() || '[Ihre URL]') + '\n\nFirma / Branche (optional):\n\nFreundliche Grüsse')}`}
-                className="btn-link"
-              >
-                Analyse innert 24h anfordern
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M7 17L17 7M17 7H7M17 7v10" /></svg>
-              </a>
+          {result.vitals.length > 0 && (
+            <dl className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+              {result.vitals.map((v) => (
+                <div key={v.label}>
+                  <dt style={{ fontSize: 14, color: 'var(--color-text-muted)', marginBottom: 4 }}>{v.label}</dt>
+                  <dd className="font-display" style={{ fontSize: '1.5rem', fontVariantNumeric: 'tabular-nums' }}>{v.value}</dd>
+                </div>
+              ))}
+            </dl>
+          )}
+
+          {result.issues.length > 0 && (
+            <div>
+              <h3 style={{ fontSize: 16, fontWeight: 600, marginBottom: 12 }}>Grösste Bremsen laut Lighthouse</h3>
+              <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 8, color: 'var(--color-text-muted)' }}>
+                {result.issues.map((issue) => (
+                  <li key={issue.title}>
+                    {issue.title}{issue.value ? <span style={{ color: 'var(--color-text-faint)' }}> · {issue.value}</span> : null}
+                  </li>
+                ))}
+              </ul>
             </div>
-          </motion.div>
+          )}
 
+          <div className="flex flex-col sm:flex-row sm:items-center gap-6">
+            <button type="button" className="btn-accent" onClick={requestPersonal}>
+              Ergebnis persönlich besprechen
+              <ArrowUpRight />
+            </button>
+            <button type="button" className="btn-link" onClick={() => { setPhase('idle'); setResult(null); setInput('') }}>
+              Andere Seite messen
+            </button>
+          </div>
+
+          <p style={{ fontSize: 13, color: 'var(--color-text-faint)' }}>
+            Gemessen mit Google PageSpeed Insights (Lighthouse). Die Werte schwanken je nach Messung um einige Punkte.
+          </p>
         </div>
-      </div>
-    </section>
+      )}
+    </div>
   )
 }

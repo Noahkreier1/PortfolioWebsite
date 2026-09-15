@@ -3,9 +3,10 @@ import { COMPANY } from '../data/company'
 
 export default function Impressum() {
   return (
-    <LegalLayout title="Impressum" lastUpdated="Mai 2026">
+    <LegalLayout title="Impressum" lastUpdated="September 2026">
       <section>
         <h2>Angaben gemäss Art. 322 OR</h2>
+        <p>{COMPANY.brand} ist eine Marke der {COMPANY.legalName}.</p>
         <p>
           <strong>{COMPANY.legalName}</strong>
           <br />
@@ -47,17 +48,17 @@ export default function Impressum() {
       <section>
         <h2>Haftungsausschluss</h2>
         <p>
-          Der Autor übernimmt keinerlei Gewähr hinsichtlich der inhaltlichen
+          {COMPANY.brand} übernimmt keinerlei Gewähr hinsichtlich der inhaltlichen
           Richtigkeit, Genauigkeit, Aktualität, Zuverlässigkeit und Vollständigkeit
-          der Informationen. Haftungsansprüche gegen den Autor wegen Schäden
+          der Informationen. Haftungsansprüche wegen Schäden
           materieller oder immaterieller Art, welche aus dem Zugriff oder der
           Nutzung beziehungsweise Nichtnutzung der veröffentlichten Informationen,
           durch Missbrauch der Verbindung oder durch technische Störungen
           entstanden sind, werden ausgeschlossen.
         </p>
         <p>
-          Alle Angebote sind unverbindlich. Der Autor behält es sich ausdrücklich
-          vor, Teile der Seiten oder das gesamte Angebot ohne gesonderte Ankündigung
+          Die Inhalte dieser Webseite sind keine Offerte; verbindlich ist allein die
+          schriftliche Festofferte. Wir behalten uns vor, Teile der Seiten oder das gesamte Angebot ohne gesonderte Ankündigung
           zu verändern, zu ergänzen, zu löschen oder die Veröffentlichung zeitweise
           oder endgültig einzustellen.
         </p>

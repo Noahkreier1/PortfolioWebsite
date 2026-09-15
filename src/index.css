@@ -2,32 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ─── Theme tokens ─── */
+/* ─── Tokens ─── */
 
-:root,
-:root[data-theme="dark"] {
-  --color-bg: #0B0A09;
-  --color-bg-soft: #0D0C0A;
-  --color-surface: #141210;
-  --color-surface-2: #1A1816;
-  --color-border: #252018;
-  --color-border-strong: #2E2820;
-  --color-text: #EDE7DC;
-  --color-text-muted: #7A7468;
-  --color-text-faint: #4A4438;
-  --color-text-subtle: #362F25;
-  --color-text-veryfaint: #2E2820;
-  --color-accent: #C4A46A;
-  --color-accent-soft: rgba(196, 164, 106, 0.18);
-  --color-accent-glow: rgba(196, 164, 106, 0.05);
-  --color-grid: rgba(237, 231, 220, 0.025);
-  --color-overlay: rgba(11, 10, 9, 0.78);
-  --shadow-soft: 0 8px 32px rgba(0, 0, 0, 0.5);
-  --shadow-card: 0 12px 32px rgba(0, 0, 0, 0.4);
-  color-scheme: dark;
-}
-
-:root[data-theme="light"] {
+:root {
   --color-bg: #FAFAF7;
   --color-bg-soft: #F2F1ED;
   --color-surface: #FFFFFF;
@@ -41,11 +18,16 @@
   --color-text-veryfaint: #D6D1C2;
   --color-accent: #8B6A30;
   --color-accent-soft: rgba(139, 106, 48, 0.20);
-  --color-accent-glow: rgba(139, 106, 48, 0.06);
-  --color-grid: rgba(20, 17, 13, 0.05);
-  --color-overlay: rgba(250, 250, 247, 0.88);
-  --shadow-soft: 0 12px 40px rgba(40, 35, 25, 0.08);
-  --shadow-card: 0 8px 28px rgba(40, 35, 25, 0.06);
+  --color-accent-glow: rgba(139, 106, 48, 0.08);
+  --color-overlay: rgba(250, 250, 247, 0.9);
+  --color-good: #3E7A4A;
+  --color-warn: #9A6A12;
+  --color-bad: #A8322A;
+
+  --font-body: 'Inter Variable', 'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  --font-display: 'Inter Tight Variable', 'Inter Tight', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  --font-label: 'Archivo', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+
   color-scheme: light;
 }
 
@@ -63,11 +45,12 @@ html {
 body {
   background-color: var(--color-bg);
   color: var(--color-text);
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.6;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  transition: background-color 0.4s ease, color 0.4s ease;
 }
 
 ::selection {
@@ -75,28 +58,44 @@ body {
   color: var(--color-bg);
 }
 
-::-webkit-scrollbar { width: 3px; }
-::-webkit-scrollbar-track { background: var(--color-bg); }
-::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 2px; }
-::-webkit-scrollbar-thumb:hover { background: var(--color-border-strong); }
+a:focus-visible,
+button:focus-visible,
+[role="slider"]:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+}
 
-/* ─── Display font — Grotesk im Schweizer Stil (Helvetica-Tradition) ─── */
+/* ─── Typografie: Inter Tight für Headlines, Inter für Text, Archivo für Labels ─── */
 
 .font-display {
-  font-family: 'Inter Tight', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-  letter-spacing: -0.03em;
-  /* Variable-Font-Achse übersteuert die inline font-weights (500) zentral */
-  font-variation-settings: 'wght' 640;
+  font-family: var(--font-display);
+  letter-spacing: -0.025em;
+  /* Variable-Font-Achse übersteuert Inline-font-weights zentral */
+  font-variation-settings: 'wght' 600;
 }
 
 .font-display-italic {
-  font-family: 'Inter Tight', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-family: var(--font-display);
   font-style: italic;
-  letter-spacing: -0.03em;
-  font-variation-settings: 'wght' 640;
+  letter-spacing: -0.025em;
+  font-variation-settings: 'wght' 500;
 }
 
-/* ─── Layout rhythm — 8px base scale (8 16 24 32 48 64 96 128 160 200) ─── */
+.font-label {
+  font-family: var(--font-label);
+}
+
+/* Faktische Metazeile (Kategorie, Branche, Dauer) — kein dekoratives Eyebrow */
+.meta-line {
+  font-family: var(--font-label);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+/* ─── Layout — 8px-Raster (8 16 24 32 48 64 96 128 160 200) ─── */
 
 .container-page {
   width: 100%;
@@ -108,67 +107,39 @@ body {
   .container-page { padding-inline: 40px; }
 }
 
-/* Each section is its own chapter: 96 → 128 → 160px */
 .section { padding-block: 96px; }
 @media (min-width: 768px) { .section { padding-block: 128px; } }
 @media (min-width: 1024px) { .section { padding-block: 160px; } }
 
-/* Quiet, closing chapters: 128 → 160 → 200px */
-.section-xl { padding-block: 128px; }
-@media (min-width: 768px) { .section-xl { padding-block: 160px; } }
-@media (min-width: 1024px) { .section-xl { padding-block: 200px; } }
-
+/* Kopf einer Sektion: linksbündig auf fester Textspalte */
 .section-head {
-  text-align: center;
   max-width: 760px;
-  margin-inline: auto;
   margin-bottom: 64px;
 }
 @media (min-width: 1024px) { .section-head { margin-bottom: 96px; } }
-.section-head .section-label { justify-content: center; margin-bottom: 16px; }
-.section-head .lead { margin: 24px auto 0; max-width: 600px; }
+.section-head .lead { margin-top: 24px; max-width: 600px; }
 
 .h-section {
-  font-weight: 500;
-  font-size: clamp(2.5rem, 5vw, 4rem);
-  line-height: 1.1;
-  letter-spacing: -0.028em;
+  font-size: clamp(2.25rem, 4.4vw, 3.5rem);
+  line-height: 1.15;
   color: var(--color-text);
+  text-wrap: balance;
 }
 
 .lead {
-  font-family: 'Inter', system-ui, sans-serif;
   font-size: clamp(1.0625rem, 1.5vw, 1.25rem);
   line-height: 1.55;
   color: var(--color-text-muted);
 }
 
-/* ─── Utilities ─── */
+/* ─── Navigation ─── */
 
-.section-label {
-  @apply flex items-center text-[13px] font-medium tracking-[0.18em] uppercase;
-  color: var(--color-text-muted);
-}
-
-.bg-grid {
-  background-image:
-    linear-gradient(var(--color-grid) 1px, transparent 1px),
-    linear-gradient(90deg, var(--color-grid) 1px, transparent 1px);
-  background-size: 60px 60px;
-}
-.bg-dots {
-  background-image: radial-gradient(var(--color-grid) 1px, transparent 1px);
-  background-size: 28px 28px;
-}
-
-/* Nav links */
 .nav-link {
   position: relative;
   color: var(--color-text-muted);
   font-size: 0.875rem;
   font-weight: 500;
   transition: color 0.25s ease;
-  letter-spacing: 0.01em;
 }
 .nav-link::after {
   content: '';
@@ -181,38 +152,32 @@ body {
 .nav-link:hover { color: var(--color-text); }
 .nav-link:hover::after { width: 100%; }
 
-/* Buttons */
-/* Buttons — understated pills, 16px / 32px padding */
+/* ─── Buttons ─── */
+
 .btn-accent {
-  @apply relative inline-flex items-center gap-2 font-body font-medium rounded-full overflow-hidden;
+  @apply relative inline-flex items-center justify-center gap-2 rounded-full;
+  font-family: var(--font-body);
+  font-weight: 500;
   font-size: 15px;
   padding: 16px 32px;
   background: var(--color-accent);
   color: var(--color-bg);
+  border: none;
+  cursor: pointer;
   transition: gap 0.3s ease, opacity 0.3s ease;
 }
-.btn-accent:hover {
-  opacity: 0.9;
-  gap: 12px;
-}
+.btn-accent:hover { opacity: 0.9; gap: 12px; }
+.btn-accent:disabled { opacity: 0.6; cursor: progress; }
 
-.btn-outline {
-  @apply inline-flex items-center gap-2 font-body font-medium rounded-full;
-  font-size: 15px;
-  padding: 16px 32px;
-  border: 1px solid var(--color-border-strong);
-  color: var(--color-text);
-  transition: background 0.3s ease;
-}
-.btn-outline:hover {
-  background: var(--color-accent-glow);
-}
-
-/* Text link CTA — "Mehr erfahren ›" */
 .btn-link {
-  @apply inline-flex items-center gap-1.5 font-body font-medium;
+  @apply inline-flex items-center gap-1.5;
+  font-family: var(--font-body);
+  font-weight: 500;
   font-size: 15px;
   color: var(--color-accent);
+  background: none;
+  border: none;
+  cursor: pointer;
   transition: gap 0.3s ease;
 }
 .btn-link:hover {
@@ -221,7 +186,8 @@ body {
   text-underline-offset: 4px;
 }
 
-/* Project cards — image isolated, text sits below on the page, no box */
+/* ─── Referenzen ─── */
+
 .project-card {
   position: relative;
   display: block;
@@ -232,101 +198,97 @@ body {
   border-radius: 20px;
 }
 .project-card-media img {
-  transition: transform 0.7s cubic-bezier(0.25,0.1,0.25,1), opacity 0.5s ease !important;
+  transition: transform 0.7s cubic-bezier(0.25, 0.1, 0.25, 1);
 }
 .project-card:hover .project-card-media img {
   transform: scale(1.02);
 }
-.project-card-overlay {
-  position: absolute;
-  inset: 0;
-  background: var(--color-overlay);
-  opacity: 0;
-  transition: opacity 0.35s ease;
+
+/* ─── Formular ─── */
+
+.field {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 2;
+  flex-direction: column;
+  gap: 8px;
 }
-.project-card:hover .project-card-overlay { opacity: 1; }
-
-/* Matterhorn sketch — theme-aware blend */
-.matterhorn-photo {
-  transition: filter 0.4s ease, opacity 0.4s ease;
+.field label {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-text);
 }
-:root[data-theme="light"] .matterhorn-photo {
-  /* black lines on white bg → multiply makes white transparent, lines stay dark */
-  mix-blend-mode: multiply;
-  opacity: 0.55;
-  filter: contrast(1.05);
+.field label span {
+  color: var(--color-text-faint);
+  font-weight: 400;
 }
-:root[data-theme="dark"] .matterhorn-photo {
-  /* invert flips: white bg → black, lines → cream/white. screen drops the now-black bg */
-  filter: invert(1) contrast(1.1);
-  mix-blend-mode: screen;
-  opacity: 0.5;
+.field input,
+.field textarea {
+  font: inherit;
+  font-size: 16px;
+  width: 100%;
+  color: var(--color-text);
+  background: var(--color-bg);
+  border: 1px solid var(--color-border-strong);
+  border-radius: 12px;
+  padding: 14px 16px;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
-
-/* Overlay — only used to softly fade bottom for stats legibility */
-.matterhorn-overlay {
-  transition: background 0.4s ease;
-  background: linear-gradient(
-    180deg,
-    transparent 0%,
-    transparent 55%,
-    color-mix(in srgb, var(--color-surface) 70%, transparent) 100%
-  );
+.field textarea {
+  resize: vertical;
+  min-height: 128px;
 }
-
-/* Theme toggle */
-.theme-toggle {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  border: 1px solid var(--color-border);
-  background: transparent;
-  color: var(--color-text-muted);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: color 0.25s ease, border-color 0.25s ease, background 0.25s ease;
-  flex-shrink: 0;
-}
-.theme-toggle:hover {
-  color: var(--color-accent);
-  border-color: var(--color-accent-soft);
-  background: var(--color-accent-glow);
+.field input:focus-visible,
+.field textarea:focus-visible {
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px var(--color-accent-glow);
 }
 
-/* Legal pages — readable long-form typography */
+/* Unbestimmter Fortschritt (Website-Check) */
+.progress-indeterminate {
+  position: relative;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--color-border);
+  overflow: hidden;
+}
+.progress-indeterminate::after {
+  content: '';
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 35%;
+  border-radius: 2px;
+  background: var(--color-accent);
+  animation: progress-slide 1.6s ease-in-out infinite;
+}
+@keyframes progress-slide {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(300%); }
+}
+
+/* ─── Rechtliche Seiten ─── */
+
 .legal-content section {
-  margin-bottom: 36px;
+  margin-bottom: 40px;
 }
 .legal-content h2 {
-  font-family: 'Inter', system-ui, sans-serif;
-  font-weight: 700;
-  font-size: 1.05rem;
+  font-weight: 600;
+  font-size: 1.125rem;
   color: var(--color-text);
   letter-spacing: -0.01em;
-  margin-bottom: 12px;
-  margin-top: 8px;
+  margin: 8px 0 12px;
 }
 .legal-content p {
-  font-family: 'Inter', system-ui, sans-serif;
-  font-size: 14.5px;
+  font-size: 15px;
   line-height: 1.7;
   color: var(--color-text-muted);
   margin-bottom: 14px;
 }
 .legal-content ul {
   list-style: none;
-  padding: 0;
-  margin: 0 0 14px 0;
+  margin: 0 0 14px;
 }
 .legal-content ul li {
-  font-family: 'Inter', system-ui, sans-serif;
-  font-size: 14.5px;
+  font-size: 15px;
   line-height: 1.7;
   color: var(--color-text-muted);
   padding-left: 18px;
@@ -345,17 +307,14 @@ body {
   color: var(--color-accent);
   text-decoration: underline;
   text-underline-offset: 2px;
-  transition: opacity 0.2s ease;
-}
-.legal-content a:hover {
-  opacity: 0.75;
 }
 .legal-content strong {
   color: var(--color-text);
   font-weight: 600;
 }
 
-/* Pricing slider (range input) */
+/* ─── Preisrechner-Slider ─── */
+
 .pricing-slider {
   -webkit-appearance: none;
   appearance: none;
@@ -367,31 +326,31 @@ body {
 .pricing-slider::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
-  width: 20px;
-  height: 20px;
+  width: 22px;
+  height: 22px;
   border-radius: 50%;
   background: var(--color-accent);
-  border: 2px solid var(--color-bg);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border: 3px solid var(--color-bg);
   cursor: pointer;
-  transition: transform 0.15s ease;
-}
-.pricing-slider::-webkit-slider-thumb:hover {
-  transform: scale(1.1);
 }
 .pricing-slider::-moz-range-thumb {
-  width: 20px;
-  height: 20px;
+  width: 22px;
+  height: 22px;
   border-radius: 50%;
   background: var(--color-accent);
-  border: 2px solid var(--color-bg);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border: 3px solid var(--color-bg);
   cursor: pointer;
+}
+.pricing-slider:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 6px;
 }
 
 @media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
 }

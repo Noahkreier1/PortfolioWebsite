@@ -1,10 +1,13 @@
-import { useRef, useState } from 'react'
-import { motion, AnimatePresence, useInView } from 'framer-motion'
+import { useState } from 'react'
+import { Link } from 'react-router-dom'
+import { motion, AnimatePresence } from 'framer-motion'
+import { COMPANY } from '../data/company'
+import { ArrowUpRight } from './Icons'
 
 const faqs = [
   {
     q: 'Was kostet eine Webseite bei Ihnen?',
-    a: 'Die meisten Projekte liegen zwischen CHF 1’000 und CHF 5’000, je nach Umfang, Design-Niveau und Modulen wie Shop oder Copywriting. Mit dem Preisrechner weiter oben sehen Sie Ihre Spanne sofort. Nach dem Erstgespräch erhalten Sie eine Festofferte, und dieser Preis gilt. Ohne Nachträge.',
+    a: 'Die meisten Projekte liegen zwischen CHF 1’000 und CHF 5’000, je nach Umfang, Design und Modulen wie Shop oder Texten. Mit dem Preisrechner weiter oben sehen Sie Ihre Spanne sofort. Nach dem Erstgespräch erhalten Sie eine Festofferte, und dieser Preis gilt.',
   },
   {
     q: 'Wie lange dauert es bis zum Launch?',
@@ -12,7 +15,13 @@ const faqs = [
   },
   {
     q: 'Wir haben schon eine Webseite. Lohnt sich ein Neuaufbau?',
-    a: 'Kommt darauf an, was sie heute leistet. Wenn über die Seite kaum Anfragen kommen, sie auf dem Handy schlecht aussieht oder Sie sich dafür ein wenig schämen: ja. Reichen Sie Ihre URL bei der kostenlosen Analyse ein, wir sagen Ihnen ehrlich, ob sich ein Neuaufbau lohnt oder nicht.',
+    a: 'Kommt darauf an, was sie heute leistet. Wenn über die Seite kaum Anfragen kommen oder sie auf dem Handy schlecht funktioniert: meistens ja. Messen Sie Ihre Seite mit dem kostenlosen Website-Check oder schicken Sie uns die Adresse. Wir sagen Ihnen ehrlich, ob sich ein Neuaufbau lohnt.',
+    link: { to: '/website-check', label: 'Zum Website-Check' },
+  },
+  {
+    q: 'Wem gehören Design, Code und Texte?',
+    a: 'Ihnen. Mit der vollständigen Bezahlung erhalten Sie das zeitlich und örtlich unbeschränkte Nutzungsrecht an allem, was wir für Ihr Projekt erstellen. So steht es in unseren AGB.',
+    link: { to: '/agb', label: 'AGB lesen' },
   },
   {
     q: 'Kann ich Inhalte später selbst anpassen?',
@@ -20,51 +29,54 @@ const faqs = [
   },
   {
     q: 'Was passiert nach dem Launch?',
-    a: 'Hosting und Domain sind im ersten Jahr inklusive. In den ersten 30 Tagen passen wir kostenlos an, was Ihnen noch nicht gefällt. Danach entscheiden Sie: Wartungspaket, punktuelle Aufträge oder komplette Übergabe an Sie.',
+    a: 'Hosting und Domain sind im ersten Jahr inklusive. In den ersten 30 Tagen passen wir kostenlos an, was Ihnen noch nicht gefällt. Danach entscheiden Sie: Wartungspaket, einzelne Aufträge oder komplette Übergabe an Sie.',
   },
   {
     q: 'Wir haben keine Texte und keine Bilder. Geht das trotzdem?',
-    a: 'Ja. Texte, die verkaufen, schreiben wir als Modul gleich mit. Für Bilder arbeiten wir mit Ihrem bestehenden Material, hochwertigen Stock-Fotos oder vermitteln bei Bedarf einen Fotografen.',
+    a: 'Ja. Texte schreiben wir als Modul gleich mit. Für Bilder arbeiten wir mit Ihrem bestehenden Material oder mit hochwertigen Stockfotos, oder wir vermitteln bei Bedarf einen Fotografen.',
   },
 ]
 
-function FaqItem({ faq, open, onToggle }) {
+function FaqItem({ faq, index, open, onToggle }) {
+  const panelId = `faq-panel-${index}`
   return (
-    <div
-      className="overflow-hidden"
-      style={{ background: 'var(--color-bg-soft)', borderRadius: 20 }}
-    >
-      <button
-        onClick={onToggle}
-        aria-expanded={open}
-        className="w-full flex items-center justify-between gap-6 text-left"
-        style={{ padding: 'clamp(20px, 3vw, 28px) clamp(24px, 4vw, 36px)', background: 'transparent', border: 'none', cursor: 'pointer' }}
-      >
-        <span style={{ fontFamily: 'Inter, sans-serif', fontWeight: 600, fontSize: 17, color: 'var(--color-text)', letterSpacing: '-0.01em', lineHeight: 1.4 }}>
-          {faq.q}
-        </span>
-        <motion.span
-          animate={{ rotate: open ? 45 : 0 }}
-          transition={{ duration: 0.25 }}
-          style={{ color: open ? 'var(--color-accent)' : 'var(--color-text-faint)', flexShrink: 0, display: 'flex' }}
+    <div style={{ background: 'var(--color-bg)', borderRadius: 20, overflow: 'hidden' }}>
+      <h3>
+        <button
+          id={`faq-button-${index}`}
+          onClick={onToggle}
+          aria-expanded={open}
+          aria-controls={panelId}
+          className="w-full flex items-center justify-between gap-6 text-left"
+          style={{ padding: 'clamp(20px, 3vw, 28px) clamp(24px, 4vw, 36px)', background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--color-text)', fontSize: 17, fontWeight: 600, lineHeight: 1.4 }}
         >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="M12 5v14M5 12h14" />
-          </svg>
-        </motion.span>
-      </button>
+          {faq.q}
+          <span
+            aria-hidden="true"
+            style={{ color: open ? 'var(--color-accent)' : 'var(--color-text-faint)', flexShrink: 0, display: 'flex', transform: `rotate(${open ? 45 : 0}deg)`, transition: 'transform 0.25s ease' }}
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 5v14M5 12h14" /></svg>
+          </span>
+        </button>
+      </h3>
       <AnimatePresence initial={false}>
         {open && (
           <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: 'auto', opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
+            id={panelId}
+            role="region"
+            aria-labelledby={`faq-button-${index}`}
+            initial={{ height: 0 }}
+            animate={{ height: 'auto' }}
+            exit={{ height: 0 }}
+            transition={{ duration: 0.25 }}
             style={{ overflow: 'hidden' }}
           >
-            <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 16, color: 'var(--color-text-muted)', lineHeight: 1.6, padding: '0 clamp(24px, 4vw, 36px) 32px', maxWidth: '64ch' }}>
-              {faq.a}
-            </p>
+            <div style={{ padding: '0 clamp(24px, 4vw, 36px) 32px', maxWidth: '68ch' }}>
+              <p style={{ color: 'var(--color-text-muted)' }}>{faq.a}</p>
+              {faq.link && (
+                <Link to={faq.link.to} className="btn-link" style={{ marginTop: 12 }}>{faq.link.label}</Link>
+              )}
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
@@ -73,48 +85,30 @@ function FaqItem({ faq, open, onToggle }) {
 }
 
 export default function FAQ() {
-  const ref = useRef(null)
-  const inView = useInView(ref, { once: true, margin: '-60px' })
   const [openIdx, setOpenIdx] = useState(0)
 
   return (
-    <section id="faq" className="section" style={{ background: 'var(--color-bg)' }}>
-      <div className="container-page" ref={ref}>
-
+    <section id="faq" className="section" style={{ background: 'var(--color-bg-soft)' }}>
+      <div className="container-page">
         <div className="section-head">
-          <motion.p initial={{ opacity: 0, y: 10 }} animate={inView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.5 }} className="section-label">Häufige Fragen</motion.p>
-          <motion.h2 initial={{ opacity: 0, y: 14 }} animate={inView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.6, delay: 0.1 }}
-            className="font-display h-section">
-            Was Sie <em className="font-display-italic" style={{ fontWeight: 500 }}>wissen wollen.</em>
-          </motion.h2>
+          <h2 className="font-display h-section">Häufige Fragen</h2>
         </div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          className="flex flex-col gap-3 mx-auto"
-          style={{ maxWidth: 820 }}
-        >
+        <div className="flex flex-col gap-3" style={{ maxWidth: 820 }}>
           {faqs.map((faq, i) => (
-            <FaqItem key={i} faq={faq} open={openIdx === i} onToggle={() => setOpenIdx(openIdx === i ? -1 : i)} />
+            <FaqItem key={faq.q} faq={faq} index={i} open={openIdx === i} onToggle={() => setOpenIdx(openIdx === i ? -1 : i)} />
           ))}
-        </motion.div>
+        </div>
 
-        <motion.div initial={{ opacity: 0 }} animate={inView ? { opacity: 1 } : {}}
-          transition={{ delay: 0.3 }}
-          className="text-center"
-          style={{ marginTop: 'clamp(64px, 8vw, 96px)' }}>
-          <p className="lead mx-auto" style={{ maxWidth: 480, marginBottom: 16 }}>
+        <div style={{ marginTop: 'clamp(64px, 8vw, 96px)', maxWidth: 600 }}>
+          <p className="lead" style={{ marginBottom: 16 }}>
             Ihre Frage ist nicht dabei? Schreiben Sie uns, Sie erhalten innert 24 Stunden eine Antwort.
           </p>
-          <a href="mailto:hello@omniadigital.ch" className="btn-link">
-            hello@omniadigital.ch
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M7 17L17 7M17 7H7M17 7v10" /></svg>
+          <a href={`mailto:${COMPANY.email}`} className="btn-link">
+            {COMPANY.email}
+            <ArrowUpRight />
           </a>
-        </motion.div>
+        </div>
       </div>
     </section>
   )

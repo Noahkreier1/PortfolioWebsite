@@ -1,13 +1,19 @@
 import { Link } from 'react-router-dom'
 import { COMPANY } from '../data/company'
+import { Wordmark } from './Navbar'
 
 const navLinks = [
   { label: 'Referenzen', href: '/#work' },
   { label: 'Ablauf', href: '/#process' },
-  { label: 'Leistungen', href: '/#services' },
   { label: 'Preise', href: '/#preis' },
   { label: 'Über uns', href: '/#about' },
+  { label: 'FAQ', href: '/#faq' },
   { label: 'Kontakt', href: '/#contact' },
+]
+
+const moreLinks = [
+  { label: 'Case Study InspireDay', to: '/referenzen/inspireday' },
+  { label: 'Website-Check', to: '/website-check' },
 ]
 
 const legalLinks = [
@@ -16,77 +22,44 @@ const legalLinks = [
   { label: 'AGB', to: '/agb' },
 ]
 
+const headingStyle = { fontSize: 14, fontWeight: 600, color: 'var(--color-text)', marginBottom: 4 }
+const linkStyle = { fontSize: 15, color: 'var(--color-text-muted)' }
+
 export default function Footer() {
   return (
-    <footer style={{ background: 'var(--color-bg)' }}>
+    <footer style={{ background: 'var(--color-bg-soft)' }}>
       <div className="container-page" style={{ paddingBlock: 'clamp(64px, 8vw, 96px)' }}>
-        <div className="flex flex-col sm:flex-row items-start justify-between gap-12">
-
-          {/* Brand */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12">
           <div>
-            <Link to="/" className="flex items-center gap-2 mb-4">
-              <div className="w-5 h-5 rounded flex items-center justify-center bg-accent flex-shrink-0">
-                <span style={{ fontFamily: 'Inter, sans-serif', fontWeight: 800, color: 'var(--color-bg)', fontSize: 10 }}>O</span>
-              </div>
-              <span style={{ fontFamily: 'Inter, sans-serif', fontWeight: 700, fontSize: 14, color: 'var(--color-text)', letterSpacing: '-0.01em' }}>
-                Omnia<span style={{ color: 'var(--color-text-faint)', fontWeight: 400 }}> Digital</span>
-              </span>
+            <Link to="/" style={{ display: 'inline-block', marginBottom: 16 }}>
+              <Wordmark size={20} />
             </Link>
-            <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 14, color: "var(--color-text-faint)", lineHeight: 1.7 }}>
-              {COMPANY.street}, {COMPANY.zip} {COMPANY.city}
+            <p style={{ fontSize: 15, color: 'var(--color-text-muted)', lineHeight: 1.7 }}>
+              Webseiten für Schweizer KMU, aus Winterthur.
               <br />
-              <a
-                href={`mailto:${COMPANY.email}`}
-                style={{ color: 'inherit' }}
-                className="hover:text-text-muted transition-colors"
-              >
-                {COMPANY.email}
-              </a>
+              <a href={`mailto:${COMPANY.email}`} className="hover:underline">{COMPANY.email}</a>
             </p>
           </div>
 
-          {/* Nav links */}
-          <div className="flex flex-col gap-3">
-            <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 10, fontWeight: 600, color: 'var(--color-text-subtle)', letterSpacing: "0.18em", textTransform: "uppercase", marginBottom: 8 }}>
-              Navigation
-            </p>
-            {navLinks.map((l) => (
-              <a
-                key={l.label}
-                href={l.href}
-                style={{ fontFamily: 'Inter, sans-serif', fontSize: 14, color: "var(--color-text-faint)" }}
-                className="hover:text-text-muted transition-colors duration-200"
-              >
-                {l.label}
-              </a>
-            ))}
-          </div>
+          <nav aria-label="Seiten" className="flex flex-col gap-3">
+            <p style={headingStyle}>Startseite</p>
+            {navLinks.map((l) => <a key={l.label} href={l.href} style={linkStyle} className="hover:underline">{l.label}</a>)}
+          </nav>
 
-          {/* Legal links */}
-          <div className="flex flex-col gap-3">
-            <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 10, fontWeight: 600, color: 'var(--color-text-subtle)', letterSpacing: "0.18em", textTransform: "uppercase", marginBottom: 8 }}>
-              Rechtliches
-            </p>
-            {legalLinks.map((l) => (
-              <Link
-                key={l.label}
-                to={l.to}
-                style={{ fontFamily: 'Inter, sans-serif', fontSize: 14, color: "var(--color-text-faint)" }}
-                className="hover:text-text-muted transition-colors duration-200"
-              >
-                {l.label}
-              </Link>
-            ))}
-          </div>
+          <nav aria-label="Weitere Seiten" className="flex flex-col gap-3">
+            <p style={headingStyle}>Mehr</p>
+            {moreLinks.map((l) => <Link key={l.label} to={l.to} style={linkStyle} className="hover:underline">{l.label}</Link>)}
+          </nav>
+
+          <nav aria-label="Rechtliches" className="flex flex-col gap-3">
+            <p style={headingStyle}>Rechtliches</p>
+            {legalLinks.map((l) => <Link key={l.label} to={l.to} style={linkStyle} className="hover:underline">{l.label}</Link>)}
+          </nav>
         </div>
 
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-3" style={{ marginTop: 64 }}>
-          <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, color: "var(--color-text-faint)" }}>
-            © {new Date().getFullYear()} {COMPANY.legalName} · Alle Rechte vorbehalten
-          </span>
-          <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, color: "var(--color-text-faint)" }}>
-            Gemacht mit <span style={{ color: 'var(--color-accent)' }}>✦</span> in der Schweiz
-          </span>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3" style={{ marginTop: 64, fontSize: 13, color: 'var(--color-text-faint)' }}>
+          <span>© {new Date().getFullYear()} {COMPANY.brand}</span>
+          <span>Winterthur, Schweiz</span>
         </div>
       </div>
     </footer>

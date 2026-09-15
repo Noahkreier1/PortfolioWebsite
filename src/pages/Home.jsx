@@ -1,35 +1,40 @@
+import { useEffect } from 'react'
+import { useLocation } from 'react-router-dom'
 import Navbar from '../components/Navbar'
-import Hero, { HeroStats } from '../components/Hero'
+import Hero from '../components/Hero'
 import Portfolio from '../components/Portfolio'
-import BeforeAfter from '../components/BeforeAfter'
 import Process from '../components/Process'
-import WhyUs from '../components/WhyUs'
-import Services from '../components/Services'
 import Pricing from '../components/Pricing'
-import About, { Team } from '../components/About'
-import WebsiteAudit from '../components/WebsiteAudit'
+import About from '../components/About'
+import CheckTeaser from '../components/CheckTeaser'
 import FAQ from '../components/FAQ'
-import CTA from '../components/CTA'
+import Contact from '../components/Contact'
 import Footer from '../components/Footer'
+import { usePageMeta } from '../lib/usePageMeta'
 
 export default function Home() {
+  usePageMeta()
+  const { hash } = useLocation()
+
+  // Von Unterseiten kommend (/#contact): zum Anker scrollen, sobald die Seite steht
+  useEffect(() => {
+    if (!hash) return
+    const el = document.getElementById(hash.slice(1))
+    if (el) requestAnimationFrame(() => el.scrollIntoView())
+  }, [hash])
+
   return (
     <>
       <Navbar />
       <main>
         <Hero />
-        <HeroStats />
         <Portfolio />
-        <BeforeAfter />
         <Process />
-        <WhyUs />
-        <Services />
         <Pricing />
         <About />
-        <Team />
-        <WebsiteAudit />
+        <CheckTeaser />
         <FAQ />
-        <CTA />
+        <Contact />
       </main>
       <Footer />
     </>
