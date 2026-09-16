@@ -16,9 +16,12 @@ export default function Home() {
   usePageMeta()
   const { hash } = useLocation()
 
-  // Von Unterseiten kommend (/#contact): zum Anker scrollen, sobald die Seite steht
+  // Von Unterseiten kommend: zum Anker scrollen (/#contact) oder oben beginnen
   useEffect(() => {
-    if (!hash) return
+    if (!hash) {
+      window.scrollTo(0, 0)
+      return
+    }
     const el = document.getElementById(hash.slice(1))
     if (el) requestAnimationFrame(() => el.scrollIntoView())
   }, [hash])

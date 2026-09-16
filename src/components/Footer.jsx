@@ -1,6 +1,7 @@
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import { COMPANY } from '../data/company'
 import { Wordmark } from './Navbar'
+import { handleLogoClick } from '../lib/scrollToTop'
 
 const navLinks = [
   { label: 'Referenzen', href: '/#work' },
@@ -26,12 +27,19 @@ const headingStyle = { fontSize: 14, fontWeight: 600, color: 'var(--color-text)'
 const linkStyle = { fontSize: 15, color: 'var(--color-text-muted)' }
 
 export default function Footer() {
+  const { pathname } = useLocation()
+
   return (
     <footer style={{ background: 'var(--color-bg-soft)' }}>
       <div className="container-page" style={{ paddingBlock: 'clamp(64px, 8vw, 96px)' }}>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12">
           <div>
-            <Link to="/" style={{ display: 'inline-block', marginBottom: 16 }}>
+            <Link
+              to="/"
+              aria-label="Omnia Digital, zum Seitenanfang"
+              onClick={(e) => handleLogoClick(e, pathname)}
+              style={{ display: 'inline-block', marginBottom: 16 }}
+            >
               <Wordmark size={20} />
             </Link>
             <p style={{ fontSize: 15, color: 'var(--color-text-muted)', lineHeight: 1.7 }}>

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Link, useLocation } from 'react-router-dom'
+import { handleLogoClick } from '../lib/scrollToTop'
 
 const links = [
   { label: 'Referenzen', anchor: '#work' },
@@ -48,7 +49,11 @@ export default function Navbar() {
       }}
     >
       <nav className="container-page h-16 flex items-center justify-between" aria-label="Hauptnavigation">
-        <Link to="/" aria-label="Omnia Digital, zur Startseite">
+        <Link
+          to="/"
+          aria-label="Omnia Digital, zum Seitenanfang"
+          onClick={(e) => { setMenuOpen(false); handleLogoClick(e, pathname) }}
+        >
           <Wordmark />
         </Link>
 
