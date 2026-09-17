@@ -18,9 +18,13 @@ const CASE = {
     'Komplett neues Design, neue Struktur und neue Texte',
     'Konzept bis Launch aus einer Hand',
   ],
-  // Resultat erst eintragen, wenn Zahl, Zeitraum und Vergleichsbasis belegt sind, z. B.
-  // { value: '+147 %', label: 'Ticketverkäufe', basis: 'gegenüber der Vorjahresausgabe, gleicher Zeitraum' }
-  result: null,
+  // Zahlen vom Kunden, Stand September 2026. Basis noch präzisieren:
+  // exakter Zeitraum und ob alle fünf Events nach dem Relaunch stattfanden.
+  result: {
+    value: '1’000+',
+    label: 'verkaufte Tickets',
+    basis: 'über fünf Events seit dem Relaunch',
+  },
 }
 
 export default function CaseInspireDay() {

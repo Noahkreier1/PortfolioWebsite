@@ -7,6 +7,7 @@ const projects = [
     name: 'InspireDay',
     category: 'Event-Webseite · Zürich',
     description: 'Konferenz für Persönlichkeitsentwicklung im Volkshaus Zürich. Tickets, Programm und Speaker an einem Ort.',
+    metric: 'Über 1’000 verkaufte Tickets über fünf Events',
     image: '/work/inspireday-desktop.jpg',
     to: '/referenzen/inspireday',
     linkLabel: 'Case Study lesen',
@@ -15,6 +16,7 @@ const projects = [
     name: 'Hikebeast',
     category: 'Eigenes Produkt · Web-App',
     description: 'Unser eigenes Produkt: eine Web-App mit über 140 Wander- und Wildcamping-Spots in der Schweiz, verkauft direkt über die Seite.',
+    metric: 'Über CHF 60’000 Umsatz in sechs Monaten',
     image: '/work/hikebeast-desktop.jpg',
     href: 'https://hikebeast.ch/map/',
     linkLabel: 'hikebeast.ch',
@@ -31,6 +33,7 @@ const projects = [
     name: 'Driven Co.',
     category: 'E-Commerce · Markenidentität',
     description: 'Schweizer Streetwear-Marke mit limitierten Drops. Minimales Design, klare Haltung.',
+    metric: 'Über 400 verkaufte Einheiten in zwei Drops',
     image: '/work/driven-co-desktop.jpg',
     href: 'https://www.driven-co.ch',
     linkLabel: 'driven-co.ch',
@@ -58,6 +61,9 @@ function ProjectCard({ project }) {
         >
           {project.name}
         </h3>
+        {project.metric && (
+          <p style={{ color: 'var(--color-accent)', fontWeight: 600, marginBottom: 12 }}>{project.metric}</p>
+        )}
         <p style={{ color: 'var(--color-text-muted)', maxWidth: '46ch', marginBottom: 16 }}>{project.description}</p>
         <span className="btn-link">
           {project.linkLabel}
