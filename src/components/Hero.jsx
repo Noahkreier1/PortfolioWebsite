@@ -40,7 +40,7 @@ export default function Hero() {
             before="/before-after/inspireday-before.jpg"
             after="/before-after/inspireday-after.jpg"
             altBefore="InspireDay Webseite vor dem Relaunch"
-            altAfter="InspireDay Webseite nach dem Relaunch durch Omnia Digital"
+            altAfter="InspireDay Webseite nach dem Relaunch durch Zurio"
           />
           <figcaption
             className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-3"

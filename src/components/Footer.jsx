@@ -36,7 +36,7 @@ export default function Footer() {
           <div>
             <Link
               to="/"
-              aria-label="Omnia Digital, zum Seitenanfang"
+              aria-label="Zurio, zum Seitenanfang"
               onClick={(e) => handleLogoClick(e, pathname)}
               style={{ display: 'inline-block', marginBottom: 16 }}
             >

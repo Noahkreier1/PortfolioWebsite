@@ -2,7 +2,7 @@
    Preisrechner oder das Ergebnis des Website-Checks. sessionStorage, damit
    der Kontext auch einen Seitenwechsel (/website-check → /#contact) übersteht. */
 
-const KEY = 'omnia-request-context'
+const KEY = 'zurio-request-context'
 const listeners = new Set()
 
 export function getRequestContext() {

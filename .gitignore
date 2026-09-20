@@ -24,6 +24,14 @@ pnpm-debug.log*
 .env.local
 .env.*.local
 
+# Arbeitsdateien für Präsentationen (nicht Teil der Website)
+zurio-wortmarken.html
+zurio-wortmarken.pdf
+zurio-wortmarken-auswahl.html
+zurio-wortmarken-auswahl.pdf
+zurio-wortmarke-abstand.html
+zurio-wortmarke-abstand.pdf
+
 # Tooling caches
 .claude/
 .y/

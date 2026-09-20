@@ -1,6 +1,6 @@
 export const COMPANY = {
   legalName: 'Saftladen GmbH',
-  brand: 'Omnia Digital',
+  brand: 'Zurio',
   street: 'Birkenstrasse 47',
   zip: '6343',
   city: 'Rotkreuz',
@@ -8,8 +8,9 @@ export const COMPANY = {
   country: 'Schweiz',
   registrationNumber: 'CHE-296.654.267',
   registerOffice: 'Handelsregister des Kantons Zug',
-  email: 'hello@omniadigital.ch',
-  // Empfänger des Kontaktformulars (Testphase). Nach Go-Live auf die Omnia-Adresse umstellen.
+  email: 'hello@zurio.ch',
+  // Empfänger des Kontaktformulars (Testphase). Nach Go-Live auf hello@zurio.ch umstellen,
+  // sobald das Postfach eingerichtet ist.
   formEmail: 'noahkreier@gmail.com',
   jurisdiction: 'Zug',
   governingLaw: 'Schweizer Recht',

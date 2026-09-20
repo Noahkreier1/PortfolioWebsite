@@ -30,7 +30,7 @@ const CASE = {
 export default function CaseInspireDay() {
   usePageMeta(
     'Case Study InspireDay',
-    'Wie Omnia Digital die Webseite der Konferenz InspireDay im Volkshaus Zürich neu aufgebaut hat: Positionierung, Design, Texte und Entwicklung.'
+    'Wie Zurio die Webseite der Konferenz InspireDay im Volkshaus Zürich neu aufgebaut hat: Positionierung, Design, Texte und Entwicklung.'
   )
   useEffect(() => { window.scrollTo(0, 0) }, [])
 
@@ -76,7 +76,7 @@ export default function CaseInspireDay() {
                 before="/before-after/inspireday-before.jpg"
                 after="/before-after/inspireday-after.jpg"
                 altBefore="InspireDay Webseite vor dem Relaunch"
-                altAfter="InspireDay Webseite nach dem Relaunch durch Omnia Digital"
+                altAfter="InspireDay Webseite nach dem Relaunch durch Zurio"
               />
               <figcaption style={{ marginTop: 16, fontSize: 15, color: 'var(--color-text-muted)' }}>
                 Links die alte, rechts die neue Startseite. Regler ziehen zum Vergleichen.

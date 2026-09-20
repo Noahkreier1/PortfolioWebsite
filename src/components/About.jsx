@@ -51,7 +51,7 @@ export default function About() {
         <div className="section-head">
           <h2 className="font-display h-section">Wer Ihre Webseite baut</h2>
           <p className="lead">
-            Omnia Digital sind Noah Kreier und Leon Helg aus Winterthur, beide ausgebildete
+            Hinter Zurio stehen Noah Kreier und Leon Helg aus Winterthur, beide ausgebildete
             Applikationsentwickler EFZ. Vom ersten Gespräch bis nach dem Launch sprechen Sie mit den
             zwei Leuten, die Ihre Seite entwerfen und programmieren.
           </p>

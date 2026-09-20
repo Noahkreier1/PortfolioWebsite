@@ -11,10 +11,13 @@ const links = [
   { label: 'FAQ', anchor: '#faq' },
 ]
 
+/* Wortmarke: Inter Tight 600, Kleinschrift, Laufweite −0.02 em.
+   Bewusst enger als der Fliesstext, aber offener als die Headlines (−0.025 em),
+   damit „r i“ und „i o“ nicht ineinanderlaufen. */
 export function Wordmark({ size = 17 }) {
   return (
     <span className="font-display" style={{ fontSize: size, color: 'var(--color-text)', letterSpacing: '-0.02em', whiteSpace: 'nowrap' }}>
-      Omnia Digital
+      zurio
     </span>
   )
 }
@@ -51,7 +54,7 @@ export default function Navbar() {
       <nav className="container-page h-16 flex items-center justify-between" aria-label="Hauptnavigation">
         <Link
           to="/"
-          aria-label="Omnia Digital, zum Seitenanfang"
+          aria-label="Zurio, zum Seitenanfang"
           onClick={(e) => { setMenuOpen(false); handleLogoClick(e, pathname) }}
         >
           <Wordmark />
