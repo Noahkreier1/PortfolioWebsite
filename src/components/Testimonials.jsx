@@ -8,15 +8,19 @@ function Portrait({ src, alt }) {
   if (!src || failed) return null
 
   return (
-    <img
-      src={src}
-      alt={alt}
-      width="56"
-      height="56"
-      loading="lazy"
-      onError={() => setFailed(true)}
-      style={{ width: 56, height: 56, borderRadius: '50%', objectFit: 'cover', objectPosition: 'center', flexShrink: 0 }}
-    />
+    <picture style={{ display: 'contents' }}>
+      <source srcSet={src.replace(/\.jpe?g$/i, '.webp')} type="image/webp" />
+      <img
+        src={src}
+        alt={alt}
+        width="56"
+        height="56"
+        loading="lazy"
+        decoding="async"
+        onError={() => setFailed(true)}
+        style={{ width: 56, height: 56, borderRadius: '50%', objectFit: 'cover', objectPosition: 'center', flexShrink: 0 }}
+      />
+    </picture>
   )
 }
 
@@ -30,7 +34,7 @@ export default function Testimonials({ company, style }) {
         <figure key={t.name} style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
           <blockquote
             className="font-display"
-            style={{ fontSize: 'clamp(1.375rem, 2.2vw, 1.75rem)', lineHeight: 1.3, letterSpacing: '-0.015em', fontVariationSettings: "'wght' 500" }}
+            style={{ fontSize: 'clamp(1.0625rem, 1.4vw, 1.25rem)', lineHeight: 1.45, letterSpacing: '-0.01em', fontVariationSettings: "'wght' 500", maxWidth: '52ch' }}
           >
             «{t.quote}»
           </blockquote>

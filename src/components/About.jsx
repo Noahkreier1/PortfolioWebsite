@@ -31,14 +31,19 @@ function Avatar({ member }) {
       {failed ? (
         member.initials
       ) : (
-        <img
-          src={member.photo}
-          alt={member.name}
-          width="96"
-          height="96"
-          onError={() => setFailed(true)}
-          style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center 25%', display: 'block' }}
-        />
+        <picture style={{ display: 'contents' }}>
+          <source srcSet={member.photo.replace(/\.jpe?g$/i, '.webp')} type="image/webp" />
+          <img
+            src={member.photo}
+            alt={`${member.name}, ${member.role} bei Zurio`}
+            width="96"
+            height="96"
+            loading="lazy"
+            decoding="async"
+            onError={() => setFailed(true)}
+            style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center 25%', display: 'block' }}
+          />
+        </picture>
       )}
     </div>
   )

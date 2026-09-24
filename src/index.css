@@ -16,9 +16,12 @@
   --color-text-faint: #8A8474;
   --color-text-subtle: #B5AF9F;
   --color-text-veryfaint: #D6D1C2;
-  --color-accent: #8B6A30;
-  --color-accent-soft: rgba(139, 106, 48, 0.20);
-  --color-accent-glow: rgba(139, 106, 48, 0.08);
+  /* Schweizer Rot. Nur für Interaktives (Buttons, Links, Slider, Fokus) und
+     Prozessnummern — Kennzahlen und Preise bleiben in Textfarbe, sonst lesen
+     sie sich wie Warnungen. */
+  --color-accent: #DA291C;
+  --color-accent-soft: rgba(218, 41, 28, 0.18);
+  --color-accent-glow: rgba(218, 41, 28, 0.06);
   --color-overlay: rgba(250, 250, 247, 0.9);
   --color-good: #3E7A4A;
   --color-warn: #9A6A12;

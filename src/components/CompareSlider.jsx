@@ -2,6 +2,9 @@ import { useRef, useState, useCallback } from 'react'
 
 const clamp = (v) => Math.min(96, Math.max(4, v))
 
+/* Zu jedem JPEG liegt eine WebP-Fassung mit gleichem Namen; der Browser wählt selbst. */
+const webp = (src) => src.replace(/\.jpe?g$/i, '.webp')
+
 const labelStyle = {
   position: 'absolute',
   top: 16,
@@ -60,20 +63,33 @@ export default function CompareSlider({ before, after, altBefore, altAfter }) {
         background: 'var(--color-bg-soft)',
       }}
     >
-      <img
-        src={after}
-        alt={altAfter}
-        draggable="false"
-        style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top left' }}
-      />
-
-      <div style={{ position: 'absolute', inset: 0, clipPath: `inset(0 ${100 - pos}% 0 0)` }}>
+      <picture style={{ display: 'contents' }}>
+        <source srcSet={webp(after)} type="image/webp" />
         <img
-          src={before}
-          alt={altBefore}
+          src={after}
+          alt={altAfter}
+          width="1800"
+          height="1023"
+          decoding="async"
+          fetchPriority="high"
           draggable="false"
           style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top left' }}
         />
+      </picture>
+
+      <div style={{ position: 'absolute', inset: 0, clipPath: `inset(0 ${100 - pos}% 0 0)` }}>
+        <picture style={{ display: 'contents' }}>
+          <source srcSet={webp(before)} type="image/webp" />
+          <img
+            src={before}
+            alt={altBefore}
+            width="1800"
+            height="973"
+            decoding="async"
+            draggable="false"
+            style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top left' }}
+          />
+        </picture>
       </div>
 
       <div style={{ position: 'absolute', top: 0, bottom: 0, left: `${pos}%`, width: 2, background: 'var(--color-accent)', transform: 'translateX(-1px)' }}>

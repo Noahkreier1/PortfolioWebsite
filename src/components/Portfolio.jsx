@@ -44,14 +44,18 @@ function ProjectCard({ project }) {
   const content = (
     <>
       <div className="project-card-media" style={{ aspectRatio: '16/10', background: 'var(--color-bg)' }}>
-        <img
-          src={project.image}
-          alt={`Startseite von ${project.name}`}
-          loading="lazy"
-          width="1440"
-          height="900"
-          style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top center', display: 'block' }}
-        />
+        <picture style={{ display: 'contents' }}>
+          <source srcSet={project.image.replace(/\.jpe?g$/i, '.webp')} type="image/webp" />
+          <img
+            src={project.image}
+            alt={`Startseite von ${project.name}: ${project.description}`}
+            loading="lazy"
+            decoding="async"
+            width="1100"
+            height="688"
+            style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top center', display: 'block' }}
+          />
+        </picture>
       </div>
       <div style={{ paddingTop: 24 }}>
         <p className="meta-line" style={{ marginBottom: 12 }}>{project.category}</p>
@@ -62,7 +66,7 @@ function ProjectCard({ project }) {
           {project.name}
         </h3>
         {project.metric && (
-          <p style={{ color: 'var(--color-accent)', fontWeight: 600, marginBottom: 12 }}>{project.metric}</p>
+          <p style={{ color: 'var(--color-text)', fontWeight: 600, marginBottom: 12 }}>{project.metric}</p>
         )}
         <p style={{ color: 'var(--color-text-muted)', maxWidth: '46ch', marginBottom: 16 }}>{project.description}</p>
         <span className="btn-link">

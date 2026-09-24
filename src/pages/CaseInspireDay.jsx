@@ -106,7 +106,7 @@ export default function CaseInspireDay() {
             {CASE.result && (
               <div style={{ marginTop: 'clamp(96px, 10vw, 128px)' }}>
                 <h2 className="font-display" style={{ fontSize: '1.75rem', lineHeight: 1.2, marginBottom: 24 }}>Resultat</h2>
-                <p className="font-display" style={{ fontSize: 'clamp(3rem, 7vw, 5rem)', lineHeight: 1, color: 'var(--color-accent)' }}>{CASE.result.value}</p>
+                <p className="font-display" style={{ fontSize: 'clamp(3rem, 7vw, 5rem)', lineHeight: 1, color: 'var(--color-text)' }}>{CASE.result.value}</p>
                 <p style={{ fontSize: 18, marginTop: 12 }}>{CASE.result.label}</p>
                 <p style={{ color: 'var(--color-text-muted)' }}>{CASE.result.basis}</p>
               </div>

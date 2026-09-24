@@ -234,7 +234,7 @@ export default function Pricing() {
                 {formatCHF(lo)}
               </p>
               <p style={{ fontSize: 15, color: 'var(--color-text-muted)', marginTop: 8 }}>
-                bis <span className="font-display" style={{ color: 'var(--color-accent)', fontSize: 20, fontVariantNumeric: 'tabular-nums' }}>{formatCHF(hi)}</span>
+                bis <span className="font-display" style={{ color: 'var(--color-text)', fontSize: 20, fontVariantNumeric: 'tabular-nums' }}>{formatCHF(hi)}</span>
               </p>
             </div>
 

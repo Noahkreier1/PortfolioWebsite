@@ -1,0 +1,72 @@
+# Zurio
+
+> Zurio ist ein Schweizer Webstudio aus Winterthur (Kanton Zürich). Zwei ausgebildete Applikationsentwickler entwerfen und programmieren Webseiten für Schweizer Unternehmen, zum verbindlichen Fixpreis und in ein bis zwei Wochen ab Auftrag.
+
+## Was Zurio macht
+
+Zurio gestaltet und programmiert Webseiten für Schweizer KMU. Das Angebot umfasst Webdesign, Web-Entwicklung, Texte (Copywriting), SEO-Grundlagen sowie E-Commerce- und Animationsmodule. Jede Seite wird individuell entworfen und von Hand entwickelt, es kommen keine Baukästen zum Einsatz.
+
+## Für wen Zurio geeignet ist
+
+Für kleine und mittlere Unternehmen in der Schweiz, die eine neue Webseite brauchen oder eine bestehende ersetzen wollen: Dienstleister, Handwerksbetriebe, Praxen, Eventveranstalter, lokale Marken und E-Commerce-Anbieter. Typische Projekte liegen zwischen CHF 1'000 und CHF 5'000, die Spanne über alle Module reicht von CHF 700 bis CHF 8'000.
+
+## Was Zurio von Agenturen unterscheidet
+
+- Verbindlicher Fixpreis ab Offerte, keine Nachträge ohne schriftliche Zusatzofferte
+- Verbindlicher Liefertermin, in der Regel ein bis zwei Wochen ab Auftrag
+- Direkter Kontakt zu den beiden Personen, die die Seite entwerfen und programmieren, ohne Projektleiter dazwischen
+- Hosting und Domain im ersten Jahr inklusive
+- 30 Tage Anpassungen nach dem Launch inbegriffen
+
+## Ablauf eines Projekts
+
+1. Erstgespräch, 30 Minuten, kostenlos und unverbindlich
+2. Festofferte und Konzept innert 2 bis 3 Tagen, mit Fixpreis und Liefertermin
+3. Design und Umsetzung, ein bis zwei Wochen, mit laufendem Einblick in den Stand
+4. Launch und Betreuung, inklusive Domain- und Hosting-Einrichtung, 30 Tage Anpassungen inbegriffen
+
+## Referenzprojekte
+
+- **InspireDay** (Eventveranstalter, Zürich): Webseite für eine Konferenz für Persönlichkeitsentwicklung im Volkshaus Zürich. Über 1'000 verkaufte Tickets über fünf Events seit dem Relaunch. Case Study: https://zurio.ch/referenzen/inspireday
+- **Hikebeast** (eigenes Produkt von Zurio): Web-App mit über 140 Wander- und Wildcamping-Spots in der Schweiz, direkt über die Seite verkauft, über CHF 60'000 Umsatz in sechs Monaten. https://hikebeast.ch
+- **Andrea Buralli** (Trauerbegleitung, Zürich, in Umsetzung): Webseite für Familientrauerbegleitung, ruhiges und einfühlsames Design für ein sensibles Thema.
+- **Driven Co.** (E-Commerce, Schweiz): Streetwear-Marke mit limitierten Drops, über 400 verkaufte Einheiten in zwei Drops. https://www.driven-co.ch
+
+## Kundenstimme
+
+«Seit den ersten Schritten von InspireDay an unserer Seite: Noah und Leon liefern erstklassigen Support und Website-Tech auf höchstem Niveau – und mit ihnen wachsen nicht nur unsere Seite, sondern auch Community und Ticketverkäufe.» — Ivo von Bergen, Gründer, InspireDay
+
+## Team
+
+Noah Kreier (Beratung, Marke und Umsetzung) und Leon Helg (Entwicklung und Produkt), beide ausgebildete Applikationsentwickler EFZ, mit Sitz in Winterthur.
+
+## Kontakt und Standort
+
+- Webseite: https://zurio.ch
+- E-Mail: hello@zurio.ch
+- Arbeitsort: Winterthur, Kanton Zürich, Schweiz
+- Rechtsträger: Saftladen GmbH, Birkenstrasse 47, 6343 Rotkreuz, Kanton Zug, Schweiz (UID CHE-296.654.267). Zurio ist eine Marke der Saftladen GmbH.
+- Arbeitsgebiet: ganze Schweiz, Schwerpunkt Kanton Zürich
+
+## Wichtige Seiten
+
+- [Startseite](https://zurio.ch/): Angebot, Referenzen, Ablauf, Preisrechner, Team, FAQ, Kontakt
+- [Case Study InspireDay](https://zurio.ch/referenzen/inspireday): Ausgangslage, Vorgehen und Resultat eines Projekts
+- [Website-Check](https://zurio.ch/website-check): kostenloses Werkzeug, das Ladegeschwindigkeit, SEO-Grundlagen, Barrierefreiheit und technische Qualität einer Webseite über Google PageSpeed Insights misst
+- [Impressum](https://zurio.ch/impressum)
+- [Datenschutzerklärung](https://zurio.ch/datenschutz)
+- [AGB](https://zurio.ch/agb)
+
+## Häufige Fragen
+
+**Was kostet eine Webseite bei Zurio?** Die meisten Projekte liegen zwischen CHF 1'000 und CHF 5'000, je nach Umfang, Design und Modulen. Nach dem Erstgespräch gibt es eine Festofferte, und dieser Preis gilt.
+
+**Wie lange dauert es bis zum Launch?** In der Regel ein bis zwei Wochen ab Auftrag. Grössere Projekte mit Shop oder vielen Seiten können länger dauern. Der verbindliche Termin steht in der Offerte.
+
+**Wem gehören Design, Code und Texte?** Der Kundschaft. Mit der vollständigen Bezahlung geht das zeitlich und örtlich unbeschränkte Nutzungsrecht an allem über, was für das Projekt erstellt wurde.
+
+**Kann man Inhalte später selbst anpassen?** Ja, auf Wunsch wird die Seite so gebaut, dass Texte und Bilder selbst gepflegt werden können. Alternativ übernimmt Zurio Änderungen im Wartungspaket.
+
+**Was passiert nach dem Launch?** Hosting und Domain sind im ersten Jahr inklusive, in den ersten 30 Tagen sind Anpassungen inbegriffen. Danach wählbar: Wartungspaket, einzelne Aufträge oder vollständige Übergabe.
+
+**Was, wenn Texte und Bilder fehlen?** Texte schreibt Zurio als Modul mit. Für Bilder wird bestehendes Material oder hochwertiges Stockmaterial genutzt, auf Wunsch wird ein Fotograf vermittelt.
