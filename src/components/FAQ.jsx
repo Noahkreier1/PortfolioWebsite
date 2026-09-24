@@ -8,6 +8,7 @@ const faqs = [
   {
     q: 'Was kostet eine Webseite bei Ihnen?',
     a: 'Kleine Webseiten beginnen bei rund CHF 700. Die meisten Projekte liegen zwischen CHF 1’000 und CHF 5’000, grosse Shops mit Branding auch darüber. Mit dem Preisrechner weiter oben sehen Sie Ihre Spanne sofort. Nach dem Erstgespräch erhalten Sie eine Festofferte, und dieser Preis gilt.',
+    link: { href: '#preis', label: 'Zum Preisrechner' },
   },
   {
     q: 'Wie läuft das Erstgespräch ab?',
@@ -78,7 +79,11 @@ function FaqItem({ faq, index, open, onToggle }) {
             <div style={{ padding: '0 clamp(24px, 4vw, 36px) 32px', maxWidth: '68ch' }}>
               <p style={{ color: 'var(--color-text-muted)' }}>{faq.a}</p>
               {faq.link && (
-                <Link to={faq.link.to} className="btn-link" style={{ marginTop: 12 }}>{faq.link.label}</Link>
+                faq.link.href ? (
+                  <a href={faq.link.href} className="btn-link" style={{ marginTop: 12 }}>{faq.link.label}</a>
+                ) : (
+                  <Link to={faq.link.to} className="btn-link" style={{ marginTop: 12 }}>{faq.link.label}</Link>
+                )
               )}
             </div>
           </motion.div>

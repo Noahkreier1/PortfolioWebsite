@@ -98,9 +98,10 @@ export default function CompareSlider({ before, after, altBefore, altAfter, prio
         role="slider"
         tabIndex={0}
         aria-label="Vorher und nachher vergleichen"
-        aria-valuemin={0}
-        aria-valuemax={100}
+        aria-valuemin={4}
+        aria-valuemax={96}
         aria-valuenow={Math.round(pos)}
+        aria-valuetext={`${Math.round(pos)} Prozent alte Seite sichtbar`}
         onKeyDown={onKeyDown}
         onPointerDown={(e) => {
           draggingRef.current = true
@@ -146,15 +147,18 @@ export default function CompareSlider({ before, after, altBefore, altAfter, prio
         </span>
       </div>
 
-      {/* Handy: beide Stände untereinander, neuer Stand zuerst */}
-      <div className="flex flex-col gap-3 sm:hidden">
+      {/* Handy: beide Stände untereinander, neuer Stand zuerst. Label über dem Bild,
+          damit es nichts im Screenshot verdeckt */}
+      <div className="flex flex-col gap-5 sm:hidden">
         {[
           { src: after, alt: altAfter, label: 'Nachher', bg: 'var(--color-accent)' },
           { src: before, alt: altBefore, label: 'Vorher', bg: 'rgba(20,17,13,0.7)' },
         ].map((s) => (
-          <div key={s.label} className="relative overflow-hidden" style={{ aspectRatio: RATIO, borderRadius: 14, background: 'var(--color-bg-soft)' }}>
-            <Shot src={s.src} alt={s.alt} width="1800" height="973" priority={priority && s.label === 'Nachher'} style={imgStyle} />
-            <span style={{ ...labelStyle, bottom: 10, left: 10, background: s.bg, color: '#FAFAF7' }}>{s.label}</span>
+          <div key={s.label}>
+            <span style={{ ...labelStyle, position: 'static', display: 'inline-block', marginBottom: 8, background: s.bg, color: '#FAFAF7' }}>{s.label}</span>
+            <div className="relative overflow-hidden" style={{ aspectRatio: RATIO, borderRadius: 14, background: 'var(--color-bg-soft)' }}>
+              <Shot src={s.src} alt={s.alt} width="1800" height="973" priority={priority && s.label === 'Nachher'} style={imgStyle} />
+            </div>
           </div>
         ))}
       </div>

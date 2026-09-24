@@ -29,7 +29,7 @@ Für kleine und mittlere Unternehmen in der Schweiz, die eine neue Webseite brau
 
 - **InspireDay** (Eventveranstalter, Zürich): Webseite für eine Konferenz für Persönlichkeitsentwicklung im Volkshaus Zürich. Über 1'000 verkaufte Tickets über fünf Events seit dem Relaunch. Case Study: https://zurio.ch/referenzen/inspireday
 - **Hikebeast** (eigenes Produkt von Zurio): Web-App mit über 140 Wander- und Wildcamping-Spots in der Schweiz, direkt über die Seite verkauft, über CHF 60'000 Umsatz in sechs Monaten. https://hikebeast.ch
-- **Andrea Buralli** (Trauerbegleitung, Zürich, in Umsetzung): Webseite für Familientrauerbegleitung, ruhiges und einfühlsames Design für ein sensibles Thema.
+- **Cosac** (E-Commerce, eigene Marke von Leon Helg): Online-Shop für XXL-Sitzsäcke aus Memory-Schaum, in der Schweiz entworfen und in die USA verkauft. https://www.cosac.store
 - **Driven Co.** (E-Commerce, Schweiz): Streetwear-Marke mit limitierten Drops, über 400 verkaufte Einheiten in zwei Drops. https://www.driven-co.ch
 
 ## Kundenstimme

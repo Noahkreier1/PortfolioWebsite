@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { track } from '@vercel/analytics'
 import { setRequestContext } from '../lib/requestContext'
-import { ArrowUpRight } from './Icons'
 
 /* ─── Preislogik ─── */
 // Liefert die einmalige CHF-Spanne [min, max] für die aktuelle Auswahl.
@@ -36,7 +35,7 @@ const formatCHF = (n) => 'CHF ' + new Intl.NumberFormat('de-CH', { maximumFracti
 const DESIGN_OPTIONS = [
   { value: 'basis', label: 'Basis', description: 'Bewährter Aufbau, gestaltet in Ihrer Marke.' },
   { value: 'custom', label: 'Individuell', description: 'Komplett individuell entworfen.' },
-  { value: 'branding', label: 'Mit Branding', description: 'Individuell entworfen, inklusive Logo, Markenauftritt, Illustrationen und Animationen.' },
+  { value: 'branding', label: 'Mit Branding', short: 'Branding', description: 'Individuell entworfen, inklusive Logo, Markenauftritt, Illustrationen und Animationen.' },
 ]
 
 const MODULES = [
@@ -98,8 +97,10 @@ function Toggle({ id, active, onChange, locked, note, children }) {
           </svg>
         )}
       </span>
-      <span style={{ flex: 1 }}>{children}</span>
-      {note && <span style={{ fontSize: 13, color: 'var(--color-text-muted)', fontWeight: 500 }}>{note}</span>}
+      <span style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 2 }}>
+        {children}
+        {note && <span style={{ fontSize: 13, color: 'var(--color-text-muted)', fontWeight: 500 }}>{note}</span>}
+      </span>
     </button>
   )
 }
@@ -141,9 +142,18 @@ export default function Pricing() {
   const selectedDesign = DESIGN_OPTIONS.find((o) => o.value === design)
 
   const sendToContact = () => {
-    const chosen = MODULES.filter((m) => modules[m.key] || (m.key === 'animations' && includesAnimations)).map((m) => m.label)
+    // Wartung ist wiederkehrend und steht separat, deshalb nicht in der Modulliste
+    const chosen = MODULES
+      .filter((m) => m.key !== 'maintenance' && (modules[m.key] || (m.key === 'animations' && includesAnimations)))
+      .map((m) => m.label)
     setRequestContext(
-      `Preisrechner: ${pages} ${pages === 1 ? 'Seite' : 'Seiten'} · Design ${selectedDesign.label} · Module: ${chosen.length ? chosen.join(', ') : 'keine'} · Richtpreis ${formatCHF(lo)} bis ${formatCHF(hi)}${modules.maintenance ? `, Wartung ${formatCHF(MAINTENANCE_PER_YEAR[0])} bis ${formatCHF(MAINTENANCE_PER_YEAR[1])} pro Jahr` : ''}`
+      [
+        `Preisrechner: ${pages} ${pages === 1 ? 'Seite' : 'Seiten'}`,
+        `Design: ${selectedDesign.label}`,
+        `Module: ${chosen.length ? chosen.join(', ') : 'keine'}`,
+        `Richtpreis einmalig: ${formatCHF(lo)} bis ${formatCHF(hi)}`,
+        modules.maintenance && `Wartung: ${formatCHF(MAINTENANCE_PER_YEAR[0])} bis ${formatCHF(MAINTENANCE_PER_YEAR[1])} pro Jahr`,
+      ].filter(Boolean).join(' · ')
     )
     track('cta_click', { location: 'pricing' })
   }
@@ -220,7 +230,12 @@ export default function Pricing() {
                         transition: 'background 0.2s ease, color 0.2s ease',
                       }}
                     >
-                      {opt.label}
+                      {opt.short ? (
+                        <>
+                          <span className="sm:hidden">{opt.short}</span>
+                          <span className="hidden sm:inline">{opt.label}</span>
+                        </>
+                      ) : opt.label}
                     </button>
                   )
                 })}
@@ -236,7 +251,7 @@ export default function Pricing() {
                   id={`pricing-module-${m.key}`}
                   active={modules[m.key] || (m.key === 'animations' && includesAnimations)}
                   locked={m.key === 'animations' && includesAnimations}
-                  note={m.key === 'animations' && includesAnimations ? 'inklusive' : m.key === 'maintenance' ? 'jährlich' : null}
+                  note={m.key === 'animations' && includesAnimations ? 'im Branding enthalten' : m.key === 'maintenance' ? 'jährlich' : null}
                   onChange={(v) => { setModules((prev) => ({ ...prev, [m.key]: v })); markUsed() }}
                 >
                   {m.label}
@@ -302,9 +317,8 @@ export default function Pricing() {
               {INCLUDED.map((item) => <li key={item}>{item}</li>)}
             </ul>
 
-            <a href="#contact-form" className="btn-accent" onClick={sendToContact}>
-              Festofferte anfragen
-              <ArrowUpRight />
+            <a href="#contact-form" className="btn-accent w-full" onClick={sendToContact} style={{ textAlign: 'center', paddingInline: 24 }}>
+              <span style={{ textWrap: 'balance' }}>Erstgespräch mit dieser Auswahl anfragen</span>
             </a>
 
             <p style={{ fontSize: 13, color: 'var(--color-text-faint)', lineHeight: 1.6, marginTop: -8 }}>

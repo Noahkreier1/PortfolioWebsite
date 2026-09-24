@@ -23,8 +23,9 @@ const legalLinks = [
   { label: 'AGB', to: '/agb' },
 ]
 
-const headingStyle = { fontSize: 14, fontWeight: 600, color: 'var(--color-text)', marginBottom: 4 }
-const linkStyle = { fontSize: 15, color: 'var(--color-text-muted)' }
+const headingStyle = { fontSize: 14, fontWeight: 600, color: 'var(--color-text)', marginBottom: 6 }
+// 44px hohe Zeilen: bequem antippbar, optisch gleicher Rhythmus wie vorher
+const linkStyle = { fontSize: 15, color: 'var(--color-text-muted)', display: 'flex', alignItems: 'center', minHeight: 44 }
 
 export default function Footer() {
   const { pathname } = useLocation()
@@ -51,17 +52,17 @@ export default function Footer() {
             </p>
           </div>
 
-          <nav aria-label="Seiten" className="flex flex-col gap-3">
+          <nav aria-label="Seiten" className="flex flex-col">
             <p style={headingStyle}>Startseite</p>
             {navLinks.map((l) => <a key={l.label} href={l.href} style={linkStyle} className="hover:underline">{l.label}</a>)}
           </nav>
 
-          <nav aria-label="Weitere Seiten" className="flex flex-col gap-3">
+          <nav aria-label="Weitere Seiten" className="flex flex-col">
             <p style={headingStyle}>Mehr</p>
             {moreLinks.map((l) => <Link key={l.label} to={l.to} style={linkStyle} className="hover:underline">{l.label}</Link>)}
           </nav>
 
-          <nav aria-label="Rechtliches" className="flex flex-col gap-3">
+          <nav aria-label="Rechtliches" className="flex flex-col">
             <p style={headingStyle}>Rechtliches</p>
             {legalLinks.map((l) => <Link key={l.label} to={l.to} style={linkStyle} className="hover:underline">{l.label}</Link>)}
           </nav>

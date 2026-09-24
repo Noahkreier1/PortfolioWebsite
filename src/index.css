@@ -63,10 +63,11 @@ body {
   color: var(--color-bg);
 }
 
+/* Fokus ist dunkel, nicht rot: Rot bedeutet nur Aktion oder Fehler */
 a:focus-visible,
 button:focus-visible,
 [role="slider"]:focus-visible {
-  outline: 2px solid var(--color-accent);
+  outline: 2px solid var(--color-text);
   outline-offset: 3px;
 }
 
@@ -277,18 +278,28 @@ button:focus-visible,
   resize: vertical;
   min-height: 128px;
 }
+.field input:focus-visible,
+.field textarea:focus-visible {
+  border-color: var(--color-text);
+  box-shadow: 0 0 0 3px rgba(20, 17, 13, 0.08);
+}
+/* Fehler: 2px Rahmen (1px Border + 1px Inset) plus Symbol und Text, nicht nur Farbe */
 .field input[aria-invalid="true"],
 .field textarea[aria-invalid="true"] {
   border-color: var(--color-bad);
+  box-shadow: inset 0 0 0 1px var(--color-bad);
 }
 .field-error {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
   font-size: 14px;
+  line-height: 1.45;
   color: var(--color-bad);
 }
-.field input:focus-visible,
-.field textarea:focus-visible {
-  border-color: var(--color-accent);
-  box-shadow: 0 0 0 3px var(--color-accent-glow);
+.field-error svg {
+  flex-shrink: 0;
+  margin-top: 2px;
 }
 
 /* Unbestimmter Fortschritt (Website-Check) */
@@ -390,7 +401,7 @@ button:focus-visible,
   cursor: pointer;
 }
 .pricing-slider:focus-visible {
-  outline: 2px solid var(--color-accent);
+  outline: 2px solid var(--color-text);
   outline-offset: 6px;
 }
 

@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Link, useLocation } from 'react-router-dom'
 import { handleLogoClick } from '../lib/scrollToTop'
+import { COMPANY } from '../data/company'
 
 const links = [
   { label: 'Referenzen', anchor: '#work' },
@@ -37,10 +38,37 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
+  const toggleRef = useRef(null)
+  const menuRef = useRef(null)
+
   useEffect(() => {
     document.body.style.overflow = menuOpen ? 'hidden' : ''
     return () => { document.body.style.overflow = '' }
   }, [menuOpen])
+
+  // Menü offen: Fokus auf den ersten Link, Esc schliesst, Tab bleibt im Menü
+  useEffect(() => {
+    if (!menuOpen) return
+    const focusables = () => [toggleRef.current, ...(menuRef.current?.querySelectorAll('a, button') ?? [])].filter(Boolean)
+    requestAnimationFrame(() => menuRef.current?.querySelector('a')?.focus())
+    const onKey = (e) => {
+      if (e.key === 'Escape') {
+        setMenuOpen(false)
+        toggleRef.current?.focus()
+        return
+      }
+      if (e.key !== 'Tab') return
+      const items = focusables()
+      const first = items[0]
+      const last = items[items.length - 1]
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus() }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus() }
+    }
+    document.addEventListener('keydown', onKey)
+    return () => document.removeEventListener('keydown', onKey)
+  }, [menuOpen])
+
+  const closeMenu = () => setMenuOpen(false)
 
   return (
     <>
@@ -88,9 +116,10 @@ export default function Navbar() {
           </a>
 
           <button
+            ref={toggleRef}
             onClick={() => setMenuOpen(!menuOpen)}
             className="lg:hidden flex flex-col items-center justify-center gap-1.5 -mr-3"
-            style={{ width: 44, height: 44 }}
+            style={{ width: 44, height: 44, borderRadius: 12 }}
             aria-label={menuOpen ? 'Menü schliessen' : 'Menü öffnen'}
             aria-expanded={menuOpen}
             aria-controls="mobile-menu"
@@ -106,25 +135,34 @@ export default function Navbar() {
         {menuOpen && (
           <motion.div
             id="mobile-menu"
+            ref={menuRef}
             initial={{ height: 0 }}
-            animate={{ height: 'auto' }}
+            animate={{ height: 'calc(100dvh - 64px)' }}
             exit={{ height: 0 }}
-            transition={{ duration: 0.25 }}
+            transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
             className="lg:hidden overflow-hidden"
             style={{ background: 'var(--color-bg)' }}
           >
-            <div className="container-page flex flex-col gap-6" style={{ paddingBlock: 40 }}>
-              {links.map((l) => (
-                <a key={l.label} href={navHref(l.anchor)} onClick={() => setMenuOpen(false)} className="font-display" style={{ fontSize: 24, color: 'var(--color-text)' }}>
-                  {l.label}
+            {/* Volle Höhe: Links oben, Kontakt unten in Daumen-Reichweite */}
+            <div className="container-page flex flex-col justify-between h-full overflow-y-auto" style={{ paddingBlock: '32px 40px' }}>
+              <div className="flex flex-col">
+                {links.map((l) => (
+                  <a key={l.label} href={navHref(l.anchor)} onClick={closeMenu} className="font-display" style={{ fontSize: 26, color: 'var(--color-text)', paddingBlock: 10 }}>
+                    {l.label}
+                  </a>
+                ))}
+                <Link to="/website-check" onClick={closeMenu} className="font-display" style={{ fontSize: 26, color: 'var(--color-text)', paddingBlock: 10 }}>
+                  Website-Check
+                </Link>
+              </div>
+              <div className="flex flex-col gap-4" style={{ paddingTop: 32 }}>
+                <a href={navHref('#contact')} onClick={closeMenu} className="btn-accent">
+                  Erstgespräch anfragen
                 </a>
-              ))}
-              <Link to="/website-check" onClick={() => setMenuOpen(false)} className="font-display" style={{ fontSize: 24, color: 'var(--color-text)' }}>
-                Website-Check
-              </Link>
-              <a href={navHref('#contact')} onClick={() => setMenuOpen(false)} className="btn-accent self-start" style={{ marginTop: 16 }}>
-                Erstgespräch anfragen
-              </a>
+                <a href={COMPANY.phoneHref} className="text-center" style={{ fontSize: 16, color: 'var(--color-text)', fontWeight: 500, paddingBlock: 12 }}>
+                  Anrufen: {COMPANY.phone}
+                </a>
+              </div>
             </div>
           </motion.div>
         )}

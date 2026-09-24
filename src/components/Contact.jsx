@@ -37,7 +37,12 @@ export default function Contact() {
     'aria-describedby': errors[name] ? `contact-${name}-error` : undefined,
     onInput: () => clearError(name),
   })
-  const FieldError = ({ name }) => (errors[name] ? <p id={`contact-${name}-error`} className="field-error">{errors[name]}</p> : null)
+  const FieldError = ({ name }) => (errors[name] ? (
+    <p id={`contact-${name}-error`} className="field-error">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true"><circle cx="12" cy="12" r="10" /><path d="M12 7v6M12 16.5v.5" /></svg>
+      <span>{errors[name]}</span>
+    </p>
+  ) : null)
 
   useEffect(() => subscribeRequestContext(setContext), [])
 
@@ -122,7 +127,9 @@ export default function Contact() {
                 {context && (
                   <div style={{ background: 'var(--color-bg)', borderRadius: 16, padding: '16px 20px' }}>
                     <p style={{ fontSize: 14, fontWeight: 500, marginBottom: 4 }}>Wird mitgeschickt</p>
-                    <p style={{ fontSize: 14, color: 'var(--color-text-muted)', marginBottom: 8 }}>{context}</p>
+                    <ul style={{ listStyle: 'none', fontSize: 14, color: 'var(--color-text-muted)', marginBottom: 8, display: 'flex', flexDirection: 'column', gap: 2 }}>
+                      {context.split(' · ').map((part) => <li key={part}>{part}</li>)}
+                    </ul>
                     <button type="button" className="btn-link" style={{ fontSize: 14 }} onClick={() => setRequestContext('')}>
                       Entfernen
                     </button>
@@ -173,10 +180,11 @@ export default function Contact() {
 
                 <div className="flex flex-col sm:flex-row sm:items-center gap-6">
                   <button type="submit" className="btn-accent" disabled={status === 'sending'} style={{ whiteSpace: 'nowrap', flexShrink: 0 }}>
-                    {status === 'sending' ? 'Wird gesendet …' : 'Anfrage senden'}
+                    {status === 'sending' ? 'Wird gesendet …' : 'Erstgespräch anfragen'}
                   </button>
                   <p style={{ fontSize: 13, color: 'var(--color-text-faint)', lineHeight: 1.5 }}>
-                    Wir verwenden Ihre Angaben nur zur Beantwortung der Anfrage.{' '}
+                    Antwort innert 24 Stunden, kostenlos und unverbindlich. Wir verwenden Ihre Angaben nur zur
+                    Beantwortung der Anfrage.{' '}
                     <Link to="/datenschutz" style={{ textDecoration: 'underline' }}>Datenschutz</Link>
                   </p>
                 </div>
