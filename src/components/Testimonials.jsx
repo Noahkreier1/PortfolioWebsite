@@ -29,7 +29,7 @@ export default function Testimonials({ company, style }) {
   if (!items.length) return null
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-16" style={style}>
+    <div className={`grid grid-cols-1 gap-x-12 gap-y-16${items.length > 1 ? ' md:grid-cols-2' : ''}`} style={style}>
       {items.map((t) => (
         <figure key={t.name} style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
           <blockquote

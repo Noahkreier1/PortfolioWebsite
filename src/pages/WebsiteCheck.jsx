@@ -17,7 +17,7 @@ export default function WebsiteCheck() {
   return (
     <>
       <Navbar />
-      <main style={{ paddingTop: 'clamp(128px, 16vh, 168px)', paddingBottom: 'clamp(96px, 11vw, 160px)' }}>
+      <main id="main" style={{ paddingTop: 'clamp(128px, 16vh, 168px)', paddingBottom: 'clamp(96px, 11vw, 160px)' }}>
         <div className="container-page">
           <div className="section-head">
             <h1 className="font-display h-section">Wie gut ist Ihre heutige Webseite?</h1>

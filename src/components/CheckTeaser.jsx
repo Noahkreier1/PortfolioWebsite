@@ -21,7 +21,7 @@ export default function CheckTeaser() {
   }
 
   return (
-    <section id="website-check" className="section" style={{ background: 'var(--color-bg)', paddingTop: 0 }}>
+    <section id="website-check" className="section" style={{ background: 'var(--color-bg)', paddingBottom: 0 }}>
       <div className="container-page">
         <div
           className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center"
@@ -29,11 +29,11 @@ export default function CheckTeaser() {
         >
           <div>
             <h2 className="font-display" style={{ fontSize: 'clamp(1.75rem, 3vw, 2.5rem)', lineHeight: 1.15, marginBottom: 16, textWrap: 'balance' }}>
-              Wie schnell ist Ihre heutige Webseite?
+              Unsicher, ob sich ein Neuaufbau lohnt?
             </h2>
             <p style={{ color: 'var(--color-text-muted)', maxWidth: '48ch' }}>
-              Kostenlos und ohne E-Mail: Google PageSpeed Insights misst Ladegeschwindigkeit,
-              SEO-Grundlagen, Barrierefreiheit und technische Qualität.
+              Messen Sie Ihre heutige Webseite zuerst selbst. Kostenlos und ohne E-Mail prüft Google
+              PageSpeed Insights Ladegeschwindigkeit, SEO-Grundlagen, Barrierefreiheit und technische Qualität.
             </p>
           </div>
 

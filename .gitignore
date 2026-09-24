@@ -35,3 +35,4 @@ zurio-wortmarke-abstand.pdf
 # Tooling caches
 .claude/
 .y/
+.impeccable/

@@ -37,7 +37,7 @@ export default function CaseInspireDay() {
   return (
     <>
       <Navbar />
-      <main>
+      <main id="main">
         <section style={{ paddingTop: 'clamp(128px, 16vh, 168px)', paddingBottom: 'clamp(64px, 8vw, 96px)' }}>
           <div className="container-page">
             <p className="meta-line" style={{ marginBottom: 24 }}>Case Study</p>
@@ -77,9 +77,10 @@ export default function CaseInspireDay() {
                 after="/before-after/inspireday-after.jpg"
                 altBefore="InspireDay Webseite vor dem Relaunch"
                 altAfter="InspireDay Webseite nach dem Relaunch durch Zurio"
+                priority
               />
               <figcaption style={{ marginTop: 16, fontSize: 15, color: 'var(--color-text-muted)' }}>
-                Links die alte, rechts die neue Startseite. Regler ziehen zum Vergleichen.
+                Die alte und die neue Startseite.<span className="hidden sm:inline"> Regler ziehen zum Vergleichen.</span>
               </figcaption>
             </figure>
           </div>
@@ -120,7 +121,7 @@ export default function CaseInspireDay() {
           <div className="container-page">
             <h2 className="font-display h-section" style={{ maxWidth: 760, marginBottom: 32 }}>Sprechen wir über Ihr Projekt</h2>
             <Link to="/#contact" className="btn-accent">
-              Erstgespräch vereinbaren
+              Erstgespräch anfragen
               <ArrowUpRight />
             </Link>
           </div>

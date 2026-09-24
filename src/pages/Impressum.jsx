@@ -22,6 +22,8 @@ export default function Impressum() {
         <h2>Kontakt</h2>
         <p>
           E-Mail: <a href={`mailto:${COMPANY.email}`}>{COMPANY.email}</a>
+          <br />
+          Telefon: <a href={COMPANY.phoneHref}>{COMPANY.phone}</a>
         </p>
       </section>
 

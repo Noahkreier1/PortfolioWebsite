@@ -46,6 +46,8 @@ export default function Footer() {
               Webseiten für Schweizer KMU, aus Winterthur.
               <br />
               <a href={`mailto:${COMPANY.email}`} className="hover:underline">{COMPANY.email}</a>
+              <br />
+              <a href={COMPANY.phoneHref} className="hover:underline">{COMPANY.phone}</a>
             </p>
           </div>
 

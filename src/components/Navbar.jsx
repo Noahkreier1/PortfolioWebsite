@@ -43,6 +43,8 @@ export default function Navbar() {
   }, [menuOpen])
 
   return (
+    <>
+    <a href="#main" className="skip-link">Zum Inhalt springen</a>
     <header
       className="fixed top-0 left-0 right-0 z-50"
       style={{
@@ -55,6 +57,8 @@ export default function Navbar() {
         <Link
           to="/"
           aria-label="Zurio, zum Seitenanfang"
+          className="inline-flex items-center"
+          style={{ minHeight: 44 }}
           onClick={(e) => { setMenuOpen(false); handleLogoClick(e, pathname) }}
         >
           <Wordmark />
@@ -77,15 +81,16 @@ export default function Navbar() {
         <div className="flex items-center gap-3">
           <a
             href={navHref('#contact')}
-            className="hidden lg:inline-flex items-center rounded-full"
+            className="hidden md:inline-flex items-center rounded-full"
             style={{ background: 'var(--color-accent)', color: 'var(--color-bg)', fontWeight: 500, fontSize: 14, padding: '10px 20px' }}
           >
-            Erstgespräch vereinbaren
+            Erstgespräch anfragen
           </a>
 
           <button
             onClick={() => setMenuOpen(!menuOpen)}
-            className="lg:hidden flex flex-col gap-1.5 p-2 -mr-2"
+            className="lg:hidden flex flex-col items-center justify-center gap-1.5 -mr-3"
+            style={{ width: 44, height: 44 }}
             aria-label={menuOpen ? 'Menü schliessen' : 'Menü öffnen'}
             aria-expanded={menuOpen}
             aria-controls="mobile-menu"
@@ -118,12 +123,13 @@ export default function Navbar() {
                 Website-Check
               </Link>
               <a href={navHref('#contact')} onClick={() => setMenuOpen(false)} className="btn-accent self-start" style={{ marginTop: 16 }}>
-                Erstgespräch vereinbaren
+                Erstgespräch anfragen
               </a>
             </div>
           </motion.div>
         )}
       </AnimatePresence>
     </header>
+    </>
   )
 }

@@ -11,7 +11,7 @@ export default function LegalLayout({ title, lastUpdated, children }) {
   return (
     <>
       <Navbar />
-      <main style={{ minHeight: 'calc(100vh - 200px)', paddingTop: 'clamp(112px, 14vh, 144px)', paddingBottom: 'clamp(64px, 8vw, 96px)' }}>
+      <main id="main" style={{ minHeight: 'calc(100vh - 200px)', paddingTop: 'clamp(112px, 14vh, 144px)', paddingBottom: 'clamp(64px, 8vw, 96px)' }}>
         <div className="container-page" style={{ maxWidth: 800 }}>
           <Link to="/" className="btn-link" style={{ marginBottom: 32 }}>
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">

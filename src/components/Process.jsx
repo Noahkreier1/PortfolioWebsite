@@ -54,7 +54,7 @@ export default function Process() {
               <h3 className="font-display" style={{ fontSize: '1.375rem', lineHeight: 1.2, color: 'var(--color-text)', marginBottom: 8 }}>
                 {step.title}
               </h3>
-              <p className="meta-line" style={{ fontSize: 12, color: 'var(--color-accent)', marginBottom: 16 }}>
+              <p className="meta-line" style={{ fontSize: 12, marginBottom: 16 }}>
                 {step.detail}
               </p>
               <p style={{ color: 'var(--color-text-muted)' }}>{step.description}</p>

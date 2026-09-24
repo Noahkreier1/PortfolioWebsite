@@ -7,7 +7,11 @@ import { ArrowUpRight } from './Icons'
 const faqs = [
   {
     q: 'Was kostet eine Webseite bei Ihnen?',
-    a: 'Die meisten Projekte liegen zwischen CHF 1’000 und CHF 5’000, je nach Umfang, Design und Modulen wie Shop oder Texten. Mit dem Preisrechner weiter oben sehen Sie Ihre Spanne sofort. Nach dem Erstgespräch erhalten Sie eine Festofferte, und dieser Preis gilt.',
+    a: 'Kleine Webseiten beginnen bei rund CHF 700. Die meisten Projekte liegen zwischen CHF 1’000 und CHF 5’000, grosse Shops mit Branding auch darüber. Mit dem Preisrechner weiter oben sehen Sie Ihre Spanne sofort. Nach dem Erstgespräch erhalten Sie eine Festofferte, und dieser Preis gilt.',
+  },
+  {
+    q: 'Wie läuft das Erstgespräch ab?',
+    a: `Sie schicken uns über das Formular eine kurze Anfrage, wir melden uns innert 24 Stunden und schlagen Termine vor. Das Gespräch dauert rund 30 Minuten, ist kostenlos und unverbindlich. Sie können uns auch direkt anrufen: ${COMPANY.phone}.`,
   },
   {
     q: 'Wie lange dauert es bis zum Launch?',

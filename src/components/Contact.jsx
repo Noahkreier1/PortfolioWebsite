@@ -1,17 +1,43 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { track } from '@vercel/analytics'
 import { COMPANY } from '../data/company'
 import { getRequestContext, setRequestContext, subscribeRequestContext } from '../lib/requestContext'
-import { ChevronRight } from './Icons'
 
 // FormSubmit leitet Anfragen per E-Mail weiter. Beim allerersten Absenden
 // schickt FormSubmit eine Aktivierungs-Mail an die Empfängeradresse.
 const ENDPOINT = `https://formsubmit.co/ajax/${COMPANY.formEmail}`
 
+// Eigene Prüfung statt Browser-Tooltips: Meldungen auf Deutsch, direkt am Feld
+function validate(data) {
+  const errors = {}
+  if (!data.name?.trim()) errors.name = 'Bitte geben Sie Ihren Namen an.'
+  const email = data.email?.trim() ?? ''
+  if (!email) errors.email = 'Bitte geben Sie Ihre E-Mail-Adresse an, damit wir antworten können.'
+  else if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) errors.email = 'Diese E-Mail-Adresse scheint unvollständig. Beispiel: name@firma.ch'
+  return errors
+}
+
+const linkStyle = { color: 'var(--color-accent-ink)', textDecoration: 'underline', textUnderlineOffset: 4 }
+
 export default function Contact() {
   const [context, setContext] = useState(getRequestContext)
   const [status, setStatus] = useState('idle') // idle | sending | sent | error
+  const [errors, setErrors] = useState({})
+  const successRef = useRef(null)
+
+  // Nach dem Absenden den Fokus auf die Bestätigung setzen, damit Screenreader sie vorlesen
+  useEffect(() => {
+    if (status === 'sent') successRef.current?.focus()
+  }, [status])
+
+  const clearError = (name) => setErrors((prev) => (prev[name] ? { ...prev, [name]: undefined } : prev))
+  const errorProps = (name) => ({
+    'aria-invalid': errors[name] ? true : undefined,
+    'aria-describedby': errors[name] ? `contact-${name}-error` : undefined,
+    onInput: () => clearError(name),
+  })
+  const FieldError = ({ name }) => (errors[name] ? <p id={`contact-${name}-error`} className="field-error">{errors[name]}</p> : null)
 
   useEffect(() => subscribeRequestContext(setContext), [])
 
@@ -20,6 +46,14 @@ export default function Contact() {
     const form = e.currentTarget
     const data = Object.fromEntries(new FormData(form))
     if (data._honey) return
+
+    const found = validate(data)
+    setErrors(found)
+    const firstInvalid = ['name', 'email'].find((k) => found[k])
+    if (firstInvalid) {
+      form.querySelector(`[name="${firstInvalid}"]`)?.focus()
+      return
+    }
 
     setStatus('sending')
     try {
@@ -62,23 +96,21 @@ export default function Contact() {
             <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 48, color: 'var(--color-text)' }}>
               <li>Antwort innert 24 Stunden</li>
               <li>Kostenlos und unverbindlich</li>
+            </ul>
+            <p style={{ color: 'var(--color-text-muted)', marginBottom: 8 }}>Lieber direkt?</p>
+            <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 8 }}>
               <li>
-                Lieber direkt schreiben:{' '}
-                <a href={`mailto:${COMPANY.email}`} style={{ color: 'var(--color-accent)', textDecoration: 'underline', textUnderlineOffset: 4 }}>
-                  {COMPANY.email}
-                </a>
+                Anrufen: <a href={COMPANY.phoneHref} style={{ ...linkStyle, whiteSpace: 'nowrap' }}>{COMPANY.phone}</a>
+              </li>
+              <li>
+                Schreiben: <a href={`mailto:${COMPANY.email}`} style={linkStyle}>{COMPANY.email}</a>
               </li>
             </ul>
-            <p style={{ color: 'var(--color-text-muted)', marginBottom: 8 }}>Sie möchten Ihre heutige Seite zuerst selbst messen?</p>
-            <Link to="/website-check" className="btn-link">
-              Zum kostenlosen Website-Check
-              <ChevronRight />
-            </Link>
           </div>
 
-          <div className="lg:col-span-3" style={{ background: 'var(--color-bg-soft)', borderRadius: 28, padding: 'clamp(24px, 4vw, 48px)' }}>
+          <div id="contact-form" className="lg:col-span-3" style={{ background: 'var(--color-bg-soft)', borderRadius: 28, padding: 'clamp(24px, 4vw, 48px)' }}>
             {status === 'sent' ? (
-              <div role="status" style={{ display: 'flex', flexDirection: 'column', gap: 16, alignItems: 'flex-start' }}>
+              <div ref={successRef} tabIndex={-1} role="status" style={{ display: 'flex', flexDirection: 'column', gap: 16, alignItems: 'flex-start', outline: 'none' }}>
                 <h3 className="font-display" style={{ fontSize: '1.75rem', lineHeight: 1.2 }}>Danke, Ihre Anfrage ist angekommen.</h3>
                 <p style={{ color: 'var(--color-text-muted)' }}>
                   Wir melden uns innert 24 Stunden per E-Mail bei Ihnen und schlagen Termine für das Erstgespräch vor.
@@ -86,11 +118,22 @@ export default function Contact() {
                 <button type="button" className="btn-link" onClick={() => setStatus('idle')}>Weitere Anfrage senden</button>
               </div>
             ) : (
-              <form onSubmit={onSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+              <form onSubmit={onSubmit} noValidate style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+                {context && (
+                  <div style={{ background: 'var(--color-bg)', borderRadius: 16, padding: '16px 20px' }}>
+                    <p style={{ fontSize: 14, fontWeight: 500, marginBottom: 4 }}>Wird mitgeschickt</p>
+                    <p style={{ fontSize: 14, color: 'var(--color-text-muted)', marginBottom: 8 }}>{context}</p>
+                    <button type="button" className="btn-link" style={{ fontSize: 14 }} onClick={() => setRequestContext('')}>
+                      Entfernen
+                    </button>
+                  </div>
+                )}
+
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                   <div className="field">
                     <label htmlFor="contact-name">Name</label>
-                    <input id="contact-name" name="name" type="text" autoComplete="name" required />
+                    <input id="contact-name" name="name" type="text" autoComplete="name" required maxLength={120} {...errorProps('name')} />
+                    <FieldError name="name" />
                   </div>
                   <div className="field">
                     <label htmlFor="contact-company">Firma <span>(optional)</span></label>
@@ -100,7 +143,8 @@ export default function Contact() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                   <div className="field">
                     <label htmlFor="contact-email">E-Mail</label>
-                    <input id="contact-email" name="email" type="email" autoComplete="email" required />
+                    <input id="contact-email" name="email" type="email" autoComplete="email" required maxLength={200} {...errorProps('email')} />
+                    <FieldError name="email" />
                   </div>
                   <div className="field">
                     <label htmlFor="contact-website">Heutige Webseite <span>(optional)</span></label>
@@ -116,23 +160,14 @@ export default function Contact() {
                   />
                 </div>
 
-                {context && (
-                  <div style={{ background: 'var(--color-bg)', borderRadius: 16, padding: '16px 20px' }}>
-                    <p style={{ fontSize: 14, fontWeight: 500, marginBottom: 4 }}>Wird mitgeschickt</p>
-                    <p style={{ fontSize: 14, color: 'var(--color-text-muted)', marginBottom: 8 }}>{context}</p>
-                    <button type="button" className="btn-link" style={{ fontSize: 14 }} onClick={() => setRequestContext('')}>
-                      Entfernen
-                    </button>
-                  </div>
-                )}
-
                 {/* Spam-Falle: für Menschen unsichtbar */}
                 <input type="text" name="_honey" tabIndex={-1} autoComplete="off" aria-hidden="true" style={{ display: 'none' }} />
 
                 {status === 'error' && (
                   <p role="alert" style={{ color: 'var(--color-bad)', fontSize: 15 }}>
-                    Die Anfrage konnte nicht gesendet werden. Bitte versuchen Sie es nochmals oder schreiben Sie direkt an{' '}
-                    <a href={`mailto:${COMPANY.email}`} style={{ textDecoration: 'underline' }}>{COMPANY.email}</a>.
+                    Die Anfrage konnte nicht gesendet werden. Bitte versuchen Sie es nochmals, schreiben Sie an{' '}
+                    <a href={`mailto:${COMPANY.email}`} style={{ textDecoration: 'underline' }}>{COMPANY.email}</a> oder rufen Sie an:{' '}
+                    <a href={COMPANY.phoneHref} style={{ textDecoration: 'underline', whiteSpace: 'nowrap' }}>{COMPANY.phone}</a>.
                   </p>
                 )}
 

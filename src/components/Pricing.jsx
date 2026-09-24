@@ -1,12 +1,13 @@
-import { useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { track } from '@vercel/analytics'
 import { setRequestContext } from '../lib/requestContext'
 import { ArrowUpRight } from './Icons'
 
 /* ─── Preislogik ─── */
-// Liefert eine CHF-Spanne [min, max] für die aktuelle Auswahl.
+// Liefert die einmalige CHF-Spanne [min, max] für die aktuelle Auswahl.
 // Kalibriert auf Standardprojekte zwischen CHF 1'000 und 5'000.
-function computePrice({ pages, ecommerce, design, copywriting, animations, seo, maintenance }) {
+// Wartung ist wiederkehrend und wird separat ausgewiesen (MAINTENANCE_PER_YEAR).
+function computePrice({ pages, ecommerce, design, copywriting, animations, seo }) {
   let lo = 700
   let hi = 1200
 
@@ -20,14 +21,17 @@ function computePrice({ pages, ecommerce, design, copywriting, animations, seo, 
   else if (design === 'branding') { lo += 1000; hi += 1700 }
 
   if (copywriting) { lo += 200; hi += 400 }
-  if (animations) { lo += 300; hi += 600 }
+  // Branding enthält Animationen bereits
+  if (animations && design !== 'branding') { lo += 300; hi += 600 }
   if (seo) { lo += 200; hi += 400 }
-  if (maintenance) { lo += 400; hi += 600 }
 
   return [Math.round(lo / 100) * 100, Math.round(hi / 100) * 100]
 }
 
-const formatCHF = (n) => 'CHF ' + new Intl.NumberFormat('de-CH', { maximumFractionDigits: 0 }).format(n)
+const MAINTENANCE_PER_YEAR = [400, 600]
+
+// Einheitlich mit typografischem Apostroph (’), wie im übrigen Text
+const formatCHF = (n) => 'CHF ' + new Intl.NumberFormat('de-CH', { maximumFractionDigits: 0 }).format(n).replace(/['\u2019]/g, '’')
 
 const DESIGN_OPTIONS = [
   { value: 'basis', label: 'Basis', description: 'Bewährter Aufbau, gestaltet in Ihrer Marke.' },
@@ -40,7 +44,7 @@ const MODULES = [
   { key: 'animations', label: 'Animationen & Interaktion' },
   { key: 'copywriting', label: 'Texte (Copywriting)' },
   { key: 'seo', label: 'SEO-Grundlagen' },
-  { key: 'maintenance', label: 'Wartung (12 Monate)' },
+  { key: 'maintenance', label: 'Wartung' },
 ]
 
 const INCLUDED = [
@@ -52,14 +56,15 @@ const INCLUDED = [
 
 const labelStyle = { fontSize: 15, fontWeight: 600, color: 'var(--color-text)', display: 'block', marginBottom: 16 }
 
-function Toggle({ id, active, onChange, children }) {
+function Toggle({ id, active, onChange, locked, note, children }) {
   return (
     <button
       id={id}
       type="button"
       role="switch"
       aria-checked={active}
-      onClick={() => onChange(!active)}
+      aria-disabled={locked || undefined}
+      onClick={() => { if (!locked) onChange(!active) }}
       className="text-left"
       style={{
         background: active ? 'var(--color-accent-glow)' : 'var(--color-bg-soft)',
@@ -67,7 +72,7 @@ function Toggle({ id, active, onChange, children }) {
         borderRadius: 16,
         padding: '16px 20px',
         color: active ? 'var(--color-text)' : 'var(--color-text-muted)',
-        cursor: 'pointer',
+        cursor: locked ? 'default' : 'pointer',
         transition: 'background 0.2s ease, border-color 0.2s ease, color 0.2s ease',
         display: 'flex',
         alignItems: 'center',
@@ -93,7 +98,8 @@ function Toggle({ id, active, onChange, children }) {
           </svg>
         )}
       </span>
-      {children}
+      <span style={{ flex: 1 }}>{children}</span>
+      {note && <span style={{ fontSize: 13, color: 'var(--color-text-muted)', fontWeight: 500 }}>{note}</span>}
     </button>
   )
 }
@@ -105,6 +111,26 @@ export default function Pricing() {
   const tracked = useRef(false)
 
   const [lo, hi] = useMemo(() => computePrice({ pages, design, ...modules }), [pages, design, modules])
+  const includesAnimations = design === 'branding'
+  const designRefs = useRef({})
+
+  // Screenreader: Preis erst ansagen, wenn der Regler kurz stillsteht, nicht bei jedem Schritt
+  const [announced, setAnnounced] = useState('')
+  useEffect(() => {
+    const t = setTimeout(() => setAnnounced(`Preisspanne ${formatCHF(lo)} bis ${formatCHF(hi)}`), 700)
+    return () => clearTimeout(t)
+  }, [lo, hi])
+
+  const onDesignKey = (e) => {
+    const dir = e.key === 'ArrowRight' || e.key === 'ArrowDown' ? 1 : e.key === 'ArrowLeft' || e.key === 'ArrowUp' ? -1 : 0
+    if (!dir) return
+    e.preventDefault()
+    const i = DESIGN_OPTIONS.findIndex((o) => o.value === design)
+    const next = DESIGN_OPTIONS[(i + dir + DESIGN_OPTIONS.length) % DESIGN_OPTIONS.length].value
+    setDesign(next)
+    markUsed()
+    designRefs.current[next]?.focus()
+  }
 
   const markUsed = () => {
     if (tracked.current) return
@@ -115,9 +141,9 @@ export default function Pricing() {
   const selectedDesign = DESIGN_OPTIONS.find((o) => o.value === design)
 
   const sendToContact = () => {
-    const chosen = MODULES.filter((m) => modules[m.key]).map((m) => m.label)
+    const chosen = MODULES.filter((m) => modules[m.key] || (m.key === 'animations' && includesAnimations)).map((m) => m.label)
     setRequestContext(
-      `Preisrechner: ${pages} ${pages === 1 ? 'Seite' : 'Seiten'} · Design ${selectedDesign.label} · Module: ${chosen.length ? chosen.join(', ') : 'keine'} · Richtpreis ${formatCHF(lo)} bis ${formatCHF(hi)}`
+      `Preisrechner: ${pages} ${pages === 1 ? 'Seite' : 'Seiten'} · Design ${selectedDesign.label} · Module: ${chosen.length ? chosen.join(', ') : 'keine'} · Richtpreis ${formatCHF(lo)} bis ${formatCHF(hi)}${modules.maintenance ? `, Wartung ${formatCHF(MAINTENANCE_PER_YEAR[0])} bis ${formatCHF(MAINTENANCE_PER_YEAR[1])} pro Jahr` : ''}`
     )
     track('cta_click', { location: 'pricing' })
   }
@@ -139,7 +165,7 @@ export default function Pricing() {
             <div style={{ marginBottom: 48 }}>
               <div className="flex items-baseline justify-between" style={{ marginBottom: 16 }}>
                 <label htmlFor="pricing-pages" style={{ ...labelStyle, marginBottom: 0 }}>Seitenanzahl</label>
-                <span className="font-display" style={{ fontSize: 24, color: 'var(--color-accent)', lineHeight: 1 }}>
+                <span className="font-display" style={{ fontSize: 24, color: 'var(--color-text)', lineHeight: 1 }}>
                   {pages}
                   <span style={{ fontFamily: 'var(--font-body)', fontSize: 14, color: 'var(--color-text-muted)', fontWeight: 500, marginLeft: 6, letterSpacing: 0 }}>
                     {pages === 1 ? 'Seite' : 'Seiten'}
@@ -157,7 +183,7 @@ export default function Pricing() {
                 style={{ width: '100%' }}
               />
               <div className="flex justify-between" style={{ marginTop: 8, fontSize: 12, color: 'var(--color-text-faint)' }}>
-                <span>1</span><span>20+</span>
+                <span>1</span><span>20</span>
               </div>
             </div>
 
@@ -166,6 +192,7 @@ export default function Pricing() {
               <div
                 role="radiogroup"
                 aria-labelledby="pricing-design-label"
+                onKeyDown={onDesignKey}
                 style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 4, padding: 4, background: 'var(--color-bg-soft)', borderRadius: 999 }}
               >
                 {DESIGN_OPTIONS.map((opt) => {
@@ -173,10 +200,12 @@ export default function Pricing() {
                   return (
                     <button
                       key={opt.value}
+                      ref={(el) => { designRefs.current[opt.value] = el }}
                       id={`pricing-design-${opt.value}`}
                       type="button"
                       role="radio"
                       aria-checked={active}
+                      tabIndex={active ? 0 : -1}
                       onClick={() => { setDesign(opt.value); markUsed() }}
                       style={{
                         padding: '12px 8px',
@@ -185,6 +214,7 @@ export default function Pricing() {
                         background: active ? 'var(--color-accent)' : 'transparent',
                         color: active ? 'var(--color-bg)' : 'var(--color-text-muted)',
                         fontSize: 14,
+                        lineHeight: 1.2,
                         fontWeight: active ? 600 : 500,
                         cursor: 'pointer',
                         transition: 'background 0.2s ease, color 0.2s ease',
@@ -204,12 +234,31 @@ export default function Pricing() {
                 <Toggle
                   key={m.key}
                   id={`pricing-module-${m.key}`}
-                  active={modules[m.key]}
+                  active={modules[m.key] || (m.key === 'animations' && includesAnimations)}
+                  locked={m.key === 'animations' && includesAnimations}
+                  note={m.key === 'animations' && includesAnimations ? 'inklusive' : m.key === 'maintenance' ? 'jährlich' : null}
                   onChange={(v) => { setModules((prev) => ({ ...prev, [m.key]: v })); markUsed() }}
                 >
                   {m.label}
                 </Toggle>
               ))}
+            </div>
+
+            {/* Handy: Preis bleibt beim Konfigurieren sichtbar */}
+            <div
+              className="lg:hidden flex items-baseline justify-between gap-4"
+              aria-hidden="true"
+              style={{
+                position: 'sticky', bottom: 12, marginTop: 32,
+                background: 'var(--color-text)', color: 'var(--color-bg)',
+                borderRadius: 14, padding: '14px 18px',
+                boxShadow: '0 8px 24px rgba(20,17,13,0.18)',
+              }}
+            >
+              <span style={{ fontSize: 13, opacity: 0.75 }}>Ihre Spanne</span>
+              <span className="font-display" style={{ fontSize: 18, fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap' }}>
+                {formatCHF(lo)} – {formatCHF(hi).replace('CHF ', '')}
+              </span>
             </div>
           </div>
 
@@ -228,21 +277,32 @@ export default function Pricing() {
               height: 'fit-content',
             }}
           >
-            <div aria-live="polite">
+            <div>
+              <p className="sr-only" aria-live="polite">{announced}</p>
               <p style={{ fontSize: 15, color: 'var(--color-text-muted)', marginBottom: 8 }}>Ihre Preisspanne</p>
               <p className="font-display" style={{ fontSize: 'clamp(2.4rem, 5vw, 3.25rem)', color: 'var(--color-text)', lineHeight: 1.05, fontVariantNumeric: 'tabular-nums' }}>
                 {formatCHF(lo)}
               </p>
               <p style={{ fontSize: 15, color: 'var(--color-text-muted)', marginTop: 8 }}>
                 bis <span className="font-display" style={{ color: 'var(--color-text)', fontSize: 20, fontVariantNumeric: 'tabular-nums' }}>{formatCHF(hi)}</span>
+                {' '}einmalig
               </p>
+              {modules.maintenance && (
+                <p style={{ fontSize: 15, color: 'var(--color-text-muted)', marginTop: 12, paddingTop: 12, borderTop: '1px solid var(--color-border)' }}>
+                  Wartung zusätzlich{' '}
+                  <span style={{ color: 'var(--color-text)', fontWeight: 600, fontVariantNumeric: 'tabular-nums' }}>
+                    {formatCHF(MAINTENANCE_PER_YEAR[0])} bis {formatCHF(MAINTENANCE_PER_YEAR[1]).replace('CHF ', '')}
+                  </span>{' '}
+                  pro Jahr
+                </p>
+              )}
             </div>
 
             <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 12, fontSize: 15, color: 'var(--color-text)' }}>
               {INCLUDED.map((item) => <li key={item}>{item}</li>)}
             </ul>
 
-            <a href="#contact" className="btn-accent" onClick={sendToContact}>
+            <a href="#contact-form" className="btn-accent" onClick={sendToContact}>
               Festofferte anfragen
               <ArrowUpRight />
             </a>

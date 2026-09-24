@@ -1,6 +1,5 @@
-import { Link } from 'react-router-dom'
 import { track } from '@vercel/analytics'
-import CompareSlider from './CompareSlider'
+import { COMPANY } from '../data/company'
 import { ArrowUpRight, ChevronRight } from './Icons'
 
 export default function Hero() {
@@ -25,7 +24,7 @@ export default function Hero() {
 
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6 sm:gap-10">
             <a href="#contact" className="btn-accent" onClick={() => track('cta_click', { location: 'hero' })}>
-              Erstgespräch vereinbaren
+              Erstgespräch anfragen
               <ArrowUpRight />
             </a>
             <a href="#work" className="btn-link">
@@ -33,29 +32,14 @@ export default function Hero() {
               <ChevronRight />
             </a>
           </div>
+          <p style={{ marginTop: 20, fontSize: 15, color: 'var(--color-text-muted)' }}>
+            30 Minuten, kostenlos und unverbindlich. Oder direkt anrufen:{' '}
+            <a href={COMPANY.phoneHref} style={{ color: 'var(--color-text)', fontWeight: 500, whiteSpace: 'nowrap', textDecoration: 'underline', textUnderlineOffset: 4, textDecorationColor: 'var(--color-border-strong)' }}>
+              {COMPANY.phone}
+            </a>
+          </p>
         </div>
 
-        <figure style={{ marginTop: 'clamp(80px, 10vw, 128px)' }}>
-          <CompareSlider
-            before="/before-after/inspireday-before.jpg"
-            after="/before-after/inspireday-after.jpg"
-            altBefore="InspireDay Webseite vor dem Relaunch"
-            altAfter="InspireDay Webseite nach dem Relaunch durch Zurio"
-          />
-          <figcaption
-            className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-3"
-            style={{ marginTop: 20, fontSize: 15, color: 'var(--color-text-muted)' }}
-          >
-            <span>
-              <strong style={{ color: 'var(--color-text)', fontWeight: 600 }}>InspireDay</strong>, Konferenz im
-              Volkshaus Zürich: die alte und die neue Webseite. Regler ziehen zum Vergleichen.
-            </span>
-            <Link to="/referenzen/inspireday" className="btn-link" style={{ whiteSpace: 'nowrap' }}>
-              Zur Case Study
-              <ChevronRight />
-            </Link>
-          </figcaption>
-        </figure>
       </div>
     </section>
   )

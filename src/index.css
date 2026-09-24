@@ -10,10 +10,10 @@
   --color-surface: #FFFFFF;
   --color-surface-2: #F8F7F3;
   --color-border: #E2DFD7;
-  --color-border-strong: #C8C4B8;
+  --color-border-strong: #8F8A7B; /* ≥3:1 für Feldrahmen und Checkboxen */
   --color-text: #14110D;
   --color-text-muted: #5C5648;
-  --color-text-faint: #8A8474;
+  --color-text-faint: #6F695B; /* ≥4.5:1 auch auf bg-soft */
   --color-text-subtle: #B5AF9F;
   --color-text-veryfaint: #D6D1C2;
   /* Schweizer Rot. Nur für Interaktives (Buttons, Links, Slider, Fokus) und
@@ -22,6 +22,8 @@
   --color-accent: #DA291C;
   --color-accent-soft: rgba(218, 41, 28, 0.18);
   --color-accent-glow: rgba(218, 41, 28, 0.06);
+  /* Etwas dunkleres Rot für Text-Links: ≥4.5:1 auch auf bg-soft (#DA291C hat dort nur 4.3:1) */
+  --color-accent-ink: #C8231A;
   --color-overlay: rgba(250, 250, 247, 0.9);
   --color-good: #3E7A4A;
   --color-warn: #9A6A12;
@@ -66,6 +68,35 @@ button:focus-visible,
 [role="slider"]:focus-visible {
   outline: 2px solid var(--color-accent);
   outline-offset: 3px;
+}
+
+/* Sprunglink für Tastatur und Screenreader, sichtbar erst bei Fokus */
+.skip-link {
+  position: fixed;
+  top: 12px;
+  left: 12px;
+  z-index: 100;
+  padding: 12px 20px;
+  border-radius: 12px;
+  background: var(--color-text);
+  color: var(--color-bg);
+  font-size: 15px;
+  font-weight: 500;
+  transform: translateY(-160%);
+  transition: transform 0.2s ease;
+}
+.skip-link:focus-visible { transform: none; }
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 /* ─── Typografie: Inter Tight für Headlines, Inter für Text, Archivo für Labels ─── */
@@ -148,12 +179,14 @@ button:focus-visible,
   content: '';
   position: absolute;
   bottom: -3px; left: 0;
-  width: 0; height: 1px;
+  width: 100%; height: 1px;
   background: var(--color-text);
-  transition: width 0.3s ease;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
 }
 .nav-link:hover { color: var(--color-text); }
-.nav-link:hover::after { width: 100%; }
+.nav-link:hover::after { transform: scaleX(1); }
 
 /* ─── Buttons ─── */
 
@@ -177,7 +210,7 @@ button:focus-visible,
   font-family: var(--font-body);
   font-weight: 500;
   font-size: 15px;
-  color: var(--color-accent);
+  color: var(--color-accent-ink);
   background: none;
   border: none;
   cursor: pointer;
@@ -236,9 +269,21 @@ button:focus-visible,
   outline: none;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
+.field input::placeholder,
+.field textarea::placeholder {
+  color: var(--color-text-faint);
+}
 .field textarea {
   resize: vertical;
   min-height: 128px;
+}
+.field input[aria-invalid="true"],
+.field textarea[aria-invalid="true"] {
+  border-color: var(--color-bad);
+}
+.field-error {
+  font-size: 14px;
+  color: var(--color-bad);
 }
 .field input:focus-visible,
 .field textarea:focus-visible {
@@ -307,7 +352,7 @@ button:focus-visible,
   font-weight: 700;
 }
 .legal-content a {
-  color: var(--color-accent);
+  color: var(--color-accent-ink);
   text-decoration: underline;
   text-underline-offset: 2px;
 }

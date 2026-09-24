@@ -6,14 +6,14 @@ const team = [
     role: 'Beratung, Marke & Umsetzung',
     initials: 'NK',
     photo: '/noah.jpg',
-    expertise: ['Verkauf & Beratung', 'Brand Building', 'Web Development', 'Content Creation'],
+    expertise: ['Verkauf & Beratung', 'Markenaufbau', 'Webentwicklung', 'Inhalte & Texte'],
   },
   {
     name: 'Leon Helg',
     role: 'Entwicklung & Produkt',
     initials: 'LH',
     photo: '/leon.jpg',
-    expertise: ['Web Development', 'Content Creation', 'Brand Building'],
+    expertise: ['Webentwicklung', 'Inhalte & Texte', 'Markenaufbau'],
   },
 ]
 
@@ -23,7 +23,7 @@ function Avatar({ member }) {
     <div
       style={{
         width: 96, height: 96, borderRadius: '50%', flexShrink: 0, overflow: 'hidden',
-        background: 'var(--color-bg)', color: 'var(--color-accent)',
+        background: 'var(--color-bg)', color: 'var(--color-text-muted)',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         fontWeight: 700, fontSize: 22,
       }}
