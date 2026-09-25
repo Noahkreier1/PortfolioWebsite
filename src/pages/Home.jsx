@@ -7,7 +7,6 @@ import BeforeAfter from '../components/BeforeAfter'
 import Process from '../components/Process'
 import Pricing from '../components/Pricing'
 import About from '../components/About'
-import CheckTeaser from '../components/CheckTeaser'
 import FAQ from '../components/FAQ'
 import Contact from '../components/Contact'
 import Footer from '../components/Footer'
@@ -38,7 +37,6 @@ export default function Home() {
         <Pricing />
         <About />
         <FAQ />
-        <CheckTeaser />
         <Contact />
       </main>
       <Footer />

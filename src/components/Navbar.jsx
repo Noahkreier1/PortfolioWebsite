@@ -38,6 +38,20 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
+  // Im Preisrechner und im Kontakt gibt es eigene CTAs, dort braucht der Header keinen zweiten
+  const [inConversion, setInConversion] = useState(false)
+  useEffect(() => {
+    const targets = ['preis', 'contact'].map((id) => document.getElementById(id)).filter(Boolean)
+    if (!targets.length) return
+    const visible = new Set()
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((e) => (e.isIntersecting ? visible.add(e.target) : visible.delete(e.target)))
+      setInConversion(visible.size > 0)
+    }, { rootMargin: '-64px 0px 0px 0px' })
+    targets.forEach((t) => io.observe(t))
+    return () => io.disconnect()
+  }, [pathname])
+
   const toggleRef = useRef(null)
   const menuRef = useRef(null)
 
@@ -86,7 +100,7 @@ export default function Navbar() {
           to="/"
           aria-label="Zurio, zum Seitenanfang"
           className="inline-flex items-center"
-          style={{ minHeight: 44 }}
+          style={{ minHeight: 44, minWidth: 44 }}
           onClick={(e) => { setMenuOpen(false); handleLogoClick(e, pathname) }}
         >
           <Wordmark />
@@ -108,11 +122,11 @@ export default function Navbar() {
 
         <div className="flex items-center gap-3">
           {/* Handy: nach dem ersten Scrollen bleibt die Hauptaktion im Header erreichbar */}
-          {scrolled && !menuOpen && (
+          {scrolled && !menuOpen && !inConversion && (
             <a
               href={navHref('#contact')}
               className="md:hidden inline-flex items-center rounded-full pressable appear"
-              style={{ background: 'var(--color-accent)', color: 'var(--color-bg)', fontWeight: 500, fontSize: 14, padding: '0 16px', minHeight: 40, transition: 'transform 160ms var(--ease-out), opacity 240ms var(--ease-out)' }}
+              style={{ background: 'var(--color-accent)', color: 'var(--color-bg)', fontWeight: 500, fontSize: 14, padding: '0 16px', minHeight: 44, transition: 'transform 160ms var(--ease-out), opacity 240ms var(--ease-out)' }}
             >
               Anfragen
             </a>

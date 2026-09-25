@@ -1,11 +1,9 @@
 import { Link } from 'react-router-dom'
-import Testimonials from './Testimonials'
 import { ArrowUpRight, ChevronRight } from './Icons'
 
 const projects = [
   {
     name: 'InspireDay',
-    category: 'Event-Webseite · Zürich',
     description: 'Konferenz für Persönlichkeitsentwicklung im Volkshaus Zürich. Tickets, Programm und Speaker an einem Ort.',
     metric: 'Über 1’000 verkaufte Tickets über fünf Events',
     image: '/work/inspireday-desktop.jpg',
@@ -14,7 +12,6 @@ const projects = [
   },
   {
     name: 'Hikebeast',
-    category: 'Eigenes Produkt · Web-App',
     description: 'Unser eigenes Produkt: eine Web-App mit über 140 Wander- und Wildcamping-Spots in der Schweiz, verkauft direkt über die Seite.',
     metric: 'Über CHF 60’000 Umsatz in sechs Monaten',
     image: '/work/hikebeast-desktop.jpg',
@@ -23,7 +20,6 @@ const projects = [
   },
   {
     name: 'Cosac',
-    category: 'E-Commerce · Eigene Marke',
     description: 'Leons eigene Marke für XXL-Sitzsäcke aus Memory-Schaum. In der Schweiz entworfen, verkauft über den eigenen Shop in die USA.',
     metric: '4.7 von 5 Sternen aus 348 Kundenbewertungen',
     image: '/work/cosac-desktop.jpg',
@@ -32,7 +28,6 @@ const projects = [
   },
   {
     name: 'Driven Co.',
-    category: 'E-Commerce · Markenidentität',
     description: 'Schweizer Streetwear-Marke mit limitierten Drops. Minimales Design, klare Haltung.',
     metric: 'Über 400 verkaufte Einheiten in zwei Drops',
     image: '/work/driven-co-desktop.jpg',
@@ -59,7 +54,6 @@ function ProjectCard({ project }) {
         </picture>
       </div>
       <div style={{ paddingTop: 24 }}>
-        <p className="meta-line" style={{ marginBottom: 12 }}>{project.category}</p>
         <h3
           className="font-display group-hover:text-accent transition-colors duration-300"
           style={{ fontSize: '1.625rem', lineHeight: 1.2, color: 'var(--color-text)', marginBottom: 12 }}
@@ -97,7 +91,6 @@ export default function Portfolio() {
           {projects.map((p) => <ProjectCard key={p.name} project={p} />)}
         </div>
 
-        <Testimonials style={{ marginTop: 'clamp(96px, 10vw, 128px)' }} />
       </div>
     </section>
   )

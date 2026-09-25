@@ -225,6 +225,7 @@ button:focus-visible,
 
 .btn-link {
   @apply inline-flex items-center gap-1.5;
+  min-height: 44px;
   font-family: var(--font-body);
   font-weight: 500;
   font-size: 15px;
@@ -429,6 +430,11 @@ button:focus-visible,
   background: var(--color-accent);
   border: 3px solid var(--color-bg);
   cursor: pointer;
+}
+/* Touch: grösserer Knopf, leichter zu greifen */
+@media (pointer: coarse) {
+  .pricing-slider::-webkit-slider-thumb { width: 28px; height: 28px; }
+  .pricing-slider::-moz-range-thumb { width: 28px; height: 28px; }
 }
 .pricing-slider:focus-visible {
   outline: 2px solid var(--color-text);

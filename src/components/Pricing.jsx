@@ -48,6 +48,7 @@ const MODULES = [
 // Wiederkehrend, darum getrennt von den einmaligen Modulen
 const MAINTENANCE = { key: 'maintenance', label: 'Wartung', hint: 'Kleine Anpassungen übers Jahr, pro Jahr verrechnet' }
 
+const MAX_PAGES = 20
 const DEFAULTS = { pages: 5, design: 'custom', modules: { ecommerce: false, animations: true, copywriting: false, seo: true, maintenance: false } }
 const FLOOR = computePrice({ pages: 1, design: 'basis' })[0]
 
@@ -65,7 +66,7 @@ function Toggle({ id, active, onChange, locked, note, children }) {
     <button
       id={id}
       type="button"
-      role="switch"
+      role="checkbox"
       aria-checked={active}
       aria-disabled={locked || undefined}
       onClick={() => { if (!locked) onChange(!active) }}
@@ -114,6 +115,7 @@ export default function Pricing() {
   const [pages, setPages] = useState(DEFAULTS.pages)
   const [design, setDesign] = useState(DEFAULTS.design)
   const [modules, setModules] = useState(DEFAULTS.modules)
+  const pagesLabel = pages === MAX_PAGES ? `${MAX_PAGES}+` : String(pages)
   const isDefault = pages === DEFAULTS.pages && design === DEFAULTS.design && JSON.stringify(modules) === JSON.stringify(DEFAULTS.modules)
   const reset = () => { setPages(DEFAULTS.pages); setDesign(DEFAULTS.design); setModules(DEFAULTS.modules) }
   const tracked = useRef(false)
@@ -155,7 +157,7 @@ export default function Pricing() {
       .map((m) => m.label)
     setRequestContext(
       [
-        `Preisrechner: ${pages} ${pages === 1 ? 'Seite' : 'Seiten'}`,
+        `Preisrechner: ${pagesLabel} ${pages === 1 ? 'Seite' : 'Seiten'}`,
         `Design: ${selectedDesign.label}`,
         `Module: ${chosen.length ? chosen.join(', ') : 'keine'}`,
         `Richtpreis einmalig: ${formatCHF(lo)} bis ${formatCHF(hi)}`,
@@ -185,7 +187,7 @@ export default function Pricing() {
               <div className="flex items-baseline justify-between" style={{ marginBottom: 16 }}>
                 <label htmlFor="pricing-pages" style={{ ...labelStyle, marginBottom: 0 }}>Seitenanzahl</label>
                 <span className="font-display" style={{ fontSize: 24, color: 'var(--color-text)', lineHeight: 1 }}>
-                  {pages}
+                  {pagesLabel}
                   <span style={{ fontFamily: 'var(--font-body)', fontSize: 14, color: 'var(--color-text-muted)', fontWeight: 500, marginLeft: 6, letterSpacing: 0 }}>
                     {pages === 1 ? 'Seite' : 'Seiten'}
                   </span>
@@ -195,15 +197,22 @@ export default function Pricing() {
                 id="pricing-pages"
                 type="range"
                 min={1}
-                max={20}
+                max={MAX_PAGES}
                 value={pages}
+                aria-valuetext={`${pagesLabel} ${pages === 1 ? 'Seite' : 'Seiten'}`}
+                aria-describedby="pricing-pages-hint"
                 onChange={(e) => { setPages(parseInt(e.target.value, 10)); markUsed() }}
                 className="pricing-slider"
                 style={{ width: '100%' }}
               />
               <div className="flex justify-between" style={{ marginTop: 8, fontSize: 12, color: 'var(--color-text-faint)' }}>
-                <span>1</span><span>20</span>
+                <span>1</span><span>20+</span>
               </div>
+              <p id="pricing-pages-hint" style={{ fontSize: 14, color: 'var(--color-text-muted)', marginTop: 12 }}>
+                {pages === MAX_PAGES
+                  ? 'Mehr als 20 Seiten offerieren wir individuell, die Spanne gilt als Richtwert.'
+                  : 'Eine Seite ist zum Beispiel Startseite, Leistungen, Team oder Kontakt.'}
+              </p>
             </div>
 
             <div style={{ marginBottom: 48 }}>
@@ -250,7 +259,15 @@ export default function Pricing() {
                   )
                 })}
               </div>
-              <p style={{ fontSize: 14, color: 'var(--color-text-muted)', marginTop: 16 }}>{selectedDesign.description}</p>
+              {/* Alle Stufen sichtbar, damit man ohne Durchklicken vergleichen kann */}
+              <dl style={{ marginTop: 16, display: 'flex', flexDirection: 'column', gap: 6, fontSize: 14, lineHeight: 1.5 }}>
+                {DESIGN_OPTIONS.map((opt) => (
+                  <div key={opt.value} style={{ color: design === opt.value ? 'var(--color-text)' : 'var(--color-text-muted)', transition: 'color 0.2s ease' }}>
+                    <dt style={{ display: 'inline', fontWeight: 600 }}>{opt.label}: </dt>
+                    <dd style={{ display: 'inline' }}>{opt.description}</dd>
+                  </div>
+                ))}
+              </dl>
             </div>
 
             <span style={labelStyle}>Module <span style={{ fontWeight: 400, color: 'var(--color-text-muted)' }}>einmalig</span></span>
@@ -300,8 +317,15 @@ export default function Pricing() {
                 boxShadow: '0 8px 24px rgba(20,17,13,0.18)',
               }}
             >
-              <span className="font-display" style={{ fontSize: 18, fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap' }}>
-                {formatCHF(lo)} – {formatCHF(hi).replace('CHF ', '')}
+              <span style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                <span className="font-display" style={{ fontSize: 18, fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap' }}>
+                  {formatCHF(lo)} – {formatCHF(hi).replace('CHF ', '')}
+                </span>
+                {modules.maintenance && (
+                  <span style={{ fontSize: 12, opacity: 0.8, fontVariantNumeric: 'tabular-nums' }}>
+                    + Wartung {formatCHF(MAINTENANCE_PER_YEAR[0])}–{formatCHF(MAINTENANCE_PER_YEAR[1]).replace('CHF ', '')} pro Jahr
+                  </span>
+                )}
               </span>
               <span style={{ fontSize: 14, fontWeight: 500, whiteSpace: 'nowrap' }}>Anfragen →</span>
             </a>
@@ -322,19 +346,18 @@ export default function Pricing() {
               height: 'fit-content',
             }}
           >
-            <div>
-              <p className="sr-only" aria-live="polite">{announced}</p>
-              <p style={{ fontSize: 15, color: 'var(--color-text-muted)', marginBottom: 8 }}>Ihre Preisspanne</p>
-              <p className="font-display" style={{ fontSize: 'clamp(2.4rem, 5vw, 3.25rem)', color: 'var(--color-text)', lineHeight: 1.05, fontVariantNumeric: 'tabular-nums' }}>
-                {formatCHF(lo)}
+            <p className="sr-only" aria-live="polite">{announced}</p>
+            {/* Handy: Preis und Anfrage stehen in der Leiste oben, hier nur, was inklusive ist */}
+            <div className="hidden lg:block">
+              <p style={{ fontSize: 15, color: 'var(--color-text-muted)', marginBottom: 8 }}>Ihre Preisspanne, einmalig</p>
+              <p className="font-display" style={{ fontSize: 'clamp(1.5rem, 2.1vw, 1.875rem)', color: 'var(--color-text)', lineHeight: 1.1, fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap' }}>
+                {formatCHF(lo)} – {formatCHF(hi).replace('CHF ', '')}
               </p>
-              <p style={{ fontSize: 15, color: 'var(--color-text-muted)', marginTop: 8 }}>
-                bis <span className="font-display" style={{ color: 'var(--color-text)', fontSize: 20, fontVariantNumeric: 'tabular-nums' }}>{formatCHF(hi)}</span>
-                {' '}einmalig
-              </p>
-              <p style={{ fontSize: 14, color: 'var(--color-text-muted)', marginTop: 8 }}>
-                Kleinste Webseiten ab {formatCHF(FLOOR)}
-              </p>
+              {lo > FLOOR && (
+                <p style={{ fontSize: 14, color: 'var(--color-text-muted)', marginTop: 8 }}>
+                  Kleinste Webseiten ab {formatCHF(FLOOR)}
+                </p>
+              )}
               {modules.maintenance && (
                 <p className="appear" style={{ fontSize: 15, color: 'var(--color-text-muted)', marginTop: 12, paddingTop: 12, borderTop: '1px solid var(--color-border)' }}>
                   Wartung zusätzlich{' '}
@@ -346,13 +369,20 @@ export default function Pricing() {
               )}
             </div>
 
+            {/* Wrapper, weil der Inline-Style display:block sonst lg:hidden überschreibt */}
+            <div className="lg:hidden" style={{ marginBottom: -16 }}>
+              <p style={labelStyle}>Immer inklusive</p>
+            </div>
             <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 12, fontSize: 15, color: 'var(--color-text)' }}>
               {INCLUDED.map((item) => <li key={item}>{item}</li>)}
             </ul>
 
-            <a href="#contact-form" className="btn-accent w-full" onClick={sendToContact} style={{ textAlign: 'center', paddingInline: 24 }}>
-              <span style={{ textWrap: 'balance' }}>Erstgespräch mit dieser Auswahl anfragen</span>
-            </a>
+            {/* Handy: Die Preisleiste ist dort der CTA. Wrapper, weil .btn-accent die hidden-Klasse überschreibt */}
+            <div className="hidden lg:block">
+              <a href="#contact-form" className="btn-accent w-full" onClick={sendToContact} style={{ textAlign: 'center', paddingInline: 24 }}>
+                <span style={{ textWrap: 'balance' }}>Erstgespräch mit dieser Auswahl anfragen</span>
+              </a>
+            </div>
 
             <p style={{ fontSize: 13, color: 'var(--color-text-faint)', lineHeight: 1.6, marginTop: -8 }}>
               Richtpreis aus vergleichbaren Projekten. Die verbindliche Festofferte erhalten Sie nach dem Erstgespräch.

@@ -103,10 +103,6 @@ export default function Contact() {
               Nach 30 Minuten Erstgespräch wissen Sie, was Sie brauchen und in welchem Preisrahmen Sie
               liegen. Die verbindliche Festofferte folgt innert 2–3 Tagen.
             </p>
-            <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 48, color: 'var(--color-text)' }}>
-              <li>Antwort innert 24 Stunden</li>
-              <li>Kostenlos und unverbindlich</li>
-            </ul>
             <p style={{ color: 'var(--color-text-muted)', marginBottom: 8 }}>Lieber direkt?</p>
             <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 8 }}>
               <li>

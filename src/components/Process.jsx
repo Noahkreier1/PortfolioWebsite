@@ -16,7 +16,7 @@ const steps = [
   {
     number: '3',
     title: 'Design & Umsetzung',
-    detail: '1–2 Wochen',
+    detail: '1–2 Wochen ab Auftrag',
     description:
       'Wir gestalten und programmieren Ihre Webseite. Sie sehen laufend den Stand und geben Ihr Feedback direkt an die Leute, die daran arbeiten.',
   },
@@ -31,7 +31,7 @@ const steps = [
 
 export default function Process() {
   return (
-    <section id="process" className="section" style={{ background: 'var(--color-bg)' }}>
+    <section id="process" className="section" style={{ background: 'var(--color-bg)', paddingBlock: 'clamp(96px, 10vw, 128px)' }}>
       <div className="container-page">
         <div className="section-head">
           <h2 className="font-display h-section">So läuft ein Projekt ab</h2>

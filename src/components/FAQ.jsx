@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { COMPANY } from '../data/company'
-import { ArrowUpRight } from './Icons'
 
 const faqs = [
   {
@@ -80,9 +79,9 @@ function FaqItem({ faq, index, open, onToggle }) {
               <p style={{ color: 'var(--color-text-muted)' }}>{faq.a}</p>
               {faq.link && (
                 faq.link.href ? (
-                  <a href={faq.link.href} className="btn-link" style={{ marginTop: 12 }}>{faq.link.label}</a>
+                  <a href={faq.link.href} className="btn-link" style={{ marginTop: 4 }}>{faq.link.label}</a>
                 ) : (
-                  <Link to={faq.link.to} className="btn-link" style={{ marginTop: 12 }}>{faq.link.label}</Link>
+                  <Link to={faq.link.to} className="btn-link" style={{ marginTop: 4 }}>{faq.link.label}</Link>
                 )
               )}
             </div>
@@ -115,7 +114,6 @@ export default function FAQ() {
           </p>
           <a href={`mailto:${COMPANY.email}`} className="btn-link">
             {COMPANY.email}
-            <ArrowUpRight />
           </a>
         </div>
       </div>

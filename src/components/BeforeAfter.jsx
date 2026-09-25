@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import CompareSlider from './CompareSlider'
+import Testimonials from './Testimonials'
 import { ChevronRight } from './Icons'
 
 // Was sich konkret verändert hat, direkt aus den beiden Screenshots ablesbar
@@ -12,7 +13,7 @@ const CHANGES = [
 /* Vorher/Nachher nach den Referenzen: erst zeigen, was wir gebaut haben, dann den Unterschied */
 export default function BeforeAfter() {
   return (
-    <section id="vorher-nachher" className="section" style={{ background: 'var(--color-bg)', paddingBottom: 0 }}>
+    <section id="vorher-nachher" className="section" style={{ background: 'var(--color-bg)', paddingTop: 'clamp(96px, 10vw, 128px)', paddingBottom: 0 }}>
       <div className="container-page">
         <div className="section-head">
           <h2 className="font-display h-section">Vorher und nachher</h2>
@@ -48,6 +49,8 @@ export default function BeforeAfter() {
             </div>
           ))}
         </div>
+
+        <Testimonials company="InspireDay" style={{ marginTop: 'clamp(64px, 8vw, 96px)' }} />
       </div>
     </section>
   )
