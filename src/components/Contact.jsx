@@ -18,6 +18,16 @@ function validate(data) {
   return errors
 }
 
+function FieldError({ id, message }) {
+  if (!message) return null
+  return (
+    <p id={id} className="field-error">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true"><circle cx="12" cy="12" r="10" /><path d="M12 7v6M12 16.5v.5" /></svg>
+      <span>{message}</span>
+    </p>
+  )
+}
+
 const linkStyle = { color: 'var(--color-accent-ink)', textDecoration: 'underline', textUnderlineOffset: 4 }
 
 export default function Contact() {
@@ -37,12 +47,7 @@ export default function Contact() {
     'aria-describedby': errors[name] ? `contact-${name}-error` : undefined,
     onInput: () => clearError(name),
   })
-  const FieldError = ({ name }) => (errors[name] ? (
-    <p id={`contact-${name}-error`} className="field-error">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true"><circle cx="12" cy="12" r="10" /><path d="M12 7v6M12 16.5v.5" /></svg>
-      <span>{errors[name]}</span>
-    </p>
-  ) : null)
+
 
   useEffect(() => subscribeRequestContext(setContext), [])
 
@@ -115,7 +120,7 @@ export default function Contact() {
 
           <div id="contact-form" className="lg:col-span-3" style={{ background: 'var(--color-bg-soft)', borderRadius: 28, padding: 'clamp(24px, 4vw, 48px)' }}>
             {status === 'sent' ? (
-              <div ref={successRef} tabIndex={-1} role="status" style={{ display: 'flex', flexDirection: 'column', gap: 16, alignItems: 'flex-start', outline: 'none' }}>
+              <div ref={successRef} tabIndex={-1} role="status" className="appear" style={{ display: 'flex', flexDirection: 'column', gap: 16, alignItems: 'flex-start', outline: 'none' }}>
                 <h3 className="font-display" style={{ fontSize: '1.75rem', lineHeight: 1.2 }}>Danke, Ihre Anfrage ist angekommen.</h3>
                 <p style={{ color: 'var(--color-text-muted)' }}>
                   Wir melden uns innert 24 Stunden per E-Mail bei Ihnen und schlagen Termine für das Erstgespräch vor.
@@ -125,7 +130,7 @@ export default function Contact() {
             ) : (
               <form onSubmit={onSubmit} noValidate style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
                 {context && (
-                  <div style={{ background: 'var(--color-bg)', borderRadius: 16, padding: '16px 20px' }}>
+                  <div className="appear" style={{ background: 'var(--color-bg)', borderRadius: 16, padding: '16px 20px' }}>
                     <p style={{ fontSize: 14, fontWeight: 500, marginBottom: 4 }}>Wird mitgeschickt</p>
                     <ul style={{ listStyle: 'none', fontSize: 14, color: 'var(--color-text-muted)', marginBottom: 8, display: 'flex', flexDirection: 'column', gap: 2 }}>
                       {context.split(' · ').map((part) => <li key={part}>{part}</li>)}
@@ -140,7 +145,7 @@ export default function Contact() {
                   <div className="field">
                     <label htmlFor="contact-name">Name</label>
                     <input id="contact-name" name="name" type="text" autoComplete="name" required maxLength={120} {...errorProps('name')} />
-                    <FieldError name="name" />
+                    <FieldError id="contact-name-error" message={errors.name} />
                   </div>
                   <div className="field">
                     <label htmlFor="contact-company">Firma <span>(optional)</span></label>
@@ -151,7 +156,7 @@ export default function Contact() {
                   <div className="field">
                     <label htmlFor="contact-email">E-Mail</label>
                     <input id="contact-email" name="email" type="email" autoComplete="email" required maxLength={200} {...errorProps('email')} />
-                    <FieldError name="email" />
+                    <FieldError id="contact-email-error" message={errors.email} />
                   </div>
                   <div className="field">
                     <label htmlFor="contact-website">Heutige Webseite <span>(optional)</span></label>

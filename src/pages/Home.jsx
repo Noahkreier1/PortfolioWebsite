@@ -34,11 +34,11 @@ export default function Home() {
         <Hero />
         <Portfolio />
         <BeforeAfter />
-        <CheckTeaser />
         <Process />
         <Pricing />
         <About />
         <FAQ />
+        <CheckTeaser />
         <Contact />
       </main>
       <Footer />

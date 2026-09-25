@@ -89,6 +89,8 @@ export default function CompareSlider({ before, after, altBefore, altAfter, prio
   const onKeyDown = (e) => {
     if (e.key === 'ArrowLeft') { e.preventDefault(); touchedRef.current = true; setPos((p) => clamp(p - 5)) }
     if (e.key === 'ArrowRight') { e.preventDefault(); touchedRef.current = true; setPos((p) => clamp(p + 5)) }
+    if (e.key === 'Home') { e.preventDefault(); touchedRef.current = true; setPos(4) }
+    if (e.key === 'End') { e.preventDefault(); touchedRef.current = true; setPos(96) }
   }
 
   return (
@@ -104,6 +106,9 @@ export default function CompareSlider({ before, after, altBefore, altAfter, prio
         aria-valuetext={`${Math.round(pos)} Prozent alte Seite sichtbar`}
         onKeyDown={onKeyDown}
         onPointerDown={(e) => {
+          // Verhindert, dass der Browser beim Ziehen Text markiert (Markierung ist rot)
+          e.preventDefault()
+          window.getSelection()?.removeAllRanges()
           draggingRef.current = true
           touchedRef.current = true
           e.currentTarget.setPointerCapture?.(e.pointerId)
@@ -112,15 +117,20 @@ export default function CompareSlider({ before, after, altBefore, altAfter, prio
         onPointerMove={(e) => { if (draggingRef.current) updateFromClientX(e.clientX) }}
         onPointerUp={() => { draggingRef.current = false }}
         onPointerCancel={() => { draggingRef.current = false }}
-        className="relative w-full select-none overflow-hidden hidden sm:block"
+        onDragStart={(e) => e.preventDefault()}
+        className="relative w-full select-none hidden sm:block"
         style={{
           aspectRatio: RATIO,
           borderRadius: 20,
           touchAction: 'pan-y',
           cursor: 'ew-resize',
-          background: 'var(--color-bg-soft)',
+          WebkitUserSelect: 'none',
         }}
       >
+        {/* Eigene Clip-Ebene: clip-path mit Rundung schneidet auch bewegte Ebenen sauber ab
+            (Safari ignoriert overflow + border-radius bei transformierten Kindern). Der Fokusring
+            liegt auf dem äusseren Element und bleibt dadurch sichtbar. */}
+        <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', borderRadius: 20, clipPath: 'inset(0 round 20px)', isolation: 'isolate', background: 'var(--color-bg-soft)' }}>
         <Shot src={after} alt={altAfter} width="1800" height="973" priority={priority} style={imgStyle} />
 
         <div style={{ position: 'absolute', inset: 0, clipPath: `inset(0 ${100 - pos}% 0 0)` }}>
@@ -145,6 +155,7 @@ export default function CompareSlider({ before, after, altBefore, altAfter, prio
         <span style={{ ...labelStyle, right: 16, background: 'var(--color-accent)', color: 'var(--color-bg)', opacity: pos < 86 ? 1 : 0 }}>
           Nachher
         </span>
+        </div>
       </div>
 
       {/* Handy: beide Stände untereinander, neuer Stand zuerst. Label über dem Bild,

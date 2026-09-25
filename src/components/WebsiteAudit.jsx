@@ -18,7 +18,7 @@ const CATEGORIES = [
   { key: 'best-practices', label: 'Technische Qualität' },
 ]
 
-function normalizeUrl(input) {
+export function normalizeUrl(input) {
   let raw = input.trim()
   if (!raw) return { error: 'Bitte geben Sie eine Adresse ein, z. B. ihrefirma.ch.' }
   if (!/^https?:\/\//i.test(raw)) raw = `https://${raw}`
@@ -102,6 +102,7 @@ export default function WebsiteAudit({ initialUrl = '' }) {
     if (normalized.error) {
       setError(normalized.error)
       setPhase('idle')
+      document.getElementById('check-url')?.focus()
       return
     }
     setError(null)
@@ -168,9 +169,16 @@ export default function WebsiteAudit({ initialUrl = '' }) {
               {phase === 'loading' ? 'Misst …' : 'Seite messen'}
             </button>
           </div>
-          <p id="check-hint" style={{ fontSize: 14, color: error && phase === 'idle' ? 'var(--color-bad)' : 'var(--color-text-faint)' }}>
-            {error && phase === 'idle' ? error : 'Kostenlos, ohne E-Mail. Die Messung läuft über Google PageSpeed Insights.'}
-          </p>
+          {error && phase === 'idle' ? (
+            <p id="check-hint" className="field-error">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true"><circle cx="12" cy="12" r="10" /><path d="M12 7v6M12 16.5v.5" /></svg>
+              <span>{error}</span>
+            </p>
+          ) : (
+            <p id="check-hint" style={{ fontSize: 14, color: 'var(--color-text-faint)' }}>
+              Kostenlos, ohne E-Mail. Die Messung läuft über Google PageSpeed Insights.
+            </p>
+          )}
         </div>
       </form>
 

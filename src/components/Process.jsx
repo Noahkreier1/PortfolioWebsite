@@ -36,7 +36,7 @@ export default function Process() {
         <div className="section-head">
           <h2 className="font-display h-section">So läuft ein Projekt ab</h2>
           <p className="lead">
-            Ab Auftrag ist Ihre Webseite in ein bis zwei Wochen online. Sie wissen zu jedem Zeitpunkt,
+            Ab Auftrag ist eine typische Webseite in ein bis zwei Wochen online. Sie wissen zu jedem Zeitpunkt,
             was passiert, was es kostet und wann es fertig ist.
           </p>
         </div>

@@ -70,10 +70,10 @@ function FaqItem({ faq, index, open, onToggle }) {
             id={panelId}
             role="region"
             aria-labelledby={`faq-button-${index}`}
-            initial={{ height: 0 }}
-            animate={{ height: 'auto' }}
-            exit={{ height: 0 }}
-            transition={{ duration: 0.25 }}
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.22, ease: [0.23, 1, 0.32, 1] }}
             style={{ overflow: 'hidden' }}
           >
             <div style={{ padding: '0 clamp(24px, 4vw, 36px) 32px', maxWidth: '68ch' }}>

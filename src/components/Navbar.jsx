@@ -107,9 +107,19 @@ export default function Navbar() {
         </div>
 
         <div className="flex items-center gap-3">
+          {/* Handy: nach dem ersten Scrollen bleibt die Hauptaktion im Header erreichbar */}
+          {scrolled && !menuOpen && (
+            <a
+              href={navHref('#contact')}
+              className="md:hidden inline-flex items-center rounded-full pressable appear"
+              style={{ background: 'var(--color-accent)', color: 'var(--color-bg)', fontWeight: 500, fontSize: 14, padding: '0 16px', minHeight: 40, transition: 'transform 160ms var(--ease-out), opacity 240ms var(--ease-out)' }}
+            >
+              Anfragen
+            </a>
+          )}
           <a
             href={navHref('#contact')}
-            className="hidden md:inline-flex items-center rounded-full"
+            className="hidden md:inline-flex items-center rounded-full pressable"
             style={{ background: 'var(--color-accent)', color: 'var(--color-bg)', fontWeight: 500, fontSize: 14, padding: '10px 20px' }}
           >
             Erstgespräch anfragen
@@ -136,12 +146,11 @@ export default function Navbar() {
           <motion.div
             id="mobile-menu"
             ref={menuRef}
-            initial={{ height: 0 }}
-            animate={{ height: 'calc(100dvh - 64px)' }}
-            exit={{ height: 0 }}
-            transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+            initial={{ opacity: 0, transform: 'translateY(-8px)' }}
+            animate={{ opacity: 1, transform: 'translateY(0px)', transition: { duration: 0.24, ease: [0.23, 1, 0.32, 1] } }}
+            exit={{ opacity: 0, transform: 'translateY(-8px)', transition: { duration: 0.15, ease: [0.23, 1, 0.32, 1] } }}
             className="lg:hidden overflow-hidden"
-            style={{ background: 'var(--color-bg)' }}
+            style={{ background: 'var(--color-bg)', height: 'calc(100dvh - 64px)' }}
           >
             {/* Volle Höhe: Links oben, Kontakt unten in Daumen-Reichweite */}
             <div className="container-page flex flex-col justify-between h-full overflow-y-auto" style={{ paddingBlock: '32px 40px' }}>

@@ -38,18 +38,23 @@ const DESIGN_OPTIONS = [
   { value: 'branding', label: 'Mit Branding', short: 'Branding', description: 'Individuell entworfen, inklusive Logo, Markenauftritt, Illustrationen und Animationen.' },
 ]
 
+// Einmalige Module mit einer Zeile, was man konkret bekommt
 const MODULES = [
-  { key: 'ecommerce', label: 'E-Commerce / Shop' },
-  { key: 'animations', label: 'Animationen & Interaktion' },
-  { key: 'copywriting', label: 'Texte (Copywriting)' },
-  { key: 'seo', label: 'SEO-Grundlagen' },
-  { key: 'maintenance', label: 'Wartung' },
+  { key: 'ecommerce', label: 'E-Commerce / Shop', hint: 'Produkte, Warenkorb und Bezahlung' },
+  { key: 'animations', label: 'Animationen & Interaktion', hint: 'Bewegung, die durch die Seite führt' },
+  { key: 'copywriting', label: 'Texte (Copywriting)', hint: 'Wir schreiben die Texte für alle Seiten' },
+  { key: 'seo', label: 'SEO-Grundlagen', hint: 'Seitentitel, Beschreibungen und saubere Struktur für Google' },
 ]
+// Wiederkehrend, darum getrennt von den einmaligen Modulen
+const MAINTENANCE = { key: 'maintenance', label: 'Wartung', hint: 'Kleine Anpassungen übers Jahr, pro Jahr verrechnet' }
+
+const DEFAULTS = { pages: 5, design: 'custom', modules: { ecommerce: false, animations: true, copywriting: false, seo: true, maintenance: false } }
+const FLOOR = computePrice({ pages: 1, design: 'basis' })[0]
 
 const INCLUDED = [
   'Verbindlicher Fixpreis ab Offerte',
   'Hosting und Domain im ersten Jahr inklusive',
-  'Online in ein bis zwei Wochen ab Auftrag',
+  'Online meist in ein bis zwei Wochen ab Auftrag',
   '30 Tage Anpassungen nach Launch inklusive',
 ]
 
@@ -64,7 +69,7 @@ function Toggle({ id, active, onChange, locked, note, children }) {
       aria-checked={active}
       aria-disabled={locked || undefined}
       onClick={() => { if (!locked) onChange(!active) }}
-      className="text-left"
+      className="text-left pressable"
       style={{
         background: active ? 'var(--color-accent-glow)' : 'var(--color-bg-soft)',
         border: `1px solid ${active ? 'var(--color-accent-soft)' : 'transparent'}`,
@@ -72,7 +77,7 @@ function Toggle({ id, active, onChange, locked, note, children }) {
         padding: '16px 20px',
         color: active ? 'var(--color-text)' : 'var(--color-text-muted)',
         cursor: locked ? 'default' : 'pointer',
-        transition: 'background 0.2s ease, border-color 0.2s ease, color 0.2s ease',
+        transition: 'background 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 160ms var(--ease-out)',
         display: 'flex',
         alignItems: 'center',
         gap: 12,
@@ -99,16 +104,18 @@ function Toggle({ id, active, onChange, locked, note, children }) {
       </span>
       <span style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 2 }}>
         {children}
-        {note && <span style={{ fontSize: 13, color: 'var(--color-text-muted)', fontWeight: 500 }}>{note}</span>}
+        {note && <span style={{ fontSize: 13, color: 'var(--color-text-muted)', fontWeight: 400, lineHeight: 1.4 }}>{note}</span>}
       </span>
     </button>
   )
 }
 
 export default function Pricing() {
-  const [pages, setPages] = useState(5)
-  const [design, setDesign] = useState('custom')
-  const [modules, setModules] = useState({ ecommerce: false, animations: true, copywriting: false, seo: true, maintenance: false })
+  const [pages, setPages] = useState(DEFAULTS.pages)
+  const [design, setDesign] = useState(DEFAULTS.design)
+  const [modules, setModules] = useState(DEFAULTS.modules)
+  const isDefault = pages === DEFAULTS.pages && design === DEFAULTS.design && JSON.stringify(modules) === JSON.stringify(DEFAULTS.modules)
+  const reset = () => { setPages(DEFAULTS.pages); setDesign(DEFAULTS.design); setModules(DEFAULTS.modules) }
   const tracked = useRef(false)
 
   const [lo, hi] = useMemo(() => computePrice({ pages, design, ...modules }), [pages, design, modules])
@@ -144,7 +151,7 @@ export default function Pricing() {
   const sendToContact = () => {
     // Wartung ist wiederkehrend und steht separat, deshalb nicht in der Modulliste
     const chosen = MODULES
-      .filter((m) => m.key !== 'maintenance' && (modules[m.key] || (m.key === 'animations' && includesAnimations)))
+      .filter((m) => modules[m.key] || (m.key === 'animations' && includesAnimations))
       .map((m) => m.label)
     setRequestContext(
       [
@@ -156,6 +163,8 @@ export default function Pricing() {
       ].filter(Boolean).join(' · ')
     )
     track('cta_click', { location: 'pricing' })
+    // Nach dem Sprung direkt ins erste Feld, damit man sofort weiterschreiben kann
+    requestAnimationFrame(() => document.getElementById('contact-name')?.focus({ preventScroll: true }))
   }
 
   return (
@@ -216,6 +225,7 @@ export default function Pricing() {
                       role="radio"
                       aria-checked={active}
                       tabIndex={active ? 0 : -1}
+                      className="pressable"
                       onClick={() => { setDesign(opt.value); markUsed() }}
                       style={{
                         padding: '12px 8px',
@@ -227,7 +237,7 @@ export default function Pricing() {
                         lineHeight: 1.2,
                         fontWeight: active ? 600 : 500,
                         cursor: 'pointer',
-                        transition: 'background 0.2s ease, color 0.2s ease',
+                        transition: 'background 0.2s ease, color 0.2s ease, transform 160ms var(--ease-out)',
                       }}
                     >
                       {opt.short ? (
@@ -243,7 +253,7 @@ export default function Pricing() {
               <p style={{ fontSize: 14, color: 'var(--color-text-muted)', marginTop: 16 }}>{selectedDesign.description}</p>
             </div>
 
-            <span style={labelStyle}>Module</span>
+            <span style={labelStyle}>Module <span style={{ fontWeight: 400, color: 'var(--color-text-muted)' }}>einmalig</span></span>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {MODULES.map((m) => (
                 <Toggle
@@ -251,7 +261,7 @@ export default function Pricing() {
                   id={`pricing-module-${m.key}`}
                   active={modules[m.key] || (m.key === 'animations' && includesAnimations)}
                   locked={m.key === 'animations' && includesAnimations}
-                  note={m.key === 'animations' && includesAnimations ? 'im Branding enthalten' : m.key === 'maintenance' ? 'jährlich' : null}
+                  note={m.key === 'animations' && includesAnimations ? 'Im Branding enthalten' : m.hint}
                   onChange={(v) => { setModules((prev) => ({ ...prev, [m.key]: v })); markUsed() }}
                 >
                   {m.label}
@@ -259,10 +269,30 @@ export default function Pricing() {
               ))}
             </div>
 
-            {/* Handy: Preis bleibt beim Konfigurieren sichtbar */}
-            <div
-              className="lg:hidden flex items-baseline justify-between gap-4"
-              aria-hidden="true"
+            <span style={{ ...labelStyle, marginTop: 40 }}>Laufend <span style={{ fontWeight: 400, color: 'var(--color-text-muted)' }}>optional</span></span>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <Toggle
+                id={`pricing-module-${MAINTENANCE.key}`}
+                active={modules.maintenance}
+                note={MAINTENANCE.hint}
+                onChange={(v) => { setModules((prev) => ({ ...prev, maintenance: v })); markUsed() }}
+              >
+                {MAINTENANCE.label}
+              </Toggle>
+            </div>
+
+            {!isDefault && (
+              <button type="button" className="btn-link appear" onClick={reset} style={{ marginTop: 24, fontSize: 14 }}>
+                Auswahl zurücksetzen
+              </button>
+            )}
+
+            {/* Handy: Preis bleibt beim Konfigurieren sichtbar und führt direkt zur Anfrage */}
+            <a
+              href="#contact-form"
+              onClick={sendToContact}
+              aria-label={`Preisspanne ${formatCHF(lo)} bis ${formatCHF(hi)}. Erstgespräch mit dieser Auswahl anfragen`}
+              className="lg:hidden flex items-center justify-between gap-4 pressable"
               style={{
                 position: 'sticky', bottom: 12, marginTop: 32,
                 background: 'var(--color-text)', color: 'var(--color-bg)',
@@ -270,11 +300,11 @@ export default function Pricing() {
                 boxShadow: '0 8px 24px rgba(20,17,13,0.18)',
               }}
             >
-              <span style={{ fontSize: 13, opacity: 0.75 }}>Ihre Spanne</span>
               <span className="font-display" style={{ fontSize: 18, fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap' }}>
                 {formatCHF(lo)} – {formatCHF(hi).replace('CHF ', '')}
               </span>
-            </div>
+              <span style={{ fontSize: 14, fontWeight: 500, whiteSpace: 'nowrap' }}>Anfragen →</span>
+            </a>
           </div>
 
           {/* Zusammenfassung */}
@@ -302,8 +332,11 @@ export default function Pricing() {
                 bis <span className="font-display" style={{ color: 'var(--color-text)', fontSize: 20, fontVariantNumeric: 'tabular-nums' }}>{formatCHF(hi)}</span>
                 {' '}einmalig
               </p>
+              <p style={{ fontSize: 14, color: 'var(--color-text-muted)', marginTop: 8 }}>
+                Kleinste Webseiten ab {formatCHF(FLOOR)}
+              </p>
               {modules.maintenance && (
-                <p style={{ fontSize: 15, color: 'var(--color-text-muted)', marginTop: 12, paddingTop: 12, borderTop: '1px solid var(--color-border)' }}>
+                <p className="appear" style={{ fontSize: 15, color: 'var(--color-text-muted)', marginTop: 12, paddingTop: 12, borderTop: '1px solid var(--color-border)' }}>
                   Wartung zusätzlich{' '}
                   <span style={{ color: 'var(--color-text)', fontWeight: 600, fontVariantNumeric: 'tabular-nums' }}>
                     {formatCHF(MAINTENANCE_PER_YEAR[0])} bis {formatCHF(MAINTENANCE_PER_YEAR[1]).replace('CHF ', '')}

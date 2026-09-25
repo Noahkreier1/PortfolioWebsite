@@ -40,17 +40,13 @@ export default function BeforeAfter() {
           </figcaption>
         </figure>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-x-12 gap-y-10" style={{ marginTop: 'clamp(48px, 6vw, 72px)' }}>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-x-12 gap-y-10" style={{ marginTop: 'clamp(48px, 6vw, 72px)' }}>
           {CHANGES.map((c) => (
             <div key={c.title}>
               <h3 style={{ fontSize: 17, fontWeight: 600, lineHeight: 1.35, marginBottom: 8 }}>{c.title}</h3>
               <p style={{ fontSize: 15, color: 'var(--color-text-muted)' }}>{c.text}</p>
             </div>
           ))}
-          <div className="lg:border-l lg:pl-12" style={{ borderColor: 'var(--color-border)' }}>
-            <p className="font-display" style={{ fontSize: 'clamp(2.25rem, 3.4vw, 2.75rem)', lineHeight: 1 }}>1’000+</p>
-            <p style={{ fontSize: 15, color: 'var(--color-text-muted)', marginTop: 12 }}>verkaufte Tickets über fünf Events seit dem Relaunch</p>
-          </div>
         </div>
       </div>
     </section>

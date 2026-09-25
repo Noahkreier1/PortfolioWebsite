@@ -49,7 +49,7 @@ function ProjectCard({ project }) {
           <source srcSet={project.image.replace(/\.jpe?g$/i, '.webp')} type="image/webp" />
           <img
             src={project.image}
-            alt={`Startseite von ${project.name}: ${project.description}`}
+            alt={`Ausschnitt der Webseite von ${project.name}: ${project.description}`}
             loading="lazy"
             decoding="async"
             width="1100"
