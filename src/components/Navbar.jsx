@@ -2,7 +2,6 @@ import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Link, useLocation } from 'react-router-dom'
 import { handleLogoClick } from '../lib/scrollToTop'
-import { COMPANY } from '../data/company'
 
 const links = [
   { label: 'Referenzen', anchor: '#work' },
@@ -54,6 +53,8 @@ export default function Navbar() {
 
   const toggleRef = useRef(null)
   const menuRef = useRef(null)
+  // Fokus nur bei Tastaturbedienung ins Menü setzen; bei Tipp/Klick erscheint sonst ein Fokusrahmen
+  const openedByKeyboard = useRef(false)
 
   useEffect(() => {
     document.body.style.overflow = menuOpen ? 'hidden' : ''
@@ -64,7 +65,7 @@ export default function Navbar() {
   useEffect(() => {
     if (!menuOpen) return
     const focusables = () => [toggleRef.current, ...(menuRef.current?.querySelectorAll('a, button') ?? [])].filter(Boolean)
-    requestAnimationFrame(() => menuRef.current?.querySelector('a')?.focus())
+    if (openedByKeyboard.current) requestAnimationFrame(() => menuRef.current?.querySelector('a')?.focus())
     const onKey = (e) => {
       if (e.key === 'Escape') {
         setMenuOpen(false)
@@ -144,16 +145,19 @@ export default function Navbar() {
 
           <button
             ref={toggleRef}
-            onClick={() => setMenuOpen(!menuOpen)}
-            className="lg:hidden flex flex-col items-center justify-center gap-1.5 -mr-3"
+            onClick={(e) => { openedByKeyboard.current = e.detail === 0; setMenuOpen(!menuOpen) }}
+            className="lg:hidden flex items-center justify-center -mr-3"
             style={{ width: 44, height: 44, borderRadius: 'var(--radius-sm)' }}
             aria-label={menuOpen ? 'Menü schliessen' : 'Menü öffnen'}
             aria-expanded={menuOpen}
             aria-controls="mobile-menu"
           >
-            <span className="block w-5 h-px origin-center" style={{ background: 'var(--color-text)', transform: menuOpen ? 'translateY(3.5px) rotate(45deg)' : 'none', transition: 'transform 0.22s ease' }} />
-            <span className="block w-5 h-px" style={{ background: 'var(--color-text)', opacity: menuOpen ? 0 : 1, transition: 'opacity 0.18s ease' }} />
-            <span className="block w-5 h-px origin-center" style={{ background: 'var(--color-text)', transform: menuOpen ? 'translateY(-3.5px) rotate(-45deg)' : 'none', transition: 'transform 0.22s ease' }} />
+            {/* Ein SVG, drei Linien: gleiche Strichstärke als Menü und als X, pixelgenau zentriert */}
+            <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" aria-hidden="true" style={{ color: 'var(--color-text)', overflow: 'visible' }}>
+              <line x1="3" x2="19" y1="6" y2="6" style={{ transformOrigin: '11px 11px', transform: menuOpen ? 'rotate(45deg) translateY(5px)' : 'none', transition: 'transform 0.22s var(--ease-out)' }} />
+              <line x1="3" x2="19" y1="11" y2="11" style={{ opacity: menuOpen ? 0 : 1, transition: 'opacity 0.15s ease' }} />
+              <line x1="3" x2="19" y1="16" y2="16" style={{ transformOrigin: '11px 11px', transform: menuOpen ? 'rotate(-45deg) translateY(-5px)' : 'none', transition: 'transform 0.22s var(--ease-out)' }} />
+            </svg>
           </button>
         </div>
       </nav>
@@ -184,9 +188,6 @@ export default function Navbar() {
               <div className="flex flex-col gap-4" style={{ paddingTop: 32 }}>
                 <a href={navHref('#contact')} onClick={closeMenu} className="btn-accent">
                   Erstgespräch anfragen
-                </a>
-                <a href={COMPANY.phoneHref} className="text-center" style={{ fontSize: 16, color: 'var(--color-text)', fontWeight: 500, paddingBlock: 12 }}>
-                  Anrufen: {COMPANY.phone}
                 </a>
               </div>
             </div>

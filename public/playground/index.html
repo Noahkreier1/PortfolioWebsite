@@ -3,70 +3,123 @@
 <head>
   <meta charset="utf-8" />
   <meta name="robots" content="noindex, nofollow" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Zurio Playground</title>
   <link rel="icon" href="data:," />
   <style>
-    /* Umschalter für die Varianten A–D. Jede Variante läuft in einem eigenen iframe,
-       damit Scroll, Lenis und ScrollTrigger sich nicht in die Quere kommen. */
-    html, body { margin: 0; height: 100%; background: #0d0c0b; }
+    /* Umschalter für die Varianten A–L. Jede Variante läuft in einem eigenen iframe,
+       damit Scroll, Lenis und ScrollTrigger sich nicht in die Quere kommen.
+       Desktop: Leiste oben rechts. Handy: Knopf mit aktuellem Namen, öffnet ein Blatt von unten. */
+    :root { --ink: #f2ede6; --muted: rgba(242, 237, 230, 0.6); --line: rgba(242, 237, 230, 0.14); --red: #DA291C; --ease: cubic-bezier(0.23, 1, 0.32, 1); }
+    html, body { margin: 0; height: 100%; background: #0d0c0b; font: 500 13px/1.3 Inter, 'Helvetica Neue', Arial, sans-serif; color: var(--ink); -webkit-font-smoothing: antialiased; }
     iframe { display: block; width: 100%; height: 100%; border: 0; }
-    .switch {
-      position: fixed;
-      top: 12px;
-      right: 12px;
-      z-index: 10;
-      display: flex;
-      gap: 2px;
-      padding: 3px;
-      border-radius: 999px;
-      background: rgba(13, 12, 11, 0.72);
-      -webkit-backdrop-filter: blur(12px);
-      backdrop-filter: blur(12px);
-      box-shadow: inset 0 0 0 1px rgba(242, 237, 230, 0.14);
-      font: 500 12px/1 Inter, 'Helvetica Neue', Arial, sans-serif;
+    button, a { -webkit-tap-highlight-color: transparent; }
+
+    /* ── Desktop-Leiste ── */
+    .bar {
+      position: fixed; top: 12px; right: 12px; z-index: 10;
+      display: flex; gap: 2px; padding: 3px; border-radius: 8px;
+      background: rgba(13, 12, 11, 0.72); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
+      box-shadow: inset 0 0 0 1px var(--line);
     }
-    .switch a {
-      min-width: 32px;
-      height: 32px;
-      display: grid;
-      place-items: center;
-      border-radius: 999px;
-      color: rgba(242, 237, 230, 0.7);
-      text-decoration: none;
-      transition: background 160ms ease, color 160ms ease;
+    .bar a { min-width: 32px; height: 32px; display: grid; place-items: center; border-radius: 5px; color: var(--muted); text-decoration: none; transition: background 160ms ease, color 160ms ease; }
+    .bar a:hover { color: var(--ink); }
+    .bar a[aria-current='page'] { background: var(--red); color: #fff; }
+    .bar .sep { width: 1px; margin: 6px 3px; background: var(--line); }
+
+    /* ── Handy: Knopf + Blatt ── */
+    .pick { display: none; }
+    .sheet { display: none; }
+    @media (max-width: 760px) {
+      .bar { display: none; }
+      .pick {
+        position: fixed; z-index: 10; right: 12px; bottom: calc(12px + env(safe-area-inset-bottom));
+        display: flex; align-items: center; gap: 10px;
+        min-height: 44px; padding: 0 14px 0 6px; border: 0; border-radius: 8px;
+        background: rgba(13, 12, 11, 0.82); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px);
+        box-shadow: inset 0 0 0 1px var(--line), 0 10px 30px rgba(0, 0, 0, 0.4);
+        color: var(--ink); font: inherit; cursor: pointer;
+        transition: transform 160ms var(--ease);
+      }
+      .pick:active { transform: scale(0.97); }
+      .pick b { width: 32px; height: 32px; display: grid; place-items: center; border-radius: 5px; background: var(--red); color: #fff; font-weight: 600; }
+      .pick span { max-width: 44vw; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+      .pick svg { opacity: 0.7; }
+
+      .sheet { display: block; position: fixed; inset: 0; z-index: 20; pointer-events: none; }
+      .sheet-scrim { position: absolute; inset: 0; background: rgba(0, 0, 0, 0.5); opacity: 0; transition: opacity 240ms var(--ease); }
+      .sheet-panel {
+        position: absolute; left: 0; right: 0; bottom: 0; max-height: 82vh; overflow-y: auto;
+        padding: 10px 16px calc(20px + env(safe-area-inset-bottom));
+        border-radius: 14px 14px 0 0; background: #161514; box-shadow: 0 -1px 0 var(--line);
+        transform: translateY(100%); transition: transform 320ms cubic-bezier(0.32, 0.72, 0, 1);
+      }
+      .sheet.is-open { pointer-events: auto; }
+      .sheet.is-open .sheet-scrim { opacity: 1; }
+      .sheet.is-open .sheet-panel { transform: none; }
+      .grip { width: 36px; height: 4px; border-radius: 2px; background: var(--line); margin: 0 auto 14px; }
+      .sheet h2 { margin: 18px 4px 8px; font-size: 11px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+      .sheet h2:first-of-type { margin-top: 0; }
+      .sheet ul { list-style: none; margin: 0; padding: 0; }
+      .sheet li a {
+        display: flex; align-items: center; gap: 12px; min-height: 48px; padding: 0 8px;
+        border-radius: 8px; color: var(--ink); text-decoration: none; font-size: 15px;
+      }
+      .sheet li a b { width: 30px; height: 30px; display: grid; place-items: center; border-radius: 5px; background: rgba(242, 237, 230, 0.07); font-weight: 600; flex: none; }
+      .sheet li a[aria-current='page'] { background: rgba(218, 41, 28, 0.14); }
+      .sheet li a[aria-current='page'] b { background: var(--red); color: #fff; }
     }
-    .switch a[aria-current='page'] { background: #DA291C; color: #fff; }
-    .switch .sep { width: 1px; margin: 6px 3px; background: rgba(242, 237, 230, 0.18); }
-    .switch a:focus-visible { outline: 2px solid #f2ede6; outline-offset: 2px; }
+    @media (prefers-reduced-motion: reduce) { .sheet-panel, .sheet-scrim { transition: none; } }
+    a:focus-visible, button:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
   </style>
 </head>
 <body>
-  <nav class="switch" aria-label="Variante wählen">
-    <a href="#a" title="Deckel auf, Seite baut sich">A</a>
-    <a href="#b" title="Milchglas, Linse zum Aufdecken">B</a>
-    <a href="#c" title="Zoom durch die Räume">C</a>
-    <a href="#d" title="Vorher / Nachher im Laptop">D</a>
-    <span class="sep" aria-hidden="true"></span>
-    <a href="#e" title="Code wird zur Seite">E</a>
-    <a href="#f" title="Explosionszeichnung">F</a>
-    <a href="#g" title="Ein Design, jedes Gerät">G</a>
-    <a href="#h" title="Schweizer Raster">H</a>
-    <span class="sep" aria-hidden="true"></span>
-    <a href="#i" title="Topografie wird Typografie">I</a>
-    <a href="#j" title="Durch das Kreuz">J</a>
-    <a href="#k" title="Abfahrtstafel">K</a>
-    <a href="#l" title="Uhrwerk">L</a>
-  </nav>
+  <nav class="bar" id="bar" aria-label="Variante wählen"></nav>
+
+  <button class="pick" id="pick" type="button" aria-haspopup="dialog" aria-controls="sheet" aria-expanded="false">
+    <b id="pick-letter">C</b><span id="pick-name"></span>
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M6 15l6-6 6 6" /></svg>
+  </button>
+
+  <div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-label="Variante wählen">
+    <div class="sheet-scrim" data-close></div>
+    <div class="sheet-panel"><div class="grip"></div><div id="sheet-list"></div></div>
+  </div>
+
   <iframe id="frame" title="Variante"></iframe>
+
   <script>
+    const GROUPS = [
+      { title: 'Laptop & Kamera', items: [['a', 'Deckel auf, Seite baut sich'], ['b', 'Milchglas, Linse zum Aufdecken'], ['c', 'Zoom durch die Räume'], ['d', 'Vorher / Nachher im Laptop']] },
+      { title: 'Handwerk sichtbar', items: [['e', 'Code wird zur Seite'], ['f', 'Explosionszeichnung'], ['g', 'Ein Design, jedes Gerät'], ['h', 'Schweizer Raster']] },
+      { title: 'Swiss, experimentell', items: [['i', 'Topografie wird Typografie'], ['j', 'Durch das Kreuz'], ['k', 'Abfahrtstafel'], ['l', 'Uhrwerk']] },
+    ]
+    const NAMES = Object.fromEntries(GROUPS.flatMap((g) => g.items))
+
+    // Desktop-Leiste und Handy-Liste aus denselben Daten
+    document.getElementById('bar').innerHTML = GROUPS.map((g) => g.items.map(([k, n]) => `<a href="#${k}" title="${n}">${k.toUpperCase()}</a>`).join('')).join('<span class="sep" aria-hidden="true"></span>')
+    document.getElementById('sheet-list').innerHTML = GROUPS.map((g) => `<h2>${g.title}</h2><ul>${g.items.map(([k, n]) => `<li><a href="#${k}"><b>${k.toUpperCase()}</b>${n}</a></li>`).join('')}</ul>`).join('')
+
     const frame = document.getElementById('frame')
+    const sheet = document.getElementById('sheet'), pick = document.getElementById('pick')
+
     const show = () => {
       const v = (location.hash.slice(1) || 'c').toLowerCase()
-      frame.src = `variant-${v}.html`
-      document.querySelectorAll('.switch a').forEach((a) => a.setAttribute('aria-current', a.hash === `#${v}` ? 'page' : 'false'))
+      const key = NAMES[v] ? v : 'c'
+      frame.src = `variant-${key}.html`
+      document.querySelectorAll('#bar a, #sheet-list a').forEach((a) => a.setAttribute('aria-current', a.hash === `#${key}` ? 'page' : 'false'))
+      document.getElementById('pick-letter').textContent = key.toUpperCase()
+      document.getElementById('pick-name').textContent = NAMES[key]
+      document.title = `${key.toUpperCase()} · ${NAMES[key]} · Zurio Playground`
     }
-    window.addEventListener('hashchange', show)
+
+    const open = () => { sheet.classList.add('is-open'); pick.setAttribute('aria-expanded', 'true'); sheet.querySelector('a[aria-current="page"]')?.focus({ preventScroll: true }) }
+    const close = () => { sheet.classList.remove('is-open'); pick.setAttribute('aria-expanded', 'false') }
+
+    pick.addEventListener('click', open)
+    sheet.addEventListener('click', (e) => { if (e.target.closest('[data-close]') || e.target.closest('a')) close() })
+    addEventListener('keydown', (e) => { if (e.key === 'Escape' && sheet.classList.contains('is-open')) { close(); pick.focus() } })
+    addEventListener('hashchange', show)
     show()
   </script>
 </body>
