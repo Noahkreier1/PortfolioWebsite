@@ -1,3 +1,4 @@
+import SectionIndex from './SectionIndex'
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -44,7 +45,7 @@ const faqs = [
 function FaqItem({ faq, index, open, onToggle }) {
   const panelId = `faq-panel-${index}`
   return (
-    <div style={{ background: 'var(--color-bg)', borderRadius: 20, overflow: 'hidden' }}>
+    <div style={{ background: 'var(--color-bg)', borderRadius: 'var(--radius)', overflow: 'hidden' }}>
       <h3>
         <button
           id={`faq-button-${index}`}
@@ -98,6 +99,7 @@ export default function FAQ() {
   return (
     <section id="faq" className="section" style={{ background: 'var(--color-bg-soft)' }}>
       <div className="container-page">
+        <SectionIndex n="06" label="FAQ" />
         <div className="section-head">
           <h2 className="font-display h-section">Häufige Fragen</h2>
         </div>

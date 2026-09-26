@@ -1,3 +1,4 @@
+import SectionIndex from './SectionIndex'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { track } from '@vercel/analytics'
 import { setRequestContext } from '../lib/requestContext'
@@ -35,7 +36,7 @@ const formatCHF = (n) => 'CHF ' + new Intl.NumberFormat('de-CH', { maximumFracti
 const DESIGN_OPTIONS = [
   { value: 'basis', label: 'Basis', description: 'Bewährter Aufbau, gestaltet in Ihrer Marke.' },
   { value: 'custom', label: 'Individuell', description: 'Komplett individuell entworfen.' },
-  { value: 'branding', label: 'Mit Branding', short: 'Branding', description: 'Individuell entworfen, inklusive Logo, Markenauftritt, Illustrationen und Animationen.' },
+  { value: 'branding', label: 'Branding', description: 'Individuell entworfen, inklusive Logo, Markenauftritt, Illustrationen und Animationen.' },
 ]
 
 // Einmalige Module mit einer Zeile, was man konkret bekommt
@@ -72,9 +73,9 @@ function Toggle({ id, active, onChange, locked, note, children }) {
       onClick={() => { if (!locked) onChange(!active) }}
       className="text-left pressable"
       style={{
-        background: active ? 'var(--color-accent-glow)' : 'var(--color-bg-soft)',
-        border: `1px solid ${active ? 'var(--color-accent-soft)' : 'transparent'}`,
-        borderRadius: 16,
+        background: active ? 'var(--color-bg)' : 'var(--color-bg-soft)',
+        border: `1px solid ${active ? 'var(--color-text)' : 'transparent'}`,
+        borderRadius: 'var(--radius)',
         padding: '16px 20px',
         color: active ? 'var(--color-text)' : 'var(--color-text-muted)',
         cursor: locked ? 'default' : 'pointer',
@@ -90,7 +91,7 @@ function Toggle({ id, active, onChange, locked, note, children }) {
       <span
         aria-hidden="true"
         style={{
-          width: 18, height: 18, borderRadius: 5, flexShrink: 0,
+          width: 18, height: 18, borderRadius: 3, flexShrink: 0,
           background: active ? 'var(--color-accent)' : 'transparent',
           border: `1.5px solid ${active ? 'var(--color-accent)' : 'var(--color-border-strong)'}`,
           display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -121,6 +122,14 @@ export default function Pricing() {
   const tracked = useRef(false)
 
   const [lo, hi] = useMemo(() => computePrice({ pages, design, ...modules }), [pages, design, modules])
+  // "ab CHF 700" nur, wenn die Spanne darüber liegt und nicht am oberen Ende (20+)
+  const showFloor = lo > FLOOR && pages < MAX_PAGES
+  const priceNote = [
+    isDefault ? 'Beispiel' : null,
+    'einmalig',
+    showFloor ? `ab ${formatCHF(FLOOR)}` : null,
+  ].filter(Boolean).join(' · ')
+  const maintNote = `+ Wartung ${MAINTENANCE_PER_YEAR[0]}–${MAINTENANCE_PER_YEAR[1]}/Jahr`
   const includesAnimations = design === 'branding'
   const designRefs = useRef({})
 
@@ -172,6 +181,7 @@ export default function Pricing() {
   return (
     <section id="preis" className="section" style={{ background: 'var(--color-bg-soft)' }}>
       <div className="container-page">
+        <SectionIndex n="04" label="Preise" />
         <div className="section-head">
           <h2 className="font-display h-section">Was Ihre Webseite kostet</h2>
           <p className="lead">
@@ -182,7 +192,7 @@ export default function Pricing() {
 
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-12">
           {/* Konfigurator */}
-          <div className="lg:col-span-3" style={{ background: 'var(--color-bg)', borderRadius: 28, padding: 'clamp(24px, 4vw, 48px)' }}>
+          <div className="lg:col-span-3" style={{ background: 'var(--color-bg)', borderRadius: 'var(--radius)', padding: 'clamp(24px, 4vw, 48px)' }}>
             <div style={{ marginBottom: 48 }}>
               <div className="flex items-baseline justify-between" style={{ marginBottom: 16 }}>
                 <label htmlFor="pricing-pages" style={{ ...labelStyle, marginBottom: 0 }}>Seitenanzahl</label>
@@ -221,7 +231,7 @@ export default function Pricing() {
                 role="radiogroup"
                 aria-labelledby="pricing-design-label"
                 onKeyDown={onDesignKey}
-                style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 4, padding: 4, background: 'var(--color-bg-soft)', borderRadius: 999 }}
+                style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 4, padding: 4, background: 'var(--color-bg-soft)', borderRadius: 'var(--radius)' }}
               >
                 {DESIGN_OPTIONS.map((opt) => {
                   const active = design === opt.value
@@ -238,7 +248,8 @@ export default function Pricing() {
                       onClick={() => { setDesign(opt.value); markUsed() }}
                       style={{
                         padding: '12px 8px',
-                        borderRadius: 999,
+                        minHeight: 44,
+                        borderRadius: 'var(--radius-sm)',
                         border: 'none',
                         background: active ? 'var(--color-accent)' : 'transparent',
                         color: active ? 'var(--color-bg)' : 'var(--color-text-muted)',
@@ -249,12 +260,7 @@ export default function Pricing() {
                         transition: 'background 0.2s ease, color 0.2s ease, transform 160ms var(--ease-out)',
                       }}
                     >
-                      {opt.short ? (
-                        <>
-                          <span className="sm:hidden">{opt.short}</span>
-                          <span className="hidden sm:inline">{opt.label}</span>
-                        </>
-                      ) : opt.label}
+                      {opt.label}
                     </button>
                   )
                 })}
@@ -270,7 +276,7 @@ export default function Pricing() {
               </dl>
             </div>
 
-            <span style={labelStyle}>Module <span style={{ fontWeight: 400, color: 'var(--color-text-muted)' }}>einmalig</span></span>
+            <span style={labelStyle}>Zusätzlich <span style={{ fontWeight: 400, color: 'var(--color-text-muted)' }}>einmalig, im Projektpreis</span></span>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {MODULES.map((m) => (
                 <Toggle
@@ -286,7 +292,7 @@ export default function Pricing() {
               ))}
             </div>
 
-            <span style={{ ...labelStyle, marginTop: 40 }}>Laufend <span style={{ fontWeight: 400, color: 'var(--color-text-muted)' }}>optional</span></span>
+            <span style={{ ...labelStyle, marginTop: 40 }}>Nach dem Launch <span style={{ fontWeight: 400, color: 'var(--color-text-muted)' }}>optional, pro Jahr</span></span>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <Toggle
                 id={`pricing-module-${MAINTENANCE.key}`}
@@ -313,7 +319,7 @@ export default function Pricing() {
               style={{
                 position: 'sticky', bottom: 12, marginTop: 32,
                 background: 'var(--color-text)', color: 'var(--color-bg)',
-                borderRadius: 14, padding: '14px 18px',
+                borderRadius: 'var(--radius)', padding: '12px 16px',
                 boxShadow: '0 8px 24px rgba(20,17,13,0.18)',
               }}
             >
@@ -321,11 +327,8 @@ export default function Pricing() {
                 <span className="font-display" style={{ fontSize: 18, fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap' }}>
                   {formatCHF(lo)} – {formatCHF(hi).replace('CHF ', '')}
                 </span>
-                {modules.maintenance && (
-                  <span style={{ fontSize: 12, opacity: 0.8, fontVariantNumeric: 'tabular-nums' }}>
-                    + Wartung {formatCHF(MAINTENANCE_PER_YEAR[0])}–{formatCHF(MAINTENANCE_PER_YEAR[1]).replace('CHF ', '')} pro Jahr
-                  </span>
-                )}
+                <span style={{ fontSize: 12, opacity: 0.8, fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap' }}>{priceNote}</span>
+                {modules.maintenance && <span style={{ fontSize: 12, opacity: 0.8, fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap' }}>{maintNote}</span>}
               </span>
               <span style={{ fontSize: 14, fontWeight: 500, whiteSpace: 'nowrap' }}>Anfragen →</span>
             </a>
@@ -336,11 +339,11 @@ export default function Pricing() {
             className="lg:col-span-2"
             style={{
               background: 'var(--color-bg)',
-              borderRadius: 28,
-              padding: 'clamp(24px, 4vw, 48px)',
+              borderRadius: 'var(--radius)',
+              padding: 'clamp(24px, 3vw, 36px)',
               display: 'flex',
               flexDirection: 'column',
-              gap: 32,
+              gap: 24,
               position: 'sticky',
               top: 96,
               height: 'fit-content',
@@ -349,11 +352,13 @@ export default function Pricing() {
             <p className="sr-only" aria-live="polite">{announced}</p>
             {/* Handy: Preis und Anfrage stehen in der Leiste oben, hier nur, was inklusive ist */}
             <div className="hidden lg:block">
-              <p style={{ fontSize: 15, color: 'var(--color-text-muted)', marginBottom: 8 }}>Ihre Preisspanne, einmalig</p>
+              <p style={{ fontSize: 15, color: 'var(--color-text-muted)', marginBottom: 8 }}>
+                {isDefault ? 'Beispiel: typische KMU-Seite, einmalig' : 'Ihre Preisspanne, einmalig'}
+              </p>
               <p className="font-display" style={{ fontSize: 'clamp(1.5rem, 2.1vw, 1.875rem)', color: 'var(--color-text)', lineHeight: 1.1, fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap' }}>
                 {formatCHF(lo)} – {formatCHF(hi).replace('CHF ', '')}
               </p>
-              {lo > FLOOR && (
+              {showFloor && (
                 <p style={{ fontSize: 14, color: 'var(--color-text-muted)', marginTop: 8 }}>
                   Kleinste Webseiten ab {formatCHF(FLOOR)}
                 </p>
@@ -369,20 +374,20 @@ export default function Pricing() {
               )}
             </div>
 
-            {/* Wrapper, weil der Inline-Style display:block sonst lg:hidden überschreibt */}
-            <div className="lg:hidden" style={{ marginBottom: -16 }}>
-              <p style={labelStyle}>Immer inklusive</p>
-            </div>
-            <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 12, fontSize: 15, color: 'var(--color-text)' }}>
-              {INCLUDED.map((item) => <li key={item}>{item}</li>)}
-            </ul>
-
             {/* Handy: Die Preisleiste ist dort der CTA. Wrapper, weil .btn-accent die hidden-Klasse überschreibt */}
             <div className="hidden lg:block">
               <a href="#contact-form" className="btn-accent w-full" onClick={sendToContact} style={{ textAlign: 'center', paddingInline: 24 }}>
                 <span style={{ textWrap: 'balance' }}>Erstgespräch mit dieser Auswahl anfragen</span>
               </a>
             </div>
+
+            {/* Wrapper, weil der Inline-Style display:block sonst lg:hidden überschreibt */}
+            <div className="lg:hidden" style={{ marginBottom: -12 }}>
+              <p style={labelStyle}>Immer inklusive</p>
+            </div>
+            <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 6, fontSize: 14, color: 'var(--color-text)', paddingTop: 20, borderTop: '1px solid var(--color-border)' }}>
+              {INCLUDED.map((item) => <li key={item}>{item}</li>)}
+            </ul>
 
             <p style={{ fontSize: 13, color: 'var(--color-text-faint)', lineHeight: 1.6, marginTop: -8 }}>
               Richtpreis aus vergleichbaren Projekten. Die verbindliche Festofferte erhalten Sie nach dem Erstgespräch.

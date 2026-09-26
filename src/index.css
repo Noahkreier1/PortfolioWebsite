@@ -36,6 +36,10 @@
   /* Bewegung: kräftiges ease-out für UI-Reaktionen */
   --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
 
+  /* Schweizer Kanten: kleine Radien statt weicher Kissen */
+  --radius: 6px;
+  --radius-sm: 4px;
+
   color-scheme: light;
 }
 
@@ -81,7 +85,7 @@ button:focus-visible,
   left: 12px;
   z-index: 100;
   padding: 12px 20px;
-  border-radius: 12px;
+  border-radius: var(--radius-sm);
   background: var(--color-text);
   color: var(--color-bg);
   font-size: 15px;
@@ -145,16 +149,34 @@ button:focus-visible,
   .container-page { padding-inline: 40px; }
 }
 
-.section { padding-block: 96px; }
-@media (min-width: 768px) { .section { padding-block: 128px; } }
-@media (min-width: 1024px) { .section { padding-block: 160px; } }
+.section { padding-block: 80px; }
+@media (min-width: 768px) { .section { padding-block: 112px; } }
+@media (min-width: 1024px) { .section { padding-block: 128px; } }
 
 /* Kopf einer Sektion: linksbündig auf fester Textspalte */
 .section-head {
   max-width: 760px;
-  margin-bottom: 64px;
+  margin-bottom: 48px;
 }
-@media (min-width: 1024px) { .section-head { margin-bottom: 96px; } }
+@media (min-width: 1024px) { .section-head { margin-bottom: 64px; } }
+
+/* Register-Zeile: Haarlinie über die ganze Breite, rote Nummer links, Name rechts */
+.section-index {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding-top: 12px;
+  margin-bottom: 40px;
+  border-top: 1px solid var(--color-text);
+  font-family: var(--font-label);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text-muted);
+}
+.section-index span:first-child { color: var(--color-accent-ink); font-weight: 600; }
+@media (min-width: 1024px) { .section-index { margin-bottom: 56px; } }
 .section-head .lead { margin-top: 24px; max-width: 600px; }
 
 .h-section {
@@ -197,7 +219,8 @@ button:focus-visible,
 /* ─── Buttons ─── */
 
 .btn-accent {
-  @apply relative inline-flex items-center justify-center gap-2 rounded-full;
+  @apply relative inline-flex items-center justify-center gap-2;
+  border-radius: var(--radius-sm);
   font-family: var(--font-body);
   font-weight: 500;
   font-size: 15px;
@@ -251,7 +274,7 @@ button:focus-visible,
 .project-card-media {
   position: relative;
   overflow: hidden;
-  border-radius: 20px;
+  border-radius: var(--radius);
 }
 .project-card-media img {
   transition: transform 0.7s cubic-bezier(0.25, 0.1, 0.25, 1);
@@ -295,7 +318,7 @@ button:focus-visible,
   color: var(--color-text);
   background: var(--color-bg);
   border: 1px solid var(--color-border-strong);
-  border-radius: 12px;
+  border-radius: var(--radius-sm);
   padding: 14px 16px;
   outline: none;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;

@@ -39,7 +39,7 @@ export default function Testimonials({ company, style }) {
             «{t.quote}»
           </blockquote>
           <figcaption className="flex items-center gap-4">
-            <Portrait src={t.photo} alt={t.name} />
+            <Portrait src={t.photo} alt="" />
             <span style={{ fontSize: 15, lineHeight: 1.4 }}>
               <strong style={{ fontWeight: 600 }}>{t.name}</strong>
               <br />

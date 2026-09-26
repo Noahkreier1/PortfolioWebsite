@@ -1,3 +1,4 @@
+import SectionIndex from './SectionIndex'
 const steps = [
   {
     number: '1',
@@ -33,6 +34,7 @@ export default function Process() {
   return (
     <section id="process" className="section" style={{ background: 'var(--color-bg)', paddingBlock: 'clamp(96px, 10vw, 128px)' }}>
       <div className="container-page">
+        <SectionIndex n="03" label="Ablauf" />
         <div className="section-head">
           <h2 className="font-display h-section">So läuft ein Projekt ab</h2>
           <p className="lead">

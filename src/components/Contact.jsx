@@ -1,3 +1,4 @@
+import SectionIndex from './SectionIndex'
 import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { track } from '@vercel/analytics'
@@ -15,6 +16,12 @@ function validate(data) {
   const email = data.email?.trim() ?? ''
   if (!email) errors.email = 'Bitte geben Sie Ihre E-Mail-Adresse an, damit wir antworten können.'
   else if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) errors.email = 'Diese E-Mail-Adresse scheint unvollständig. Beispiel: name@firma.ch'
+  // Telefon ist freiwillig; wenn angegeben, muss es nach einer Nummer aussehen (Schweizer und internationale Formate)
+  const phone = data.phone?.trim() ?? ''
+  const digits = phone.replace(/\D/g, '')
+  if (phone && (!/^[+\d\s()./-]+$/.test(phone) || digits.length < 9 || digits.length > 15)) {
+    errors.phone = 'Diese Telefonnummer scheint unvollständig. Beispiel: 079\u00a0123\u00a045\u00a067'
+  }
   return errors
 }
 
@@ -28,7 +35,8 @@ function FieldError({ id, message }) {
   )
 }
 
-const linkStyle = { color: 'var(--color-accent-ink)', textDecoration: 'underline', textUnderlineOffset: 4 }
+// 44px hohe Tap-Fläche, optisch unverändert
+const linkStyle = { color: 'var(--color-accent-ink)', textDecoration: 'underline', textUnderlineOffset: 4, display: 'inline-flex', alignItems: 'center', minHeight: 44 }
 
 export default function Contact() {
   const [context, setContext] = useState(getRequestContext)
@@ -59,7 +67,7 @@ export default function Contact() {
 
     const found = validate(data)
     setErrors(found)
-    const firstInvalid = ['name', 'email'].find((k) => found[k])
+    const firstInvalid = ['name', 'email', 'phone'].find((k) => found[k])
     if (firstInvalid) {
       form.querySelector(`[name="${firstInvalid}"]`)?.focus()
       return
@@ -74,6 +82,7 @@ export default function Contact() {
           Name: data.name,
           Firma: data.company || '–',
           'E-Mail': data.email,
+          Telefon: data.phone?.trim() || '–',
           Webseite: data.website || '–',
           Nachricht: data.message || '–',
           Auswahl: context || '–',
@@ -96,6 +105,7 @@ export default function Contact() {
   return (
     <section id="contact" className="section" style={{ background: 'var(--color-bg)' }}>
       <div className="container-page">
+        <SectionIndex n="07" label="Kontakt" />
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-16 lg:gap-24">
           <div className="lg:col-span-2">
             <h2 className="font-display h-section" style={{ marginBottom: 24, fontSize: 'clamp(2.25rem, 3.6vw, 3rem)' }}>Erzählen Sie uns von Ihrem Projekt</h2>
@@ -114,7 +124,7 @@ export default function Contact() {
             </ul>
           </div>
 
-          <div id="contact-form" className="lg:col-span-3" style={{ background: 'var(--color-bg-soft)', borderRadius: 28, padding: 'clamp(24px, 4vw, 48px)' }}>
+          <div id="contact-form" className="lg:col-span-3" style={{ background: 'var(--color-bg-soft)', borderRadius: 'var(--radius)', padding: 'clamp(24px, 4vw, 48px)' }}>
             {status === 'sent' ? (
               <div ref={successRef} tabIndex={-1} role="status" className="appear" style={{ display: 'flex', flexDirection: 'column', gap: 16, alignItems: 'flex-start', outline: 'none' }}>
                 <h3 className="font-display" style={{ fontSize: '1.75rem', lineHeight: 1.2 }}>Danke, Ihre Anfrage ist angekommen.</h3>
@@ -126,7 +136,7 @@ export default function Contact() {
             ) : (
               <form onSubmit={onSubmit} noValidate style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
                 {context && (
-                  <div className="appear" style={{ background: 'var(--color-bg)', borderRadius: 16, padding: '16px 20px' }}>
+                  <div className="appear" style={{ background: 'var(--color-bg)', borderRadius: 'var(--radius-sm)', padding: '16px 20px' }}>
                     <p style={{ fontSize: 14, fontWeight: 500, marginBottom: 4 }}>Wird mitgeschickt</p>
                     <ul style={{ listStyle: 'none', fontSize: 14, color: 'var(--color-text-muted)', marginBottom: 8, display: 'flex', flexDirection: 'column', gap: 2 }}>
                       {context.split(' · ').map((part) => <li key={part}>{part}</li>)}
@@ -155,15 +165,21 @@ export default function Contact() {
                     <FieldError id="contact-email-error" message={errors.email} />
                   </div>
                   <div className="field">
-                    <label htmlFor="contact-website">Heutige Webseite <span>(optional)</span></label>
-                    <input id="contact-website" name="website" type="text" inputMode="url" autoComplete="url" placeholder="ihrefirma.ch" />
+                    <label htmlFor="contact-phone">Telefon <span>(optional)</span></label>
+                    <input id="contact-phone" name="phone" type="tel" inputMode="tel" autoComplete="tel" maxLength={30} placeholder="079 123 45 67" {...errorProps('phone')} />
+                    <FieldError id="contact-phone-error" message={errors.phone} />
                   </div>
+                </div>
+                <div className="field">
+                  <label htmlFor="contact-website">Heutige Webseite <span>(optional)</span></label>
+                  <input id="contact-website" name="website" type="text" inputMode="url" autoComplete="url" placeholder="ihrefirma.ch" />
                 </div>
                 <div className="field">
                   <label htmlFor="contact-message">Worum geht es? <span>(optional)</span></label>
                   <textarea
                     id="contact-message"
                     name="message"
+                    maxLength={4000}
                     placeholder="z. B. neue Webseite für unsere Schreinerei, rund 5 Seiten, Launch im Frühling"
                   />
                 </div>

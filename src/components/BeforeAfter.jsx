@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import CompareSlider from './CompareSlider'
 import Testimonials from './Testimonials'
+import SectionIndex from './SectionIndex'
 import { ChevronRight } from './Icons'
 
 // Was sich konkret verändert hat, direkt aus den beiden Screenshots ablesbar
@@ -15,6 +16,7 @@ export default function BeforeAfter() {
   return (
     <section id="vorher-nachher" className="section" style={{ background: 'var(--color-bg)', paddingTop: 'clamp(96px, 10vw, 128px)', paddingBottom: 0 }}>
       <div className="container-page">
+        <SectionIndex n="02" label="Vorher / Nachher" />
         <div className="section-head">
           <h2 className="font-display h-section">Vorher und nachher</h2>
           <p className="lead">

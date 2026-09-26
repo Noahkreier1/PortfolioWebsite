@@ -39,7 +39,7 @@ export default function Footer() {
               to="/"
               aria-label="Zurio, zum Seitenanfang"
               onClick={(e) => handleLogoClick(e, pathname)}
-              style={{ display: 'inline-block', marginBottom: 16 }}
+              style={{ display: 'inline-flex', alignItems: 'center', minHeight: 44, minWidth: 44, marginBottom: 8 }}
             >
               <Wordmark size={20} />
             </Link>

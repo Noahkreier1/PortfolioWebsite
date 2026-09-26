@@ -125,16 +125,19 @@ export default function Navbar() {
           {scrolled && !menuOpen && !inConversion && (
             <a
               href={navHref('#contact')}
-              className="md:hidden inline-flex items-center rounded-full pressable appear"
-              style={{ background: 'var(--color-accent)', color: 'var(--color-bg)', fontWeight: 500, fontSize: 14, padding: '0 16px', minHeight: 44, transition: 'transform 160ms var(--ease-out), opacity 240ms var(--ease-out)' }}
+              className="md:hidden inline-flex items-center pressable appear"
+              style={{ background: 'var(--color-accent)', color: 'var(--color-bg)', fontWeight: 500, fontSize: 14, padding: '0 16px', minHeight: 44, borderRadius: 'var(--radius-sm)', transition: 'transform 160ms var(--ease-out), opacity 240ms var(--ease-out)' }}
             >
               Anfragen
             </a>
           )}
           <a
             href={navHref('#contact')}
-            className="hidden md:inline-flex items-center rounded-full pressable"
-            style={{ background: 'var(--color-accent)', color: 'var(--color-bg)', fontWeight: 500, fontSize: 14, padding: '10px 20px' }}
+            className="hidden md:inline-flex items-center pressable"
+            // Im Preisrechner und im Kontakt gibt es eigene CTAs: dort tritt der Header-Button zurück
+            aria-hidden={inConversion || undefined}
+            tabIndex={inConversion ? -1 : undefined}
+            style={{ background: 'var(--color-accent)', color: 'var(--color-bg)', fontWeight: 500, fontSize: 14, padding: '10px 20px', borderRadius: 'var(--radius-sm)', opacity: inConversion ? 0 : 1, pointerEvents: inConversion ? 'none' : 'auto', transition: 'opacity 240ms var(--ease-out), transform 160ms var(--ease-out)' }}
           >
             Erstgespräch anfragen
           </a>
@@ -143,7 +146,7 @@ export default function Navbar() {
             ref={toggleRef}
             onClick={() => setMenuOpen(!menuOpen)}
             className="lg:hidden flex flex-col items-center justify-center gap-1.5 -mr-3"
-            style={{ width: 44, height: 44, borderRadius: 12 }}
+            style={{ width: 44, height: 44, borderRadius: 'var(--radius-sm)' }}
             aria-label={menuOpen ? 'Menü schliessen' : 'Menü öffnen'}
             aria-expanded={menuOpen}
             aria-controls="mobile-menu"

@@ -20,7 +20,7 @@ const labelStyle = {
   letterSpacing: '0.12em',
   textTransform: 'uppercase',
   padding: '6px 10px',
-  borderRadius: 6,
+  borderRadius: 3,
   pointerEvents: 'none',
   transition: 'opacity 0.25s ease',
 }
@@ -121,7 +121,7 @@ export default function CompareSlider({ before, after, altBefore, altAfter, prio
         className="relative w-full select-none hidden sm:block"
         style={{
           aspectRatio: RATIO,
-          borderRadius: 20,
+          borderRadius: 'var(--radius)',
           touchAction: 'pan-y',
           cursor: 'ew-resize',
           WebkitUserSelect: 'none',
@@ -130,7 +130,7 @@ export default function CompareSlider({ before, after, altBefore, altAfter, prio
         {/* Eigene Clip-Ebene: clip-path mit Rundung schneidet auch bewegte Ebenen sauber ab
             (Safari ignoriert overflow + border-radius bei transformierten Kindern). Der Fokusring
             liegt auf dem äusseren Element und bleibt dadurch sichtbar. */}
-        <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', borderRadius: 20, clipPath: 'inset(0 round 20px)', isolation: 'isolate', background: 'var(--color-bg-soft)' }}>
+        <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', borderRadius: 'var(--radius)', clipPath: 'inset(0 round 6px)', isolation: 'isolate', background: 'var(--color-bg-soft)' }}>
         <Shot src={after} alt={altAfter} width="1800" height="973" priority={priority} style={imgStyle} />
 
         <div style={{ position: 'absolute', inset: 0, clipPath: `inset(0 ${100 - pos}% 0 0)` }}>
@@ -152,23 +152,23 @@ export default function CompareSlider({ before, after, altBefore, altAfter, prio
         <span style={{ ...labelStyle, left: 16, background: 'rgba(20,17,13,0.7)', color: '#FAFAF7', opacity: pos > 10 ? 1 : 0 }}>
           Vorher
         </span>
-        <span style={{ ...labelStyle, right: 16, background: 'var(--color-accent)', color: 'var(--color-bg)', opacity: pos < 86 ? 1 : 0 }}>
+        <span style={{ ...labelStyle, right: 16, background: 'var(--color-bg)', color: 'var(--color-text)', opacity: pos < 86 ? 1 : 0 }}>
           Nachher
         </span>
         </div>
       </div>
 
-      {/* Handy: beide Stände untereinander, neuer Stand zuerst. Label über dem Bild,
-          damit es nichts im Screenshot verdeckt */}
+      {/* Handy: beide Stände untereinander, neuer Stand zuerst. Zugeschnitten auf den Hero-Bereich
+          (4:3 statt 16:9), damit Headline, Ticket-Button und Datum lesbar bleiben. Label über dem Bild. */}
       <div className="flex flex-col gap-5 sm:hidden">
         {[
-          { src: after, alt: altAfter, label: 'Nachher', bg: 'var(--color-accent)' },
-          { src: before, alt: altBefore, label: 'Vorher', bg: 'rgba(20,17,13,0.7)' },
+          { src: after, alt: altAfter, label: 'Nachher', bg: 'var(--color-text)', pos: 'left top' },
+          { src: before, alt: altBefore, label: 'Vorher', bg: 'rgba(20,17,13,0.55)', pos: 'center top' },
         ].map((s) => (
           <div key={s.label}>
             <span style={{ ...labelStyle, position: 'static', display: 'inline-block', marginBottom: 8, background: s.bg, color: '#FAFAF7' }}>{s.label}</span>
-            <div className="relative overflow-hidden" style={{ aspectRatio: RATIO, borderRadius: 14, background: 'var(--color-bg-soft)' }}>
-              <Shot src={s.src} alt={s.alt} width="1800" height="973" priority={priority && s.label === 'Nachher'} style={imgStyle} />
+            <div className="relative overflow-hidden" style={{ aspectRatio: '4 / 3', borderRadius: 'var(--radius)', background: 'var(--color-bg-soft)' }}>
+              <Shot src={s.src} alt={s.alt} width="1800" height="973" priority={priority && s.label === 'Nachher'} style={{ ...imgStyle, objectPosition: s.pos }} />
             </div>
           </div>
         ))}

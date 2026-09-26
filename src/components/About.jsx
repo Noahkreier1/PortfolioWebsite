@@ -1,3 +1,4 @@
+import SectionIndex from './SectionIndex'
 import { useState } from 'react'
 
 const team = [
@@ -53,6 +54,7 @@ export default function About() {
   return (
     <section id="about" className="section" style={{ background: 'var(--color-bg)' }}>
       <div className="container-page">
+        <SectionIndex n="05" label="Über uns" />
         <div className="section-head">
           <h2 className="font-display h-section">Wer Ihre Webseite baut</h2>
           <p className="lead">
@@ -66,7 +68,7 @@ export default function About() {
           {team.map((m) => (
             <article
               key={m.name}
-              style={{ background: 'var(--color-bg-soft)', borderRadius: 28, padding: 'clamp(32px, 4vw, 48px)', display: 'flex', flexDirection: 'column', gap: 32 }}
+              style={{ background: 'var(--color-bg-soft)', borderRadius: 'var(--radius)', padding: 'clamp(32px, 4vw, 48px)', display: 'flex', flexDirection: 'column', gap: 32 }}
             >
               <div className="flex items-center gap-6">
                 <Avatar member={m} />
@@ -81,7 +83,7 @@ export default function About() {
                 {m.expertise.map((skill) => (
                   <li
                     key={skill}
-                    style={{ fontSize: 13, color: 'var(--color-text-muted)', background: 'var(--color-bg)', borderRadius: 999, padding: '6px 14px', whiteSpace: 'nowrap' }}
+                    style={{ fontSize: 13, color: 'var(--color-text-muted)', background: 'var(--color-bg)', borderRadius: 'var(--radius-sm)', padding: '6px 14px', whiteSpace: 'nowrap' }}
                   >
                     {skill}
                   </li>

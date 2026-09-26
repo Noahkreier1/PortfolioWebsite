@@ -144,7 +144,7 @@ export default function WebsiteAudit({ initialUrl = '' }) {
     navigate('/#contact')
   }
 
-  const panel = { background: 'var(--color-bg-soft)', borderRadius: 28, padding: 'clamp(24px, 4vw, 48px)' }
+  const panel = { background: 'var(--color-bg-soft)', borderRadius: 'var(--radius)', padding: 'clamp(24px, 4vw, 48px)' }
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 32 }}>

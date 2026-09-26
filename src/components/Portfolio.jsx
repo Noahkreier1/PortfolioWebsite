@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { ArrowUpRight, ChevronRight } from './Icons'
+import SectionIndex from './SectionIndex'
 
 const projects = [
   {
@@ -44,7 +45,7 @@ function ProjectCard({ project }) {
           <source srcSet={project.image.replace(/\.jpe?g$/i, '.webp')} type="image/webp" />
           <img
             src={project.image}
-            alt={`Ausschnitt der Webseite von ${project.name}: ${project.description}`}
+            alt={`Screenshot der Webseite von ${project.name}`}
             loading="lazy"
             decoding="async"
             width="1100"
@@ -61,7 +62,7 @@ function ProjectCard({ project }) {
           {project.name}
         </h3>
         {project.metric && (
-          <p style={{ color: 'var(--color-text)', fontWeight: 600, marginBottom: 12 }}>{project.metric}</p>
+          <p className="font-display" style={{ fontSize: 'clamp(1.125rem, 1.6vw, 1.375rem)', lineHeight: 1.3, color: 'var(--color-text)', marginBottom: 12, fontVariantNumeric: 'tabular-nums' }}>{project.metric}</p>
         )}
         <p style={{ color: 'var(--color-text-muted)', maxWidth: '46ch', marginBottom: 16 }}>{project.description}</p>
         <span className="btn-link">
@@ -83,6 +84,7 @@ export default function Portfolio() {
   return (
     <section id="work" className="section" style={{ background: 'var(--color-bg-soft)' }}>
       <div className="container-page">
+        <SectionIndex n="01" label="Referenzen" />
         <div className="section-head">
           <h2 className="font-display h-section">Webseiten, die wir zuletzt gebaut haben</h2>
         </div>

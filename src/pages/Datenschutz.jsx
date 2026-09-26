@@ -54,7 +54,7 @@ export default function Datenschutz() {
         </p>
         <ul>
           <li>Name und E-Mail-Adresse</li>
-          <li>Optional: Firma, Adresse Ihrer heutigen Webseite, Ihre Nachricht</li>
+          <li>Optional: Firma, Telefonnummer, Adresse Ihrer heutigen Webseite, Ihre Nachricht</li>
           <li>Optional: Ihre Auswahl aus dem Preisrechner oder das Ergebnis des Website-Checks, falls Sie diese mitschicken</li>
         </ul>
         <p>
