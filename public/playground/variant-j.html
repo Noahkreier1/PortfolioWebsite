@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="de-CH">
+<head>
+  <meta charset="utf-8" />
+  <meta name="robots" content="noindex, nofollow" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Variante J: Durch das Kreuz</title>
+  <link rel="icon" href="data:," />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./shared/base.css" />
+  <link rel="stylesheet" href="./shared/mini-site.css" />
+  <style>
+    /* ─────────────────────────────────────────────────────────────
+       Variante J: "Durch das Kreuz"
+       Der Bildschirm ist zuerst eine Schweizer Fahne. Das weisse Kreuz wird
+       zum Portal: Es wird durchsichtig, wächst, und man fliegt hindurch in
+       einen Raum mit einem Laptop. Dann zweiter Durchflug durch den Bildschirm
+       auf die Seite in voller Grösse (wie Variante A).
+       Kreuz nach Bundesvorgabe: Arme 1/6 länger als breit (6 : 7).
+         0–8 %    Fahne
+         8–46 %   Kreuz wird Portal, Kamera fliegt hindurch, Raum setzt sich
+         46–72 %  Raum mit Laptop
+         72–100 % Durchflug durch den Bildschirm, Übergabe an den echten Abschnitt
+       ───────────────────────────────────────────────────────────── */
+
+    #portal-track { height: 480vh; }
+    @media (max-width: 720px) { #portal-track { height: 320vh; } }
+
+    /* Raum hinter der Fahne */
+    .scene {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      background:
+        radial-gradient(50% 45% at 50% 56%, rgba(218, 41, 28, 0.16), transparent 70%),
+        linear-gradient(to bottom, transparent 64%, rgba(242, 237, 230, 0.03) 64.2%, rgba(0, 0, 0, 0.3) 100%),
+        var(--bg);
+    }
+    .scene-copy { position: absolute; left: max(24px, 6vw); top: max(24px, 10vh); display: grid; gap: 14px; max-width: 340px; z-index: 2; }
+    .scene-copy .display { font-size: clamp(1.9rem, 3.4vw, 3.25rem); }
+    .made { display: inline-flex; align-items: center; gap: 8px; }
+    .made svg { width: 14px; height: 14px; }
+
+    /* Laptop rechts der Mitte, damit der Text links frei steht */
+    .rig { --mb-w: min(780px, 56vw); position: relative; margin: 10vh 0 0 24vw; }
+    @media (max-width: 720px) { .rig { --mb-w: 92vw; margin: 22vh 0 0; } .scene-copy { max-width: none; right: 24px; } .scene-copy .display { font-size: 1.75rem; } }
+    .rig .mb-face { --ba: 1; background: linear-gradient(rgba(27,26,25,var(--ba)), rgba(18,17,16,var(--ba))); box-shadow: inset 0 0 0 1px rgba(255,255,255,calc(0.08*var(--ba))), 0 30px 80px -20px rgba(0,0,0,calc(0.7*var(--ba))); }
+    .rig .mb-face::before { opacity: var(--ba); }
+
+    /* Fahne: rotes Feld mit Loch in Kreuzform (evenodd) + weisse Kreuzfüllung darüber */
+    .flag { position: absolute; inset: 0; z-index: 5; width: 100%; height: 100%; pointer-events: none; }
+    .flag-hint { position: absolute; z-index: 6; left: 50%; bottom: 7vh; transform: translateX(-50%); font-size: 13px; letter-spacing: 0.06em; color: rgba(255, 255, 255, 0.85); white-space: nowrap; }
+
+    .next { position: relative; z-index: 7; margin-top: -100vh; margin-top: -100svh; height: 100vh; height: 100svh; background: var(--bg); opacity: 0; pointer-events: none; }
+    .next.is-live { pointer-events: auto; }
+    .outro { position: relative; z-index: 8; background: var(--bg); }
+
+    .reduced #portal-track { height: auto; }
+    .reduced #portal-track .stage { position: relative; }
+    .reduced .flag, .reduced .flag-hint, .reduced .next { display: none; }
+  </style>
+</head>
+<body>
+  <div class="grain" aria-hidden="true"></div>
+
+  <section class="intro">
+    <h1 class="display">Wir bauen Webseiten, die man nicht wegscrollt.</h1>
+    <p class="lead">Made in Switzerland. Scrollen Sie hindurch.</p>
+    <p class="scroll-hint">Scrollen ↓</p>
+  </section>
+
+  <section class="track" id="portal-track" aria-label="Swiss made">
+    <div class="stage">
+      <div class="scene" id="scene">
+        <div class="scene-copy" id="copy">
+          <div class="chips">
+            <span class="chip made"><svg viewBox="0 0 20 20" aria-hidden="true"><rect width="20" height="20" rx="3" fill="#DA291C"/><path d="M8 4h4v4h4v4h-4v4H8v-4H4V8h4z" fill="#fff"/></svg>Swiss made</span>
+            <span class="chip">Winterthur</span>
+          </div>
+          <h2 class="display">Aus der Schweiz. Für Ihr Web.</h2>
+          <p class="lead">Entworfen und programmiert in Winterthur, von den zwei Leuten, mit denen Sie sprechen.</p>
+        </div>
+        <div class="rig" id="rig">
+          <div class="mb">
+            <div class="mb-lid"><div class="mb-face" id="face"><div class="mb-screen" id="screen"></div></div></div>
+            <div class="mb-deck" id="deck"></div><div class="mb-shadow" id="shadow"></div>
+          </div>
+        </div>
+        <div class="vignette" id="vig"></div>
+      </div>
+
+      <svg class="flag" id="flag" aria-hidden="true">
+        <g id="flag-g">
+          <path id="flag-red" fill="#DA291C" fill-rule="evenodd"></path>
+          <path id="flag-white" fill="#fff"></path>
+        </g>
+      </svg>
+      <p class="flag-hint" id="hint">Durch das Kreuz scrollen</p>
+    </div>
+  </section>
+
+  <section class="next" id="next" aria-label="Beispielseite in voller Grösse"></section>
+
+  <section class="outro">
+    <h2 class="display">Swiss made heisst: präzise, pünktlich, persönlich.</h2>
+    <p class="lead">Webseiten für Schweizer KMU, aus Winterthur.</p>
+  </section>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js"></script>
+  <script src="./shared/motion.js"></script>
+  <script src="./shared/mini-site.js"></script>
+  <script>
+    const { reduced } = setupMotion()
+    const $ = (s) => document.querySelector(s)
+    const screen = $('#screen')
+    screen.insertAdjacentHTML('afterbegin', miniSiteHTML(false))
+    $('#next').innerHTML = miniSiteHTML(false)
+    fitMiniSite(screen); fitMiniSite($('#next'))
+
+    /* ── Fahne zeichnen: Kreuz 20 Einheiten hoch, Armbreite 6, Arme 7 (Verhältnis 6:7) ── */
+    const flag = { u: 1, W: 0, H: 0, sEnd: 1 }
+    const crossPath = (cx, cy, u) => {
+      const a = 3 * u, l = 10 * u   // halbe Armbreite, halbe Gesamtlänge
+      return `M${cx - a},${cy - l}H${cx + a}V${cy - a}H${cx + l}V${cy + a}H${cx + a}V${cy + l}H${cx - a}V${cy + a}H${cx - l}V${cy - a}H${cx - a}Z`
+    }
+    const drawFlag = () => {
+      const W = innerWidth, H = innerHeight
+      flag.W = W; flag.H = H
+      $('#flag').setAttribute('viewBox', `0 0 ${W} ${H}`)
+      flag.u = Math.min(W, H) * 0.34 / 20
+      const cx = W / 2, cy = H / 2
+      // Rotes Feld deutlich grösser als der Viewport, damit es beim Skalieren nie endet
+      const R = Math.max(W, H) * 60
+      $('#flag-red').setAttribute('d', `M${cx - R},${cy - R}H${cx + R}V${cy + R}H${cx - R}Z ${crossPath(cx, cy, flag.u)}`)
+      $('#flag-white').setAttribute('d', crossPath(cx, cy, flag.u))
+      // SVG: Ursprung in Nutzerkoordinaten, damit GSAP exakt um die Kreuzmitte skaliert
+      if (window.gsap) gsap.set('#flag-g', { svgOrigin: `${cx} ${cy}` })
+      // Endskalierung: Das Mittelquadrat (6u) muss die Bildschirmdiagonale überdecken
+      flag.sEnd = (Math.hypot(W, H) * 1.15) / (6 * flag.u)
+    }
+    drawFlag()
+
+    if (reduced) {
+      document.documentElement.classList.add('reduced')
+    } else {
+      /* ── Endpunkt des Durchflugs durch den Bildschirm ── */
+      const flight = { x: 0, y: 0, s: 1 }
+      const measure = () => {
+        const rig = $('#rig'), scene = $('#scene')
+        let sx = 0, sy = 0, el = screen
+        while (el && el !== scene) { sx += el.offsetLeft; sy += el.offsetTop; el = el.offsetParent }
+        // Ursprung relativ zum Rig
+        let rx = 0, ry = 0; el = rig
+        while (el && el !== scene) { rx += el.offsetLeft; ry += el.offsetTop; el = el.offsetParent }
+        rig.style.transformOrigin = `${sx - rx}px ${sy - ry}px`
+        flight.x = -sx; flight.y = -sy
+        flight.s = document.documentElement.clientWidth / screen.offsetWidth
+      }
+      measure()
+
+      gsap.set('#scene', { scale: 1.35, filter: 'blur(10px)' })
+
+      const tl = gsap.timeline({
+        defaults: { ease: 'none' },
+        scrollTrigger: {
+          trigger: '#portal-track', start: 'top top', end: 'bottom bottom', scrub: 0.6,
+          invalidateOnRefresh: true,
+          onRefreshInit: () => { drawFlag(); measure() },
+          onToggle: (self) => toggleWillChange([$('#flag-g'), $('#scene'), $('#rig')], self.isActive ? 'transform' : 'auto'),
+        },
+      })
+
+      /* 8–46 %: Kreuz wird Portal */
+      tl.to('#hint', { opacity: 0, duration: 4 }, 6)
+      tl.to('#flag-white', { opacity: 0, duration: 12, ease: 'power1.in' }, 8)              // Kreuz wird durchsichtig
+      tl.to('#flag-g', { scale: () => flag.sEnd, duration: 36, ease: 'power3.in' }, 10)      // Kamera beschleunigt hindurch
+      tl.to('#scene', { scale: 1, filter: 'blur(0px)', duration: 30, ease: 'power2.out' }, 16)
+      tl.set('#flag', { display: 'none' }, 46)
+      // fromTo statt from: bei invalidateOnRefresh würde from seinen Endwert (schon 0) neu einlesen
+      tl.fromTo('#copy', { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 8 }, 38)
+
+      /* 72–100 %: Durchflug durch den Bildschirm */
+      tl.to('#copy', { opacity: 0, y: -12, duration: 5 }, 72)
+      tl.to(['#deck', '#shadow', '#vig'], { opacity: 0, duration: 8 }, 74)
+      tl.to('#face', { '--ba': 0, duration: 10 }, 80)
+      tl.to('#rig', { x: () => flight.x, y: () => flight.y, scale: () => flight.s, duration: 24, ease: 'power2.inOut' }, 74)
+      tl.to('#next', { opacity: 1, duration: 0.6, onComplete: () => $('#next').classList.add('is-live'), onReverseComplete: () => $('#next').classList.remove('is-live') }, 99.4)
+    }
+  </script>
+</body>
+</html>

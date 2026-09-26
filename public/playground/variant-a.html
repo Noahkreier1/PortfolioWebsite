@@ -1,0 +1,280 @@
+<!doctype html>
+<html lang="de-CH">
+<head>
+  <meta charset="utf-8" />
+  <meta name="robots" content="noindex, nofollow" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Variante A: Deckel auf, Seite baut sich</title>
+  <link rel="icon" href="data:," />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./shared/base.css" />
+  <link rel="stylesheet" href="./shared/mini-site.css" />
+  <style>
+    /* ─────────────────────────────────────────────────────────────
+       Variante A: "Lid opens, site builds itself"
+       400vh Scroll-Strecke, 100vh Sticky-Bühne, alles gescrubbt:
+         0–25 %   Deckel öffnet sich (rotateX, Perspektive 1600px), Bildschirm glüht auf
+         25–80 %  Seite baut sich im Zeitraffer: Drahtgitter → echte Typo, Bilder, Farben,
+                  dazu Build-Log und Fortschrittsbalken im Bildschirm
+         80–100 % Kamera fährt in den Bildschirm, bis die Mini-Seite den Viewport füllt
+                  und nahtlos zum echten nächsten Abschnitt wird
+       ───────────────────────────────────────────────────────────── */
+
+    #build-track { height: 400vh; }
+    @media (max-width: 720px) { #build-track { height: 250vh; } }
+
+    .stage { background: radial-gradient(50% 45% at 50% 55%, rgba(242, 237, 230, 0.06), transparent 70%), var(--bg); }
+
+    .rig { --mb-w: min(860px, 76vw); position: relative; }
+    @media (max-width: 720px) { .rig { --mb-w: 92vw; } }
+
+    /* Rahmenfarbe als Variable, damit er beim Durchflug ausblenden kann */
+    .rig .mb-face {
+      --ba: 1;
+      background: linear-gradient(rgba(27, 26, 25, var(--ba)), rgba(18, 17, 16, var(--ba)));
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, calc(0.08 * var(--ba))), 0 30px 80px -20px rgba(0, 0, 0, calc(0.7 * var(--ba)));
+    }
+    .rig .mb-face::before { opacity: var(--ba); }
+
+    /* Bildschirm-Leuchten beim Aufklappen */
+    .screen-glow {
+      position: absolute;
+      inset: -12% -8% -20%;
+      z-index: -1;
+      pointer-events: none;
+      background: radial-gradient(50% 50% at 50% 50%, rgba(246, 242, 234, 0.22), transparent 70%);
+      opacity: 0;
+      filter: blur(20px);
+    }
+
+    /* Build-Log unten rechts im Bildschirm */
+    .buildlog {
+      position: absolute;
+      z-index: 4;
+      right: 3%;
+      bottom: 4%;
+      width: 34%;
+      padding: 2.2% 2.4%;
+      border-radius: 8px;
+      background: rgba(13, 12, 11, 0.88);
+      color: #d9d4cb;
+      font-family: ui-monospace, 'SF Mono', Menlo, monospace; /* echter Code, darum Monospace */
+      font-size: clamp(6px, 0.78vw, 11px);
+      line-height: 1.6;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    }
+    .buildlog-lines { height: 6.4em; overflow: hidden; display: flex; flex-direction: column; justify-content: flex-end; }
+    .buildlog-line { opacity: 0; white-space: nowrap; }
+    .buildlog-line b { color: #3fb950; font-weight: 500; }
+    .buildlog-line i { color: var(--ink-faint); font-style: normal; }
+    .buildlog-bar { margin-top: 0.8em; height: 3px; border-radius: 3px; background: rgba(242, 237, 230, 0.12); overflow: hidden; }
+    .buildlog-bar span { display: block; height: 100%; background: var(--accent); transform: scaleX(0); transform-origin: left; }
+
+    /* Begleittext oben links, blendet vor dem Durchflug aus */
+    .build-copy {
+      position: absolute;
+      left: max(24px, 6vw);
+      top: max(24px, 9vh);
+      display: grid;
+      gap: 14px;
+      max-width: 420px;
+      z-index: 2;
+    }
+    .build-copy .display { font-size: clamp(1.75rem, 3vw, 2.75rem); }
+    .phase { position: relative; height: 30px; }
+    .phase .chip { position: absolute; left: 0; top: 0; opacity: 0; }
+    .phase .chip:first-child { opacity: 1; }
+
+    /* Der echte nächste Abschnitt: dieselbe Seite in voller Breite.
+       Liegt mit -100vh exakt unter dem Endzustand der Bühne und wird erst am Schluss sichtbar. */
+    .next {
+      position: relative;
+      z-index: 5;
+      margin-top: -100vh;
+      margin-top: -100svh;
+      height: 100vh;
+      height: 100svh;
+      background: var(--bg);
+      opacity: 0;
+      pointer-events: none;
+    }
+    .next.is-live { pointer-events: auto; }
+
+    .outro { position: relative; z-index: 6; background: var(--bg); }
+
+    /* Reduzierte Bewegung: Endzustand, kein Durchflug */
+    .reduced #build-track { height: auto; }
+    .reduced #build-track .stage { position: relative; height: 100vh; }
+    .reduced .next { display: none; }
+  </style>
+</head>
+<body>
+  <div class="grain" aria-hidden="true"></div>
+
+  <section class="intro">
+    <h1 class="display">Wir bauen Webseiten, die man nicht wegscrollt.</h1>
+    <p class="lead">Vom zugeklappten Laptop zur fertigen Seite, in einem Scroll.</p>
+    <p class="scroll-hint">Scrollen ↓</p>
+  </section>
+
+  <section class="track" id="build-track" aria-label="So entsteht eine Webseite">
+    <div class="stage">
+      <div class="build-copy">
+        <h2 class="display">So entsteht eine Webseite.</h2>
+        <div class="phase" aria-live="polite">
+          <span class="chip">Konzept</span>
+          <span class="chip">Gestaltung</span>
+          <span class="chip">Entwicklung</span>
+          <span class="chip chip--live">Live</span>
+        </div>
+      </div>
+
+      <div class="rig" id="rig">
+        <div class="mb" id="mb">
+          <div class="screen-glow" id="glow"></div>
+          <div class="mb-lid" id="lid">
+            <div class="mb-face" id="face">
+              <div class="mb-screen" id="screen">
+                <!-- Mini-Seite mit Drahtgitter-Fassung per JS -->
+                <div class="buildlog" id="log" aria-hidden="true">
+                  <div class="buildlog-lines">
+                    <div class="buildlog-line"><i>$</i> npm create zurio@latest</div>
+                    <div class="buildlog-line"><b>✓</b> Design-Tokens geladen</div>
+                    <div class="buildlog-line"><b>✓</b> Raster &amp; Typografie</div>
+                    <div class="buildlog-line"><b>✓</b> 12 Komponenten gebaut</div>
+                    <div class="buildlog-line"><i>$</i> npm run build</div>
+                    <div class="buildlog-line"><b>✓</b> built in 1.12s</div>
+                    <div class="buildlog-line"><i>→</i> deploying to vercel…</div>
+                    <div class="buildlog-line"><b>✓</b> live auf holzwerk-keller.ch</div>
+                  </div>
+                  <div class="buildlog-bar"><span id="bar"></span></div>
+                </div>
+              </div>
+            </div>
+            <div class="mb-back"></div>
+          </div>
+          <div class="mb-deck" id="deck"></div>
+          <div class="mb-shadow" id="shadow"></div>
+        </div>
+      </div>
+      <div class="vignette" id="vig"></div>
+    </div>
+  </section>
+
+  <!-- Nächster Abschnitt: dieselbe Seite, jetzt in echt und in voller Grösse -->
+  <section class="next" id="next" aria-label="Beispielseite in voller Grösse"></section>
+
+  <section class="outro">
+    <h2 class="display">Von der Idee bis live in ein bis zwei Wochen.</h2>
+    <p class="lead">Konzept, Gestaltung und Entwicklung aus einer Hand.</p>
+  </section>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js"></script>
+  <script src="./shared/motion.js"></script>
+  <script src="./shared/mini-site.js"></script>
+  <script>
+    const { reduced } = setupMotion()
+    const $ = (s) => document.querySelector(s)
+    const screen = $('#screen')
+    screen.insertAdjacentHTML('afterbegin', miniSiteHTML(true))
+    $('#next').innerHTML = miniSiteHTML(false)
+    fitMiniSite(screen)
+    fitMiniSite($('#next'))   // gleiche Skalierung wie der Bildschirm am Ende des Durchflugs
+
+    const site = screen.querySelector('.site')
+    const blocks = gsap.utils.toArray(screen.querySelectorAll('.build'))
+    const wfs = blocks.map((b) => b.querySelector('.wf'))
+    const reals = blocks.map((b) => b.querySelector('.real'))
+    const logLines = gsap.utils.toArray('.buildlog-line')
+    const phases = gsap.utils.toArray('.phase .chip')
+
+    if (reduced) {
+      // Endzustand: offen, fertig gebaut, ohne Durchflug
+      document.documentElement.classList.add('reduced')
+      gsap.set(wfs, { opacity: 0 })
+      gsap.set('#log', { opacity: 0 })
+      gsap.set(phases, { opacity: 0 }); gsap.set(phases[phases.length - 1], { opacity: 1 })
+      gsap.set('#glow', { opacity: 1 })
+    } else {
+      /* ── Ausgangslage ── */
+      gsap.set('#lid', { rotateX: -84 })                    // zugeklappt, von leicht oben gesehen
+      // Zugeklappt liegt die Vorderkante des Unterteils vorne am Deckelrand, nicht am Scharnier
+      const closedDeck = { y: 0, sx: 1 }
+      const measureDeck = () => {
+        const lidR = $('#lid').getBoundingClientRect(), deckR = $('#deck').getBoundingClientRect()
+        closedDeck.y = lidR.bottom - deckR.top
+        closedDeck.sx = lidR.width / deckR.width
+      }
+      gsap.set('#deck', { y: 0, scaleX: 1 }); measureDeck()
+      gsap.set(['#deck', '#shadow'], { y: () => closedDeck.y, scaleX: () => closedDeck.sx })
+      gsap.set(site, { backgroundColor: '#161514' })       // Bildschirm aus
+      gsap.set(wfs, { opacity: 0, scale: 0.96 })
+      gsap.set(reals, { opacity: 0, y: 8 })
+      gsap.set('#log', { opacity: 0 })
+
+      /* ── Endpunkt des Durchflugs: Bildschirm oben links bündig, volle Breite ── */
+      const flight = { x: 0, y: 0, s: 1 }
+      const measure = () => {
+        const rig = $('#rig')
+        let sx = 0, sy = 0, el = screen
+        while (el && el !== rig) { sx += el.offsetLeft; sy += el.offsetTop; el = el.offsetParent }
+        rig.style.transformOrigin = `${sx}px ${sy}px`
+        flight.x = -(rig.offsetLeft + sx)
+        flight.y = -(rig.offsetTop + sy)
+        flight.s = document.documentElement.clientWidth / screen.offsetWidth
+      }
+      measure()
+
+      const tl = gsap.timeline({
+        defaults: { ease: 'none' },
+        scrollTrigger: {
+          trigger: '#build-track',
+          start: 'top top',
+          end: 'bottom bottom',
+          scrub: 0.6,
+          invalidateOnRefresh: true,
+          onRefreshInit: measure,
+          onToggle: (self) => toggleWillChange([$('#rig'), $('#lid')], self.isActive ? 'transform' : 'auto'),
+        },
+      })
+      // Zeitachse in Prozent der Strecke (0–100)
+
+      /* 0–25 %: Deckel öffnet sich, Bildschirm glüht auf */
+      tl.to('#lid', { rotateX: 0, duration: 22, ease: 'power2.inOut' }, 0)
+      tl.to(['#deck', '#shadow'], { y: 0, scaleX: 1, duration: 22, ease: 'power2.inOut' }, 0)
+      tl.to('#glow', { opacity: 1, duration: 10 }, 14)
+      tl.to(site, { backgroundColor: '#e9e5dd', duration: 6 }, 18)
+
+      /* 25–80 %: Seite baut sich */
+      tl.to('#log', { opacity: 1, duration: 3 }, 24)
+      tl.to('#bar', { scaleX: 1, duration: 55 }, 25)
+      logLines.forEach((line, i) => tl.to(line, { opacity: 1, duration: 1.5 }, 25 + i * 6.5))
+      // Drahtgitter tauchen gestaffelt auf …
+      tl.to(wfs, { opacity: 1, scale: 1, duration: 3, stagger: 1.2, ease: 'power2.out' }, 26)
+      tl.to(phases[0], { opacity: 0, duration: 1 }, 40); tl.to(phases[1], { opacity: 1, duration: 1 }, 40)
+      // … und werden durch echten Inhalt ersetzt
+      tl.to(site, { backgroundColor: '#f6f2ea', duration: 8 }, 44)
+      blocks.forEach((b, i) => {
+        const at = 46 + i * 2.2
+        tl.to(reals[i], { opacity: 1, y: 0, duration: 3, ease: 'power2.out' }, at)
+        tl.to(wfs[i], { opacity: 0, duration: 2 }, at + 0.6)
+      })
+      tl.to(phases[1], { opacity: 0, duration: 1 }, 58); tl.to(phases[2], { opacity: 1, duration: 1 }, 58)
+      tl.to(phases[2], { opacity: 0, duration: 1 }, 76); tl.to(phases[3], { opacity: 1, duration: 1 }, 76)
+      tl.to('#log', { opacity: 0, y: 6, duration: 3 }, 79)
+
+      /* 80–100 %: Kamera fährt in den Bildschirm */
+      tl.to('.build-copy', { opacity: 0, y: -12, duration: 4 }, 80)
+      tl.to(['#deck', '#shadow', '#glow', '#vig'], { opacity: 0, duration: 8 }, 82)
+      tl.to('#face', { '--ba': 0, duration: 10 }, 86)
+      tl.to('#rig', { x: () => flight.x, y: () => flight.y, scale: () => flight.s, duration: 18, ease: 'power2.inOut' }, 82)
+      // Übergabe an den echten Abschnitt ganz am Ende
+      tl.to('#next', { opacity: 1, duration: 0.6, onComplete: () => $('#next').classList.add('is-live'), onReverseComplete: () => $('#next').classList.remove('is-live') }, 99.4)
+    }
+  </script>
+</body>
+</html>

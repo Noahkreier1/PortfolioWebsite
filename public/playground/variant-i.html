@@ -1,0 +1,280 @@
+<!doctype html>
+<html lang="de-CH">
+<head>
+  <meta charset="utf-8" />
+  <meta name="robots" content="noindex, nofollow" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Variante I: Topografie wird Typografie</title>
+  <link rel="icon" href="data:," />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./shared/base.css" />
+  <style>
+    /* ─────────────────────────────────────────────────────────────
+       Variante I: "Topografie wird Typografie"
+       Canvas. Die Kamera fliegt über ein Alpenrelief aus Höhenlinien auf einen
+       Gipfel zu (4'478 m ü. M.). Dann glätten sich die Linien zu einem Grundlinien-
+       Raster, 12 Spalten erscheinen, Typografie setzt sich auf die Linien.
+       Zum Schluss schrumpft die ganze Komposition in einen Laptop-Bildschirm.
+         0–40 %   Flug übers Relief
+         40–62 %  Relief wird Raster
+         62–80 %  Typografie setzt sich
+         80–100 % Komposition wird zum Bildschirm
+       ───────────────────────────────────────────────────────────── */
+
+    #topo-track { height: 480vh; }
+    @media (max-width: 720px) { #topo-track { height: 320vh; } }
+
+    .stage { display: block; }
+    .world { position: absolute; inset: 0; transform-origin: 0 0; }
+    canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+
+    /* Typografie auf den Grundlinien, Positionen setzt JS */
+    .type { position: absolute; inset: 0; pointer-events: none; }
+    .type .line { position: absolute; left: 0; font-family: var(--font-display); font-weight: 800; letter-spacing: -0.045em; line-height: 1; white-space: nowrap; color: var(--ink); opacity: 0; transform-origin: 0 100%; }
+    .type .line.red { color: var(--accent); font-weight: 500; }
+    .type .meta { position: absolute; font-size: 12px; letter-spacing: 0.06em; color: var(--ink-muted); opacity: 0; white-space: nowrap; }
+
+    .peak-label { position: absolute; font-size: 12px; font-weight: 500; letter-spacing: 0.04em; color: var(--ink); white-space: nowrap; opacity: 0; pointer-events: none; }
+    .peak-label::before { content: ''; display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--accent); margin-right: 8px; vertical-align: 1px; }
+
+    .i-copy { position: absolute; left: max(24px, 6vw); top: max(24px, 9vh); z-index: 3; display: grid; gap: 12px; max-width: 420px; }
+    .i-copy .display { font-size: clamp(1.75rem, 3vw, 2.75rem); }
+
+    /* Laptop, in den die Komposition am Ende schrumpft */
+    .frame { position: absolute; left: 50%; top: 54%; transform: translate(-50%, -50%); --mb-w: min(860px, 78vw); opacity: 0; pointer-events: none; }
+    @media (max-width: 720px) { .frame { --mb-w: 92vw; } }
+    .frame .mb-screen { background: transparent; }
+
+    .reduced #topo-track { height: auto; }
+    .reduced #topo-track .stage { position: relative; height: 100vh; }
+  </style>
+</head>
+<body>
+  <div class="grain" aria-hidden="true"></div>
+
+  <section class="intro">
+    <h1 class="display">Wir bauen Webseiten, die man nicht wegscrollt.</h1>
+    <p class="lead">Aus der Landschaft, die uns umgibt, wird die Ordnung unserer Seiten.</p>
+    <p class="scroll-hint">Scrollen ↓</p>
+  </section>
+
+  <section class="track" id="topo-track" aria-label="Topografie wird Typografie">
+    <div class="stage">
+      <div class="frame" id="frame" aria-hidden="true">
+        <div class="mb">
+          <div class="mb-lid"><div class="mb-face"><div class="mb-screen" id="target"></div></div></div>
+          <div class="mb-deck"></div><div class="mb-shadow"></div>
+        </div>
+      </div>
+      <div class="world" id="world">
+        <canvas id="cv"></canvas>
+        <span class="peak-label" id="peak">4’478 m ü. M. · 45°58′ N 7°39′ E</span>
+        <div class="type" id="type">
+          <span class="line" data-row="0.34">Topografie</span>
+          <span class="line red" data-row="0.52">wird</span>
+          <span class="line" data-row="0.70">Typografie.</span>
+          <span class="meta" data-row="0.86" data-col="0">Raster aus der Landschaft</span>
+          <span class="meta" data-row="0.86" data-col="6">Zurio, Winterthur</span>
+        </div>
+      </div>
+      <div class="i-copy" id="copy">
+        <div class="chips"><span class="chip" id="phase">Anflug</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="outro">
+    <h2 class="display">Ordnung, die aus der Landschaft kommt.</h2>
+    <p class="lead">Schweizer Präzision, übersetzt ins Web.</p>
+  </section>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js"></script>
+  <script src="./shared/motion.js"></script>
+  <script>
+    const { reduced } = setupMotion()
+    const cv = document.getElementById('cv'), ctx = cv.getContext('2d')
+    const world = document.getElementById('world'), frame = document.getElementById('frame'), target = document.getElementById('target')
+    const peakEl = document.getElementById('peak'), phaseEl = document.getElementById('phase')
+    const lines = [...document.querySelectorAll('.type .line')], metas = [...document.querySelectorAll('.type .meta')]
+    const mobile = () => innerWidth < 720
+
+    let W = 0, H = 0, DPR = 1
+    const resize = () => {
+      DPR = Math.min(2, devicePixelRatio || 1)
+      W = innerWidth; H = innerHeight
+      cv.width = W * DPR; cv.height = H * DPR
+      ctx.setTransform(DPR, 0, 0, DPR, 0, 0)
+    }
+    resize()
+
+    /* ── Gelände: ein markanter Gipfel mit Graten plus weiche Hügel ── */
+    const PEAK_Z = 9.0
+    const noise = (x, z) => Math.sin(x * 7.1 + z * 1.3) * 0.5 + Math.sin(x * 13.7 - z * 2.1) * 0.25 + Math.sin(x * 23.3 + z * 3.7) * 0.12
+    const height = (x, z) => {
+      const dx = x - 0.12, dz = (z - PEAK_Z) * 0.55
+      // Pyramide mit Graten, zur Spitze hin steiler (Hornform)
+      const pyramid = Math.max(0, 1 - (Math.abs(dx) * 1.9 + Math.abs(dz) * 1.2 + Math.abs(dx + dz) * 0.35))
+      const horn = Math.pow(pyramid, 1.7) * 1.25
+      const hills = (Math.max(0, 1 - Math.abs(x + 0.55) * 1.8) * 0.28 + Math.max(0, 1 - Math.abs(x - 0.75) * 2.2) * 0.22) * (0.6 + 0.4 * Math.sin(z * 0.9))
+      return horn + hills * 0.8 + noise(x, z) * 0.035
+    }
+
+    const ROWS = () => (mobile() ? 46 : 70)
+    const PTS = () => (mobile() ? 90 : 150)
+    const lerp = (a, b, t) => a + (b - a) * t
+    const clamp01 = (v) => Math.max(0, Math.min(1, v))
+    const ease = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2)
+
+    // Raster-Geometrie (Endzustand): Grundlinien und 12 Spalten
+    const grid = () => {
+      const m = mobile()
+      const left = W * (m ? 0.06 : 0.08), right = W * (m ? 0.94 : 0.92)
+      const top = H * 0.18, bottom = H * 0.9
+      return { left, right, top, bottom, cols: m ? 4 : 12 }
+    }
+
+    /* ── Zeichnen für Fortschritt p (0–1) ── */
+    function draw(p) {
+      const fly = clamp01(p / 0.4)                  // Flug
+      const flat = ease(clamp01((p - 0.4) / 0.22))  // Relief → Raster
+      const typeT = clamp01((p - 0.62) / 0.18)      // Typografie
+      const N = ROWS(), M = PTS(), g = grid()
+
+      ctx.clearRect(0, 0, W, H)
+      ctx.fillStyle = '#0d0c0b'
+      ctx.fillRect(0, 0, W, H)
+
+      // Kamera: fährt nach vorn und leicht hoch, Horizont sinkt
+      const camZ = lerp(0, PEAK_Z - 4.2, ease(fly))
+      const horizon = H * lerp(0.36, 0.3, fly)
+      const camH = lerp(0.9, 1.35, fly)
+      const f = Math.min(W, H) * (mobile() ? 1.25 : 0.95)
+      const dz = 0.16
+
+      // Grundlinien-Endpositionen
+      const rowGap = (g.bottom - g.top) / (N - 1)
+
+      // Spalten des Rasters (erscheinen beim Glätten)
+      if (flat > 0) {
+        const colW = (g.right - g.left) / g.cols
+        ctx.strokeStyle = `rgba(218, 41, 28, ${0.35 * flat * (1 - typeT * 0.5)})`
+        ctx.lineWidth = 1
+        for (let c = 0; c <= g.cols; c++) {
+          const x = g.left + c * colW
+          ctx.beginPath(); ctx.moveTo(x, lerp(g.top + (g.bottom - g.top) / 2, g.top, flat)); ctx.lineTo(x, lerp(g.top + (g.bottom - g.top) / 2, g.bottom, flat)); ctx.stroke()
+        }
+      }
+
+      let peakScreen = null
+      // Von hinten nach vorn zeichnen, jede Linie verdeckt, was hinter ihr liegt
+      for (let i = N - 1; i >= 0; i--) {
+        const zWorld = camZ + 0.35 + i * dz
+        const depth = zWorld - camZ
+        const pts = []
+        for (let k = 0; k < M; k++) {
+          const u = k / (M - 1)                        // 0..1 über die Breite
+          const x = lerp(-1.6, 1.6, u)
+          const h = height(x, zWorld)
+          // Perspektive
+          const sx = W / 2 + (x * f) / depth
+          const sy = horizon + ((camH - h * 1.1) * f) / depth * 0.55
+          // Endzustand: gerade Grundlinie i (vorne unten = letzte Zeile)
+          const gx = lerp(g.left, g.right, u)
+          const gy = g.bottom - i * rowGap * (N - 1) / (N - 1)
+          pts.push([lerp(sx, gx, flat), lerp(sy, gy, flat)])
+          if (!peakScreen && Math.abs(x - 0.12) < 0.012 && Math.abs(zWorld - PEAK_Z) < dz * 0.6) peakScreen = [sx, sy]
+        }
+        // Füllung unterhalb (Verdeckung), nur solange es Relief ist
+        if (flat < 1) {
+          ctx.beginPath()
+          ctx.moveTo(pts[0][0], H + 10)
+          pts.forEach(([x, y]) => ctx.lineTo(x, y))
+          ctx.lineTo(pts[M - 1][0], H + 10)
+          ctx.closePath()
+          ctx.fillStyle = `rgba(13, 12, 11, ${1 - flat})`
+          ctx.fill()
+        }
+        // Linie: nah = heller, fern = dunkler; Gipfellinie rot
+        const near = 1 - i / N
+        const isPeakRow = Math.abs(zWorld - PEAK_Z) < dz / 2
+        ctx.beginPath()
+        pts.forEach(([x, y], k) => (k ? ctx.lineTo(x, y) : ctx.moveTo(x, y)))
+        ctx.lineWidth = isPeakRow && flat < 0.5 ? 1.6 : 1
+        ctx.strokeStyle = isPeakRow && flat < 0.5
+          ? `rgba(218, 41, 28, ${0.95 * (1 - flat)})`
+          : `rgba(242, 237, 230, ${lerp(0.14 + near * 0.6, 0.16, flat)})`
+        ctx.stroke()
+      }
+
+      // Gipfel-Beschriftung
+      const showPeak = fly > 0.55 && flat < 0.2
+      if (peakScreen && showPeak) {
+        peakEl.style.opacity = String(Math.min(1, (fly - 0.55) * 5) * (1 - flat * 5))
+        peakEl.style.transform = `translate(${peakScreen[0] + 12}px, ${peakScreen[1] - 26}px)`
+      } else peakEl.style.opacity = '0'
+
+      // Typografie auf die Grundlinien setzen
+      const colW = (g.right - g.left) / g.cols
+      const size = rowGap * (mobile() ? 3.4 : 6.6)
+      lines.forEach((el, j) => {
+        const row = Math.round(parseFloat(el.dataset.row) * (N - 1))
+        const y = g.top + row * rowGap
+        el.style.fontSize = `${size}px`
+        const t = clamp01(typeT * 3 - j * 0.6)
+        el.style.opacity = String(t)
+        el.style.transform = `translate(${g.left}px, ${y - size * 0.86 + (1 - t) * rowGap * 2}px)`
+      })
+      metas.forEach((el, j) => {
+        const row = Math.round(parseFloat(el.dataset.row) * (N - 1))
+        const col = parseInt(el.dataset.col, 10) * (mobile() ? 0 : 1)
+        el.style.opacity = String(clamp01(typeT * 2 - 1.2))
+        el.style.transform = `translate(${g.left + col * colW}px, ${g.top + row * rowGap - 16 + (mobile() ? j * 18 : 0)}px)`
+      })
+
+      const label = p < 0.4 ? (fly > 0.55 ? 'Gipfel' : 'Anflug') : p < 0.62 ? 'Raster' : p < 0.8 ? 'Typografie' : 'Webseite'
+      if (phaseEl.textContent !== label) phaseEl.textContent = label
+    }
+
+    /* ── Schlussbild: Welt schrumpft in den Laptop-Bildschirm (16:10-Ausschnitt) ── */
+    const fitToScreen = (t) => {
+      const r = target.getBoundingClientRect()
+      const fr = frame.getBoundingClientRect()
+      if (!r.width) return
+      // Sichtbarer 16:10-Ausschnitt der Welt, mittig
+      // Ausschnitt so gross, dass der ganze Typografie-Block hineinpasst (Handy: Viewport viel höher als 16:10).
+      // Ist er breiter als der Viewport, schrumpft die Welt einfach stärker.
+      const g = grid(), span = g.bottom - g.top
+      const size = parseFloat(lines[0].style.fontSize) || 40
+      const blockTop = g.top + span * 0.34 - size, blockBottom = g.top + span * 0.9
+      const cropH = Math.max(Math.min(H, W / 1.6), (blockBottom - blockTop) * 1.2), cropW = cropH * 1.6
+      const cx = (W - cropW) / 2
+      const cy = (blockTop + blockBottom) / 2 - cropH / 2
+      const s = lerp(1, r.width / cropW, t)
+      const tx = lerp(0, r.left - cx * (r.width / cropW), t)
+      const ty = lerp(0, r.top - cy * (r.width / cropW), t)
+      world.style.transform = `translate(${tx}px, ${ty}px) scale(${s})`
+      const bottomInset = H - cy - cropH, side = Math.max(0, cx)
+      world.style.clipPath = t > 0 ? `inset(${Math.max(0, cy) * t}px ${side * t}px ${Math.max(0, bottomInset) * t}px ${side * t}px round ${lerp(0, 4 / (r.width / cropW), t)}px)` : 'none'
+      frame.style.opacity = String(clamp01(t * 1.6))
+    }
+
+    const render = (p) => {
+      draw(p)
+      fitToScreen(ease(clamp01((p - 0.82) / 0.16)))
+    }
+
+    if (reduced) {
+      document.documentElement.classList.add('reduced')
+      render(0.8)
+    } else {
+      render(0)
+      ScrollTrigger.create({ trigger: '#topo-track', start: 'top top', end: 'bottom bottom', onUpdate: (self) => render(self.progress), onRefresh: (self) => { resize(); render(self.progress) } })
+    }
+    addEventListener('resize', () => { resize(); render(ScrollTrigger.getAll()[0]?.progress ?? 0.8) })
+  </script>
+</body>
+</html>

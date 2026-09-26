@@ -1,0 +1,103 @@
+/* ─────────────────────────────────────────────────────────────
+   Mini-Webseite im Bildschirm (Varianten A und B)
+   Echtes HTML in 1280 × 800, per transform auf die Bildschirmgrösse
+   skaliert (--s = Bildschirmbreite / 1280). Bleibt dadurch scharf.
+   Inhalt ist ein erfundenes Beispiel ("Holzwerk Keller").
+   ───────────────────────────────────────────────────────────── */
+
+.site {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 1280px;
+  height: 800px;
+  transform: scale(var(--s, 0.5));
+  transform-origin: 0 0;
+  background: #f6f2ea;
+  color: #1d1812;
+  font-family: var(--font-body);
+  overflow: hidden;
+}
+
+.site-nav {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 84px;
+  padding: 0 64px;
+}
+.site-logo { font-family: var(--font-display); font-weight: 700; font-size: 22px; letter-spacing: -0.02em; }
+.site-logo span { color: #a0522d; }
+.site-links { display: flex; gap: 36px; font-size: 15px; color: #5b5146; }
+.site-cta {
+  font-size: 15px;
+  font-weight: 600;
+  color: #f6f2ea;
+  background: #1d1812;
+  padding: 12px 22px;
+  border-radius: 999px;
+}
+
+.site-hero {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1.05fr 1fr;
+  gap: 56px;
+  padding: 40px 64px 0;
+  height: 440px;
+}
+.site-eyebrow { font-size: 13px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: #a0522d; margin-bottom: 20px; }
+.site-h1 { font-family: var(--font-display); font-weight: 700; font-size: 66px; line-height: 1.02; letter-spacing: -0.035em; margin-bottom: 22px; }
+.site-p { font-size: 18px; line-height: 1.55; color: #5b5146; max-width: 460px; margin-bottom: 30px; }
+.site-btns { display: flex; gap: 14px; }
+.site-btn { font-size: 16px; font-weight: 600; padding: 15px 26px; border-radius: 999px; background: #a0522d; color: #fff; }
+.site-btn--ghost { background: transparent; color: #1d1812; box-shadow: inset 0 0 0 1.5px #cbbfae; }
+
+/* "Bilder" als Verläufe, keine Stockfotos */
+.site-photo {
+  position: relative;
+  border-radius: 22px;
+  overflow: hidden;
+  background:
+    repeating-linear-gradient(96deg, rgba(0,0,0,0.05) 0 3px, transparent 3px 22px),
+    linear-gradient(135deg, #c98f5b, #8b5a33 55%, #5e3a1f);
+}
+.site-photo::after {
+  content: 'Eichentisch, massiv';
+  position: absolute;
+  left: 20px;
+  bottom: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #fff;
+  background: rgba(0,0,0,0.35);
+  padding: 8px 12px;
+  border-radius: 10px;
+}
+
+.site-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  padding: 36px 64px 0;
+}
+.site-card { border-radius: 18px; background: #fff; padding: 14px 14px 18px; box-shadow: 0 1px 0 rgba(0,0,0,0.04); }
+.site-card-img { height: 96px; border-radius: 12px; margin-bottom: 14px; }
+.site-cards > :nth-child(1) .site-card-img { background: linear-gradient(135deg, #d9c2a3, #a67c52); }
+.site-cards > :nth-child(2) .site-card-img { background: linear-gradient(135deg, #bfc8c0, #6f7f73); }
+.site-cards > :nth-child(3) .site-card-img { background: linear-gradient(135deg, #e4cdb5, #b0784a); }
+.site-card h4 { font-family: var(--font-display); font-size: 19px; letter-spacing: -0.02em; margin-bottom: 4px; }
+.site-card p { font-size: 14px; color: #7a6e61; }
+
+/* ─── Bau-Zustände für Variante A ───
+   Jeder Block hat eine graue Drahtgitter-Fassung (.wf) und den echten Inhalt (.real). */
+.build { position: relative; }
+.build > .real.site-photo { height: 100%; }
+.build > .wf {
+  position: absolute;
+  inset: 0;
+  border-radius: 10px;
+  background: #d9d4cb;
+}
+.build > .wf.wf--dark { background: #cfc8bc; }

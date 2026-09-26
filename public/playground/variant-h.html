@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="de-CH">
+<head>
+  <meta charset="utf-8" />
+  <meta name="robots" content="noindex, nofollow" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Variante H: Schweizer Raster</title>
+  <link rel="icon" href="data:," />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./shared/base.css" />
+  <style>
+    /* ─────────────────────────────────────────────────────────────
+       Variante H: "Schweizer Raster"
+       Ein Plakat baut sich auf hellem Papier auf, im Geist der Schweizer
+       Typografie. Erst zeichnen sich 12 Spalten und Zeilen, dann schnappen
+       Wörter und Formen aus verstreuten Positionen in ihre Rasterfelder.
+       Die Endpositionen setzt CSS Grid; animiert wird nur der Weg dorthin
+       (transform), das Layout bleibt echt und responsiv (Handy: 4 Spalten).
+         0–25 %  Raster zeichnet sich
+         25–65 % Elemente schnappen ein, Spannweiten werden angezeigt
+         65–100 % Raster tritt zurück, das Plakat steht
+       ───────────────────────────────────────────────────────────── */
+
+    :root { --paper: #f2ede6; --ink-dark: #14110d; }
+    #grid-track { height: 320vh; }
+    @media (max-width: 720px) { #grid-track { height: 240vh; } }
+
+    .stage { background: var(--paper); color: var(--ink-dark); }
+
+    .poster {
+      --cols: 12;
+      --gap: 1.4vw;
+      position: relative;
+      width: min(1280px, 92vw);
+      height: min(80vh, 760px);
+      display: grid;
+      grid-template-columns: repeat(var(--cols), 1fr);
+      grid-template-rows: repeat(8, 1fr);
+      column-gap: var(--gap);
+    }
+
+    /* Hilfslinien: Spalten und Zeilen */
+    .guides { position: absolute; inset: 0; display: grid; grid-template-columns: repeat(var(--cols), 1fr); column-gap: var(--gap); pointer-events: none; }
+    .col { position: relative; background: rgba(218, 41, 28, 0.06); transform-origin: top; }
+    .col::before, .col::after { content: ''; position: absolute; top: 0; bottom: 0; width: 1px; background: rgba(218, 41, 28, 0.55); }
+    .col::before { left: 0; } .col::after { right: 0; }
+    .col span { position: absolute; top: -22px; left: 0; font-size: 10px; font-weight: 600; color: var(--accent); font-variant-numeric: tabular-nums; }
+    .rows { position: absolute; inset: 0; display: grid; grid-template-rows: repeat(8, 1fr); pointer-events: none; }
+    .row { border-top: 1px solid rgba(20, 17, 13, 0.14); transform-origin: left; }
+    .row:last-child { border-bottom: 1px solid rgba(20, 17, 13, 0.14); }
+
+    /* Plakat-Elemente, Endpositionen per Grid */
+    .el { position: relative; z-index: 2; }
+    .w { font-family: var(--font-display); font-weight: 800; letter-spacing: -0.045em; line-height: 0.86; white-space: nowrap; }
+    .w1 { grid-column: 1 / 10; grid-row: 2 / 4; font-size: clamp(3rem, 11.6vw, 10.5rem); align-self: end; }
+    .w2 { grid-column: 1 / 4; grid-row: 4 / 6; font-size: clamp(3rem, 11.6vw, 10.5rem); font-weight: 500; color: var(--accent); }
+    .w3 { grid-column: 4 / 12; grid-row: 4 / 6; font-size: clamp(3rem, 11.6vw, 10.5rem); }
+    .circle { grid-column: 10 / 13; grid-row: 1 / 4; justify-self: end; height: 100%; aspect-ratio: 1; max-width: 100%; border-radius: 50%; background: var(--accent); }
+    .bar { grid-column: 1 / -1; grid-row: 7; align-self: center; height: 6px; background: var(--ink-dark); }
+    .meta { grid-row: 8; align-self: end; font-size: clamp(11px, 1vw, 14px); line-height: 1.45; }
+    .m1 { grid-column: 1 / 4; } .m2 { grid-column: 5 / 8; } .m3 { grid-column: 9 / 13; }
+    .meta b { display: block; font-weight: 600; }
+
+    /* Spannweiten-Etiketten */
+    .span-tag { position: absolute; left: 0; top: -20px; font-size: 10px; font-weight: 600; letter-spacing: 0.04em; color: #fff; background: var(--accent); padding: 3px 6px; border-radius: 3px; opacity: 0; white-space: nowrap; }
+
+    .h-cap { position: absolute; left: max(24px, 4vw); bottom: max(20px, 4vh); font-size: 12px; color: rgba(20, 17, 13, 0.55); letter-spacing: 0.04em; }
+
+    @media (max-width: 720px) {
+      .poster { --cols: 4; --gap: 3vw; height: 74vh; grid-template-rows: repeat(10, 1fr); }
+      .rows { grid-template-rows: repeat(10, 1fr); }
+      .w1 { grid-column: 1 / 5; grid-row: 3 / 5; font-size: 15vw; }
+      .w2 { grid-column: 1 / 3; grid-row: 5 / 6; font-size: 15vw; }
+      .w3 { grid-column: 1 / 5; grid-row: 6 / 8; font-size: 15vw; }
+      .circle { grid-column: 3 / 5; grid-row: 1 / 3; }
+      .bar { grid-row: 8; }
+      .m1 { grid-column: 1 / 3; grid-row: 9 / 11; } .m2 { grid-column: 3 / 5; grid-row: 9 / 11; } .m3 { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="grain" aria-hidden="true"></div>
+
+  <section class="intro">
+    <h1 class="display">Wir bauen Webseiten, die man nicht wegscrollt.</h1>
+    <p class="lead">Mit der Ordnung der Schweizer Typografie: Raster zuerst, dann alles an seinen Platz.</p>
+    <p class="scroll-hint">Scrollen ↓</p>
+  </section>
+
+  <section class="track" id="grid-track" aria-label="Gestaltung mit System">
+    <div class="stage">
+      <div class="poster" id="poster">
+        <div class="guides" id="guides" aria-hidden="true"></div>
+        <div class="rows" id="rows" aria-hidden="true"></div>
+
+        <div class="el circle" aria-hidden="true"><span class="span-tag" data-mob="Spalte 3–4">Spalte 10–12</span></div>
+        <h2 class="el w w1">Gestaltung<span class="span-tag" data-mob="Spalte 1–4">Spalte 1–9</span></h2>
+        <p class="el w w2" aria-hidden="true">mit<span class="span-tag" data-mob="1–2">1–3</span></p>
+        <p class="el w w3" aria-hidden="true">System.<span class="span-tag" data-mob="Spalte 1–4">Spalte 4–11</span></p>
+        <div class="el bar" aria-hidden="true"></div>
+        <p class="el meta m1"><b>Zurio</b>Webseiten für Schweizer KMU</p>
+        <p class="el meta m2"><b>Raster</b>12 Spalten, eine Grundlinie</p>
+        <p class="el meta m3"><b>Winterthur</b>Konzept, Design, Entwicklung</p>
+      </div>
+      <p class="h-cap">Das Raster ist unsichtbar. Man spürt es trotzdem.</p>
+    </div>
+  </section>
+
+  <section class="outro">
+    <h2 class="display">Ordnung, die man nicht sieht, aber spürt.</h2>
+    <p class="lead">Jede Zurio-Seite steht auf einem festen Raster.</p>
+  </section>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js"></script>
+  <script src="./shared/motion.js"></script>
+  <script>
+    const { reduced } = setupMotion()
+    const mobile = window.matchMedia('(max-width: 720px)').matches
+    const COLS = mobile ? 4 : 12, ROWS = mobile ? 10 : 8
+
+    const guides = document.getElementById('guides'), rowsEl = document.getElementById('rows')
+    guides.innerHTML = Array.from({ length: COLS }, (_, i) => `<div class="col"><span>${i + 1}</span></div>`).join('')
+    rowsEl.innerHTML = '<div class="row"></div>'.repeat(ROWS)
+    const cols = [...guides.children], rows = [...rowsEl.children]
+    const els = gsap.utils.toArray('.el')
+    const spanTags = gsap.utils.toArray('.span-tag')
+    // Etiketten passend zum Raster: 12 Spalten auf dem Desktop, 4 auf dem Handy
+    if (mobile) spanTags.forEach((t) => { if (t.dataset.mob) t.textContent = t.dataset.mob })
+
+    // Verstreute Startpositionen, fest statt zufällig, damit es jedes Mal gleich aussieht
+    const SCATTER = [
+      { x: -18, y: -30, r: -14 },  // Kreis
+      { x: 22, y: 26, r: 6 },      // Gestaltung
+      { x: -30, y: 18, r: -10 },   // mit
+      { x: 26, y: -22, r: 9 },     // System.
+      { x: 0, y: 40, r: 3 },       // Balken
+      { x: -20, y: 30, r: -6 }, { x: 10, y: 34, r: 5 }, { x: 24, y: 28, r: -4 },
+    ]
+
+    if (reduced) {
+      gsap.set([guides, rowsEl], { opacity: 0.35 })
+    } else {
+      gsap.set(cols, { scaleY: 0 })
+      gsap.set(rows, { scaleX: 0 })
+      els.forEach((el, i) => {
+        const s = SCATTER[i] || { x: 0, y: 30, r: 0 }
+        gsap.set(el, { xPercent: 0, x: `${s.x}vw`, y: `${s.y}vh`, rotate: s.r, opacity: 0 })
+      })
+
+      const tl = gsap.timeline({
+        defaults: { ease: 'none' },
+        scrollTrigger: { trigger: '#grid-track', start: 'top top', end: 'bottom bottom', scrub: 0.5,
+          onToggle: (self) => toggleWillChange(els, self.isActive ? 'transform' : 'auto') },
+      })
+      /* 0–25 %: Raster zeichnet sich */
+      tl.to(cols, { scaleY: 1, duration: 12, stagger: 0.8, ease: 'power3.out' }, 2)
+      tl.to(rows, { scaleX: 1, duration: 10, stagger: 0.8, ease: 'power3.out' }, 8)
+
+      /* 25–65 %: Elemente erscheinen verstreut und schnappen ins Raster */
+      els.forEach((el, i) => {
+        const at = 24 + i * 4
+        tl.to(el, { opacity: 1, duration: 2 }, at)
+        tl.to(el, { x: 0, y: 0, rotate: 0, duration: 9, ease: 'back.out(1.4)' }, at)
+      })
+      tl.to(spanTags, { opacity: 1, duration: 3, stagger: 1 }, 48)
+
+      /* 65–100 %: Raster tritt zurück, Plakat steht */
+      tl.to(spanTags, { opacity: 0, duration: 5 }, 68)
+      tl.to([guides, rowsEl], { opacity: 0, duration: 14 }, 72)
+      tl.to({}, { duration: 10 }, 90)
+    }
+  </script>
+</body>
+</html>

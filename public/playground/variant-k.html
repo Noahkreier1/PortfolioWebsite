@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="de-CH">
+<head>
+  <meta charset="utf-8" />
+  <meta name="robots" content="noindex, nofollow" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Variante K: Abfahrtstafel</title>
+  <link rel="icon" href="data:," />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./shared/base.css" />
+  <style>
+    /* ─────────────────────────────────────────────────────────────
+       Variante K: "Abfahrtstafel"
+       Eine Fallblatt-Anzeige wie im Bahnhof. Jede Zelle blättert im Scroll-Takt
+       durch das Alphabet bis zu ihrem Zeichen, kaskadierend von links oben nach
+       rechts unten. Das Blättern ist echt 3D (obere Klappe fällt, untere Klappe
+       schwingt auf) und gescrubbt: rückwärts scrollen blättert zurück.
+       Danach wandert eine Markierung über die Zeilen, rechts zeigt ein Monitor
+       das jeweilige Projekt. Bewusst ohne SBB-Marke oder Bahnhofsuhr (geschützt).
+         0–48 %   Tafel blättert sich auf
+         48–96 %  Zeile für Zeile mit Projektbild
+       ───────────────────────────────────────────────────────────── */
+
+    #board-track { height: 440vh; }
+    @media (max-width: 860px) { #board-track { height: 300vh; } }
+
+    .stage { background: radial-gradient(60% 50% at 50% 50%, rgba(242, 237, 230, 0.05), transparent 70%), var(--bg); }
+
+    .station { width: min(1280px, 94vw); display: grid; grid-template-columns: 1.55fr 1fr; gap: 28px; align-items: center; }
+    .station-head { grid-column: 1 / -1; display: flex; justify-content: space-between; align-items: end; gap: 24px; }
+    .station-head .display { font-size: clamp(1.9rem, 3.4vw, 3.25rem); max-width: 18ch; }
+    .station-sign { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--ink-muted); white-space: nowrap; }
+    .station-sign i { width: 18px; height: 18px; border-radius: 3px; background: #DA291C; position: relative; }
+    .station-sign i::before, .station-sign i::after { content: ''; position: absolute; background: #fff; }
+    .station-sign i::before { left: 7px; top: 4px; width: 4px; height: 10px; }
+    .station-sign i::after { left: 4px; top: 7px; width: 10px; height: 4px; }
+
+    /* Tafel */
+    .board {
+      --cell-w: clamp(15px, 1.52vw, 25px);
+      --cell-h: calc(var(--cell-w) * 1.48);
+      --gap: 3px;
+      position: relative;
+      padding: 18px 18px 14px;
+      border-radius: 10px;
+      background: linear-gradient(#1a1918, #111010);
+      box-shadow: 0 40px 100px -30px rgba(0, 0, 0, 0.9), inset 0 0 0 1px rgba(242, 237, 230, 0.07), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    }
+    .board-labels, .board-row { display: grid; grid-template-columns: var(--cols); column-gap: calc(var(--cell-w) * 0.9); }
+    .board-labels { margin-bottom: 10px; font-size: 10px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(242, 237, 230, 0.45); }
+    .board-row { position: relative; padding: 5px 0; }
+    .board-row + .board-row { border-top: 1px solid rgba(242, 237, 230, 0.05); }
+    .board-row::before { content: ''; position: absolute; inset: 0 -10px; border-radius: 6px; background: rgba(218, 41, 28, 0.14); box-shadow: inset 3px 0 0 var(--accent); opacity: 0; transition: opacity 260ms var(--ease-out); }
+    .board-row.is-on::before { opacity: 1; }
+    .field { display: flex; gap: var(--gap); position: relative; }
+
+    /* Eine Fallblatt-Zelle: statische Hälften + zwei bewegte Klappen */
+    .flap { position: relative; width: var(--cell-w); height: var(--cell-h); perspective: 300px; font-family: var(--font-display); font-weight: 700; font-size: calc(var(--cell-h) * 0.68); color: #f2ede6; }
+    .flap .h { position: absolute; left: 0; right: 0; height: 50%; overflow: hidden; background: linear-gradient(#2a2826, #232120); backface-visibility: hidden; }
+    .flap .h b { position: absolute; left: 0; right: 0; height: var(--cell-h); display: grid; place-items: center; font-weight: 700; line-height: 1; }
+    .flap .top { top: 0; border-radius: 3px 3px 0 0; transform-origin: 50% 100%; }
+    .flap .bot { bottom: 0; border-radius: 0 0 3px 3px; transform-origin: 50% 0%; background: linear-gradient(#211f1e, #1c1b1a); }
+    .flap .bot b { top: calc(var(--cell-h) * -0.5); }
+    .flap .leaf { z-index: 2; }
+    .flap::after { content: ''; position: absolute; left: 0; right: 0; top: 50%; height: 1px; margin-top: -0.5px; background: #0b0a0a; z-index: 3; }
+    .flap.is-red { color: #ff5a4a; }
+    .flap.is-green { color: #6fd08a; }
+
+    /* Monitor rechts */
+    .monitor { display: grid; gap: 14px; }
+    .mon { position: relative; aspect-ratio: 16 / 10; border-radius: 12px; overflow: hidden; background: #000; box-shadow: 0 30px 80px -30px rgba(0, 0, 0, 0.9), 0 0 0 8px #1a1918, 0 0 0 9px rgba(242, 237, 230, 0.08); }
+    .mon img, .mon .mon-cta { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: top center; opacity: 0; }
+    .mon .mon-cta { display: grid; place-content: center; text-align: center; gap: 10px; background: radial-gradient(60% 60% at 50% 50%, rgba(218, 41, 28, 0.35), #0d0c0b); }
+    .mon-cta b { font-family: var(--font-display); font-size: clamp(1.25rem, 2.2vw, 2rem); letter-spacing: -0.02em; }
+    .mon-cta span { font-size: 13px; color: var(--ink-muted); }
+    .mon .mon-idle { position: absolute; inset: 0; display: grid; place-items: center; font-size: 13px; letter-spacing: 0.08em; color: var(--ink-faint); transition: opacity 300ms var(--ease-out); }
+    .mon.has-active .mon-idle { opacity: 0; }
+    .mon-caption { font-size: 14px; color: var(--ink-muted); min-height: 1.6em; }
+    .mon-caption b { color: var(--ink); font-weight: 600; }
+
+    @media (max-width: 860px) {
+      .station { grid-template-columns: 1fr; gap: 16px; }
+      .station-sign { display: none; }
+      /* Handy: Projekt und Ergebnis untereinander, damit 17 Zellen in die Breite passen */
+      .board { --cell-w: clamp(11px, 3.9vw, 16px); padding: 12px 12px 10px; }
+      .board-labels, .board-row { grid-template-columns: 1fr !important; row-gap: 4px; }
+      .board-labels span + span { display: none; }
+      .board-row { padding: 8px 0; }
+      .monitor { grid-template-columns: 1fr 1.2fr; align-items: center; }
+      .mon-caption { font-size: 12px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="grain" aria-hidden="true"></div>
+
+  <section class="intro">
+    <h1 class="display">Wir bauen Webseiten, die man nicht wegscrollt.</h1>
+    <p class="lead">Pünktlich wie ein Schweizer Fahrplan: online in ein bis zwei Wochen.</p>
+    <p class="scroll-hint">Scrollen ↓</p>
+  </section>
+
+  <section class="track" id="board-track" aria-label="Projekte als Abfahrtstafel">
+    <div class="stage">
+      <div class="station">
+        <div class="station-head">
+          <h2 class="display">Nächste Abfahrten. Alle pünktlich.</h2>
+          <span class="station-sign"><i aria-hidden="true"></i>Winterthur, Gleis Zurio</span>
+        </div>
+        <div class="board" id="board" role="table" aria-label="Projekte und Ergebnisse"></div>
+        <div class="monitor">
+          <div class="mon" id="mon">
+            <img src="/before-after/inspireday-after.webp" alt="InspireDay" decoding="async" />
+            <img src="/work/hikebeast-desktop.webp" alt="Hikebeast" loading="lazy" decoding="async" />
+            <img src="/work/cosac-desktop.webp" alt="Cosac" loading="lazy" decoding="async" />
+            <img src="/work/driven-co-desktop.webp" alt="Driven Co." loading="lazy" decoding="async" />
+            <div class="mon-cta"><b>Ihr Projekt</b><span>Einsteigen: 30 Minuten Erstgespräch</span></div>
+            <div class="mon-idle">Abfahrt folgt …</div>
+          </div>
+          <p class="mon-caption" id="cap"></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="outro">
+    <h2 class="display">Ihr Projekt fährt als Nächstes ab.</h2>
+    <p class="lead">Verbindlicher Fixpreis, verbindlicher Termin.</p>
+  </section>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js"></script>
+  <script src="./shared/motion.js"></script>
+  <script>
+    const { reduced } = setupMotion()
+    const mobile = window.matchMedia('(max-width: 860px)').matches
+    const CHARSET = " ABCDEFGHIJKLMNOPQRSTUVWXYZÄÖÜ0123456789'.,:+-/★"
+
+    // Tafel-Inhalt: echte Kennzahlen aus der Hauptseite
+    const ROWS = [
+      { project: 'INSPIREDAY', result: "1'000+ TICKETS", status: 'LIVE', cap: '<b>InspireDay</b>, Konferenz im Volkshaus Zürich' },
+      { project: 'HIKEBEAST', result: "CHF 60'000 UMSATZ", status: 'LIVE', cap: '<b>Hikebeast</b>, eigene Web-App, in sechs Monaten' },
+      { project: 'COSAC', result: '4.7★ 348 BEWERT.', status: 'LIVE', cap: '<b>Cosac</b>, Leons eigene Marke, verkauft in die USA' },
+      { project: 'DRIVEN CO.', result: '400+ EINHEITEN', status: 'LIVE', cap: '<b>Driven Co.</b>, Streetwear, zwei Drops' },
+      { project: 'IHR PROJEKT', result: 'ERSTGESPRÄCH', status: 'JETZT', cap: '<b>Ihr Projekt</b>: kostenlos, 30 Minuten' },
+    ]
+    // Feldbreiten in Zeichen; auf dem Handy ohne Status-Spalte
+    const W = mobile ? { project: 11, result: 17 } : { project: 11, result: 17, status: 5 }
+    const fields = Object.keys(W)
+
+    const board = document.getElementById('board')
+    const colTemplate = fields.map((f) => `calc(${W[f]} * var(--cell-w) + ${W[f] - 1} * var(--gap))`).join(' ')
+    board.style.setProperty('--cols', colTemplate)
+    board.innerHTML = `<div class="board-labels" role="row">${fields.map((f) => `<span role="columnheader">${{ project: 'Projekt', result: 'Ergebnis', status: 'Status' }[f]}</span>`).join('')}</div>`
+
+    // Zellen aufbauen; jede kennt ihre Zeichenfolge von Leer bis Ziel
+    const cells = []
+    const rowEls = ROWS.map((row, r) => {
+      const rowEl = document.createElement('div')
+      rowEl.className = 'board-row'
+      rowEl.setAttribute('role', 'row')
+      fields.forEach((f, fi) => {
+        const field = document.createElement('div')
+        field.className = 'field'
+        field.setAttribute('role', 'cell')
+        field.setAttribute('aria-label', row[f])
+        const text = row[f].padEnd(W[f], ' ').slice(0, W[f])
+        ;[...text].forEach((ch, c) => {
+          const el = document.createElement('span')
+          el.className = 'flap'
+          if (f === 'status') el.classList.add(row.status === 'LIVE' ? 'is-green' : 'is-red')
+          el.innerHTML = '<span class="h top"><b></b></span><span class="h bot"><b></b></span><span class="h top leaf lt"><b></b></span><span class="h bot leaf lb"><b></b></span>'
+          field.appendChild(el)
+          // Nicht das ganze Alphabet: ab einem festen Versatz vor dem Ziel blättern (wirkt wie echt, bleibt schnell)
+          const target = Math.max(0, CHARSET.indexOf(ch))
+          const seed = (r * 31 + fi * 17 + c * 7) % 9
+          const start = ch === ' ' ? 0 : Math.max(1, target - (6 + seed))
+          const seq = [' ', ...CHARSET.slice(start, target + 1)]
+          if (ch === ' ') seq.length = 1
+          const globalCol = fields.slice(0, fi).reduce((n, k) => n + W[k], 0) + c
+          cells.push({
+            el, seq,
+            parts: [...el.querySelectorAll('b')],        // top, bot, leafTop, leafBot
+            leafs: [el.querySelector('.lt'), el.querySelector('.lb')],
+            delay: r * 0.075 + globalCol * 0.009,
+            last: '',
+          })
+        })
+        rowEl.appendChild(field)
+      })
+      board.appendChild(rowEl)
+      return rowEl
+    })
+
+    const MAX_DELAY = Math.max(...cells.map((c) => c.delay))
+
+    // Zelle für Fortschritt p zeichnen
+    const renderCell = (cell, p) => {
+      const steps = cell.seq.length - 1
+      const pos = steps <= 0 ? 0 : gsap.utils.clamp(0, 1, (p - cell.delay) / 0.36) * steps
+      const i = Math.min(steps, Math.floor(pos))
+      const f = i >= steps ? 0 : pos - i
+      const cur = cell.seq[i], nxt = cell.seq[Math.min(steps, i + 1)]
+      const key = `${i}|${f.toFixed(3)}`
+      if (key === cell.last) return
+      cell.last = key
+      const [top, bot, lt, lb] = cell.parts
+      top.textContent = f > 0 ? nxt : cur        // oben: schon das nächste Zeichen, sobald die Klappe fällt
+      bot.textContent = cur                      // unten: noch das aktuelle, bis die Klappe landet
+      lt.textContent = cur
+      lb.textContent = nxt
+      const [leafT, leafB] = cell.leafs
+      if (f === 0) { leafT.style.transform = 'rotateX(0deg)'; leafT.style.visibility = 'hidden'; leafB.style.visibility = 'hidden'; return }
+      if (f < 0.5) {
+        leafT.style.visibility = 'visible'; leafB.style.visibility = 'hidden'
+        leafT.style.transform = `rotateX(${-180 * f}deg)`
+      } else {
+        leafT.style.visibility = 'hidden'; leafB.style.visibility = 'visible'
+        leafB.style.transform = `rotateX(${180 - 180 * f}deg)`
+        bot.textContent = cur
+      }
+    }
+
+    const imgs = [...document.querySelectorAll('#mon > img, #mon > .mon-cta')]
+    const cap = document.getElementById('cap')
+    let active = -1
+    const setActive = (idx) => {
+      if (idx === active) return
+      active = idx
+      rowEls.forEach((r, i) => r.classList.toggle('is-on', i === idx))
+      document.getElementById('mon').classList.toggle('has-active', idx >= 0)
+      imgs.forEach((im, i) => gsap.to(im, { opacity: i === idx ? 1 : 0, duration: 0.35, ease: 'power2.out', overwrite: true }))
+      cap.innerHTML = idx >= 0 ? ROWS[idx].cap : ''
+    }
+
+    const render = (progress) => {
+      // Kaskade in den ersten 48 %: bis dahin ist auch die letzte Zelle (grösste Verzögerung) fertig
+      const flipP = gsap.utils.clamp(0, 1, progress / 0.48) * (MAX_DELAY + 0.36)
+      cells.forEach((c) => renderCell(c, flipP))
+      const hl = progress < 0.5 ? -1 : Math.min(ROWS.length - 1, Math.floor((progress - 0.5) / 0.46 * ROWS.length))
+      setActive(hl)
+    }
+
+    if (reduced) {
+      cells.forEach((c) => renderCell(c, 1))
+      setActive(0)
+    } else {
+      render(0)
+      ScrollTrigger.create({ trigger: '#board-track', start: 'top top', end: 'bottom bottom', onUpdate: (self) => render(self.progress) })
+    }
+  </script>
+</body>
+</html>

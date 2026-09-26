@@ -1,5 +1,30 @@
 {
+  "redirects": [
+    {
+      "source": "/playground",
+      "destination": "/playground/",
+      "permanent": false
+    }
+  ],
+  "headers": [
+    {
+      "source": "/playground/(.*)",
+      "headers": [
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        }
+      ]
+    }
+  ],
   "rewrites": [
-    { "source": "/(.*)", "destination": "/" }
+    {
+      "source": "/playground/",
+      "destination": "/playground/index.html"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/"
+    }
   ]
 }

@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="de-CH">
+<head>
+  <meta charset="utf-8" />
+  <meta name="robots" content="noindex, nofollow" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Variante E: Code wird zur Seite</title>
+  <link rel="icon" href="data:," />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./shared/base.css" />
+  <style>
+    /* ─────────────────────────────────────────────────────────────
+       Variante E: "Code wird zur Seite"
+       Links tippt sich ein Editor im Scroll-Takt. Rechts rendert die Vorschau
+       live mit: Erst erscheint rohes HTML im Browser-Standardlook (Times, blaue
+       Links), dann stylt jede CSS-Zeile ein Stück der Seite. Zeigt, dass wir
+       den Code selbst schreiben. Alles scrubbed, rückwärts scrollen löscht wieder.
+       ───────────────────────────────────────────────────────────── */
+
+    #code-track { height: 360vh; }
+    @media (max-width: 860px) { #code-track { height: 280vh; } }
+
+    .stage { background: radial-gradient(50% 50% at 70% 50%, rgba(160, 82, 45, 0.16), transparent 70%), var(--bg); }
+
+    .ce {
+      width: min(1240px, 94vw);
+      display: grid;
+      grid-template-columns: 0.92fr 1.08fr;
+      gap: 20px;
+      align-items: stretch;
+    }
+    .ce-head { grid-column: 1 / -1; display: flex; justify-content: space-between; align-items: end; gap: 24px; margin-bottom: 8px; }
+    .ce-head .display { font-size: clamp(1.75rem, 3.2vw, 3rem); max-width: 16ch; }
+
+    /* Fenster-Rahmen für Editor und Browser */
+    .win { border-radius: 14px; overflow: hidden; box-shadow: 0 30px 80px -30px rgba(0, 0, 0, 0.8), inset 0 0 0 1px rgba(242, 237, 230, 0.08); display: flex; flex-direction: column; }
+    .win-bar { height: 36px; flex: none; display: flex; align-items: center; gap: 8px; padding: 0 14px; font-size: 12px; }
+    .dots { display: flex; gap: 6px; }
+    .dots i { width: 10px; height: 10px; border-radius: 50%; background: rgba(242, 237, 230, 0.18); }
+
+    /* Editor */
+    .editor { background: #151413; }
+    .editor .win-bar { background: #1c1b1a; color: var(--ink-faint); }
+    .tab { padding: 5px 10px; border-radius: 6px; background: rgba(242, 237, 230, 0.06); color: var(--ink-muted); }
+    .code {
+      flex: 1;
+      margin: 0;
+      padding: 16px 0;
+      font-family: ui-monospace, 'SF Mono', Menlo, monospace; /* echter Code */
+      font-size: clamp(10.5px, 0.95vw, 13.5px);
+      line-height: 1.7;
+      color: #d9d4cb;
+      counter-reset: ln;
+      min-height: 420px;
+    }
+    .ln { display: block; padding: 0 16px 0 52px; position: relative; white-space: pre; min-height: 1.7em; }
+    .ln::before { counter-increment: ln; content: counter(ln); position: absolute; left: 0; width: 36px; text-align: right; color: rgba(242, 237, 230, 0.22); }
+    .ln.is-active { background: rgba(242, 237, 230, 0.04); }
+    .t-tag { color: #e8826a; } .t-attr { color: #d9b36c; } .t-str { color: #9ccf8a; } .t-sel { color: #e8826a; } .t-prop { color: #8fb8e0; } .t-com { color: rgba(242,237,230,0.35); }
+    .caret { display: inline-block; width: 2px; height: 1.15em; margin-left: 1px; vertical-align: -0.2em; background: var(--accent); animation: blink 1s steps(1) infinite; }
+    @keyframes blink { 50% { opacity: 0; } }
+
+    /* Browser mit Vorschau */
+    .browser { background: #fff; }
+    .browser .win-bar { background: #ece9e3; color: #6f695b; }
+    .url { flex: 1; margin-left: 8px; padding: 5px 12px; border-radius: 6px; background: #fff; color: #5b5146; font-size: 12px; }
+    .preview-wrap { position: relative; flex: 1; overflow: hidden; container-type: inline-size; }
+
+    /* ── Vorschau: startet als rohes HTML im Browser-Standardlook ── */
+    .pv { position: absolute; inset: 0; padding: 16px; font-family: 'Times New Roman', Times, serif; color: #000; background: #fff; transition: background 400ms var(--ease-out), padding 400ms var(--ease-out); }
+    .pv > * { opacity: 0; transform: translateY(6px); transition: opacity 240ms var(--ease-out), transform 240ms var(--ease-out); }
+    .pv > .on { opacity: 1; transform: none; }
+    .pv-eyebrow { font-size: 16px; margin: 0 0 8px; }
+    .pv-h1 { font-size: 32px; font-weight: bold; margin: 0 0 8px; line-height: 1.15; transition: font 300ms ease, letter-spacing 300ms ease, color 300ms ease; }
+    .pv-p { font-size: 16px; margin: 0 0 12px; max-width: none; transition: color 300ms ease; }
+    .pv-btn { display: inline-block; color: #0000ee; text-decoration: underline; font-size: 16px; transition: all 300ms var(--ease-out); }
+    .pv-photo { display: block; width: 100%; height: 0; color: #555; font-size: 14px; transition: height 400ms var(--ease-out), border-radius 400ms var(--ease-out), background 400ms var(--ease-out); }
+    .pv-photo::before { content: '[Bild: eiche.jpg]'; }
+
+    /* CSS-Zeilen schalten Stil-Stufen ein */
+    .pv.s-bg { background: #f6f2ea; padding: 7cqw 6cqw; }
+    .pv.s-type { font-family: var(--font-body); color: #1d1812; }
+    .pv.s-type .pv-eyebrow { font-size: max(10px, 1.6cqw); font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: #a0522d; }
+    .pv.s-type .pv-h1 { font-family: var(--font-display); font-size: max(22px, 6.4cqw); letter-spacing: -0.035em; line-height: 1.02; }
+    .pv.s-type .pv-p { font-size: max(12px, 1.9cqw); color: #5b5146; max-width: 46ch; }
+    .pv.s-btn .pv-btn { color: #fff; text-decoration: none; background: #a0522d; padding: 1.2cqw 2.4cqw; border-radius: 999px; font-family: var(--font-body); font-weight: 600; font-size: max(11px, 1.7cqw); }
+    .pv.s-photo .pv-photo { height: 22cqw; border-radius: 16px; margin-top: 3.2cqw; color: transparent;
+      background: repeating-linear-gradient(96deg, rgba(0,0,0,0.05) 0 3px, transparent 3px 22px), linear-gradient(135deg, #c98f5b, #8b5a33 55%, #5e3a1f); }
+
+    .ce-status { font-size: 12px; color: var(--ink-faint); display: flex; gap: 12px; align-items: center; }
+    .ce-status b { color: var(--ink); font-weight: 500; font-variant-numeric: tabular-nums; }
+
+    @media (max-width: 860px) {
+      .ce { grid-template-columns: 1fr; gap: 12px; }
+      .ce-head .display { font-size: 1.6rem; }
+      .ce-status { display: none; }
+      .code { min-height: 0; height: 34vh; font-size: 10.5px; padding: 10px 0; overflow: hidden; }
+      .ln { padding-left: 40px; } .ln::before { width: 26px; }
+      .browser { height: 34vh; }
+    }
+  </style>
+</head>
+<body>
+  <div class="grain" aria-hidden="true"></div>
+
+  <section class="intro">
+    <h1 class="display">Wir bauen Webseiten, die man nicht wegscrollt.</h1>
+    <p class="lead">Kein Baukasten, kein Template. Jede Zeile geschrieben, jede Zeile sichtbar.</p>
+    <p class="scroll-hint">Scrollen ↓</p>
+  </section>
+
+  <section class="track" id="code-track" aria-label="Code wird zur Seite">
+    <div class="stage">
+      <div class="ce">
+        <div class="ce-head">
+          <h2 class="display">Jede Zeile von Hand geschrieben.</h2>
+          <p class="ce-status">Zeichen <b id="chars">0</b> · Zeilen <b id="lines">0</b></p>
+        </div>
+        <div class="win editor">
+          <div class="win-bar"><span class="dots"><i></i><i></i><i></i></span><span class="tab">Hero.html</span><span class="tab">hero.css</span></div>
+          <pre class="code" id="code" aria-hidden="true"></pre>
+        </div>
+        <div class="win browser">
+          <div class="win-bar"><span class="dots"><i></i><i></i><i></i></span><span class="url">holzwerk-keller.ch</span></div>
+          <div class="preview-wrap">
+            <div class="pv" id="pv">
+              <p class="pv-eyebrow">Schreinerei in Winterthur</p>
+              <h1 class="pv-h1">Möbel nach Mass, gebaut für Jahrzehnte.</h1>
+              <p class="pv-p">Küchen, Einbauschränke und Tische aus Schweizer Holz.</p>
+              <a class="pv-btn">Beratung buchen</a>
+              <span class="pv-photo"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="outro">
+    <h2 class="display">Sauberer Code ist schneller, zugänglicher und hält länger.</h2>
+    <p class="lead">Darum schreiben wir ihn selbst.</p>
+  </section>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js"></script>
+  <script src="./shared/motion.js"></script>
+  <script>
+    const { reduced } = setupMotion()
+
+    /* Code als Zeilen aus Token [Text, Klasse]. `show` blendet ein Vorschau-Element ein,
+       `style` schaltet eine Stil-Stufe auf der Vorschau. Ausgelöst, sobald die Zeile fertig getippt ist. */
+    const L = (tokens, action) => ({ tokens, action })
+    const lines = [
+      L([['<!-- Hero.html -->', 't-com']]),
+      L([['<section ', 't-tag'], ['class', 't-attr'], ['=', ''], ['"hero"', 't-str'], ['>', 't-tag']]),
+      L([['  <p ', 't-tag'], ['class', 't-attr'], ['=', ''], ['"eyebrow"', 't-str'], ['>', 't-tag'], ['Schreinerei in Winterthur', ''], ['</p>', 't-tag']], { show: '.pv-eyebrow' }),
+      L([['  <h1>', 't-tag'], ['Möbel nach Mass, gebaut für Jahrzehnte.', ''], ['</h1>', 't-tag']], { show: '.pv-h1' }),
+      L([['  <p>', 't-tag'], ['Küchen, Einbauschränke und Tische …', ''], ['</p>', 't-tag']], { show: '.pv-p' }),
+      L([['  <a ', 't-tag'], ['class', 't-attr'], ['=', ''], ['"btn"', 't-str'], ['>', 't-tag'], ['Beratung buchen', ''], ['</a>', 't-tag']], { show: '.pv-btn' }),
+      L([['  <img ', 't-tag'], ['src', 't-attr'], ['=', ''], ['"eiche.jpg"', 't-str'], [' />', 't-tag']], { show: '.pv-photo' }),
+      L([['</section>', 't-tag']]),
+      L([['', '']]),
+      L([['/* hero.css */', 't-com']]),
+      L([['.hero', 't-sel'], [' { ', ''], ['background', 't-prop'], [': #f6f2ea; ', ''], ['padding', 't-prop'], [': 7cqw; }', '']], { style: 's-bg' }),
+      L([['h1', 't-sel'], [' { ', ''], ['font', 't-prop'], [': 700 6.4cqw/1.02 "Inter Tight"; }', '']], { style: 's-type' }),
+      L([['.btn', 't-sel'], [' { ', ''], ['background', 't-prop'], [': #a0522d; ', ''], ['border-radius', 't-prop'], [': 999px; }', '']], { style: 's-btn' }),
+      L([['img', 't-sel'], [' { ', ''], ['aspect-ratio', 't-prop'], [': 16/5; ', ''], ['border-radius', 't-prop'], [': 16px; }', '']], { style: 's-photo' }),
+    ]
+
+    const codeEl = document.getElementById('code')
+    const pv = document.getElementById('pv')
+    const charsEl = document.getElementById('chars'), linesEl = document.getElementById('lines')
+
+    // Zeilen-Elemente mit je einem Span pro Token vorbereiten
+    const rows = lines.map((line) => {
+      const row = document.createElement('span'); row.className = 'ln'
+      const spans = line.tokens.map(([text, cls]) => { const s = document.createElement('span'); if (cls) s.className = cls; row.appendChild(s); return { s, text } })
+      codeEl.appendChild(row)
+      return { row, spans, len: line.tokens.reduce((n, [t]) => n + t.length, 0), action: line.action }
+    })
+    const total = rows.reduce((n, r) => n + r.len, 0)
+    const caret = document.createElement('span'); caret.className = 'caret'
+
+    // Zustand für eine bestimmte Anzahl getippter Zeichen herstellen (vorwärts wie rückwärts)
+    let lastTyped = -1
+    const renderTyped = (typed) => {
+      typed = Math.round(typed)
+      if (typed === lastTyped) return
+      lastTyped = typed
+      let left = typed, doneLines = 0, activeRow = rows[0]
+      rows.forEach((r) => {
+        let rowLeft = Math.min(left, r.len)
+        r.spans.forEach(({ s, text }) => { const n = Math.max(0, Math.min(text.length, rowLeft)); s.textContent = text.slice(0, n); rowLeft -= n })
+        const complete = left >= r.len
+        if (left > 0) activeRow = r
+        if (complete) doneLines++
+        if (r.action?.show) pv.querySelector(r.action.show).classList.toggle('on', complete)
+        if (r.action?.style) pv.classList.toggle(r.action.style, complete)
+        left = Math.max(0, left - r.len)
+      })
+      rows.forEach((r) => r.row.classList.toggle('is-active', r === activeRow && typed < total))
+      activeRow.row.appendChild(caret)
+      charsEl.textContent = typed
+      linesEl.textContent = doneLines
+      // Auf kleinen Screens mitscrollen, damit die aktive Zeile sichtbar bleibt
+      const off = activeRow.row.offsetTop - codeEl.clientHeight * 0.6
+      codeEl.scrollTop = Math.max(0, off)
+    }
+
+    if (reduced) {
+      renderTyped(total)
+    } else {
+      renderTyped(0)
+      ScrollTrigger.create({
+        trigger: '#code-track',
+        start: 'top top',
+        end: 'bottom bottom',
+        scrub: 0.4,
+        // 5 % Vorlauf, 88 % Tippen, Rest Halt auf dem Ergebnis
+        onUpdate: (self) => renderTyped(gsap.utils.clamp(0, 1, (self.progress - 0.05) / 0.83) * total),
+      })
+    }
+  </script>
+</body>
+</html>

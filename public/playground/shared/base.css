@@ -1,0 +1,233 @@
+/* ─────────────────────────────────────────────────────────────
+   Zurio Playground: gemeinsame Basis für alle Varianten
+   Token, Typografie, Film-Grain, Vignette, Chips und das
+   MacBook aus reinem CSS. Wer eine Variante übernimmt, braucht
+   diese Datei plus mini-site.css (A, B).
+   ───────────────────────────────────────────────────────────── */
+
+:root {
+  --bg: #0d0c0b;
+  --ink: #f2ede6;
+  --ink-muted: rgba(242, 237, 230, 0.62);
+  --ink-faint: rgba(242, 237, 230, 0.38);
+  --line: rgba(242, 237, 230, 0.12);
+  /* Zurio-Akzent (Schweizer Rot) statt Terrakotta, passend zur Hauptseite */
+  --accent: #DA291C;
+
+  --font-display: 'Inter Tight', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  --font-body: 'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+
+  /* Breite des MacBooks; Varianten überschreiben das */
+  --mb-w: min(880px, 92vw);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { background: var(--bg); color-scheme: dark; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+::selection { background: var(--accent); color: var(--ink); }
+
+/* Lenis */
+html.lenis, html.lenis body { height: auto; }
+.lenis.lenis-smooth { scroll-behavior: auto !important; }
+.lenis.lenis-stopped { overflow: hidden; }
+
+/* ─── Atmosphäre ─── */
+
+/* Film-Grain: SVG-Rauschen, 4 % Deckkraft, liegt über allem, fängt keine Klicks */
+.grain {
+  position: fixed;
+  inset: -50%;
+  z-index: 50;
+  pointer-events: none;
+  opacity: 0.04;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* Weiche Vignette für die Bühnen */
+.vignette {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(120% 90% at 50% 45%, transparent 55%, rgba(0, 0, 0, 0.55) 100%);
+}
+
+/* ─── Typografie ─── */
+
+.display {
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1.02;
+  text-wrap: balance;
+}
+.lead { color: var(--ink-muted); font-size: clamp(1rem, 1.3vw, 1.125rem); max-width: 42ch; }
+
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  color: var(--ink-muted);
+  padding: 6px 12px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: rgba(242, 237, 230, 0.03);
+}
+.chip--live::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #3fb950;
+  box-shadow: 0 0 0 3px rgba(63, 185, 80, 0.18);
+}
+
+/* ─── Intro / Outro Abschnitte ─── */
+
+.intro, .outro {
+  min-height: 70vh;
+  display: grid;
+  align-content: center;
+  padding: 16vh max(24px, 8vw);
+  gap: 24px;
+}
+.intro .display { font-size: clamp(2.5rem, 6vw, 5.25rem); max-width: 14ch; }
+.scroll-hint { font-size: 13px; color: var(--ink-faint); letter-spacing: 0.04em; }
+
+/* ─── MacBook aus CSS ───
+   Aufbau: .mb > .mb-lid (> .mb-face > .mb-screen) + .mb-deck
+   Der Bildschirm hat exakt 16:10, damit die Mini-Seite (1280×800) passt. */
+
+.mb {
+  position: relative;
+  width: var(--mb-w);
+  perspective: 1600px;
+  perspective-origin: 50% -30%;
+}
+
+.mb-lid {
+  position: relative;
+  width: 82%;
+  margin: 0 auto;
+  transform-origin: 50% 100%;
+  transform-style: preserve-3d;
+}
+
+/* Vorderseite: Rahmen + Bildschirm */
+.mb-face {
+  position: relative;
+  padding: 2.4% 2.4% 3.6%;
+  border-radius: 18px 18px 4px 4px;
+  background: linear-gradient(#1b1a19, #121110);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.08),
+    0 30px 80px -20px rgba(0, 0, 0, 0.7);
+  backface-visibility: hidden;
+}
+/* Kamera-Punkt */
+.mb-face::before {
+  content: '';
+  position: absolute;
+  top: 1%;
+  left: 50%;
+  width: 6px;
+  height: 6px;
+  margin-left: -3px;
+  border-radius: 50%;
+  background: #2a2a2a;
+}
+
+/* Rückseite (Aluminium) für die geschlossene Stellung in Variante A */
+.mb-back {
+  position: absolute;
+  inset: 0;
+  border-radius: 18px 18px 4px 4px;
+  background: linear-gradient(160deg, #cfd0d2, #9fa1a5 60%, #86888c);
+  transform: rotateY(180deg);
+  backface-visibility: hidden;
+}
+
+.mb-screen {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  border-radius: 3px;
+  background: #000;
+}
+
+/* Unterteil: flache Front mit Griffmulde */
+.mb-deck {
+  position: relative;
+  width: 100%;
+  height: calc(var(--mb-w) * 0.028);
+  min-height: 8px;
+  border-radius: 2px 2px 14px 14px / 2px 2px 10px 10px;
+  background: linear-gradient(#d8d9db, #a9abae 45%, #7d7f83);
+  box-shadow: 0 24px 40px -12px rgba(0, 0, 0, 0.8);
+}
+.mb-deck::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 16%;
+  height: 45%;
+  transform: translateX(-50%);
+  border-radius: 0 0 8px 8px;
+  background: linear-gradient(#8e9094, #b5b7ba);
+}
+
+/* Bodenschatten unter dem Gerät */
+.mb-shadow {
+  position: absolute;
+  left: 8%;
+  right: 8%;
+  bottom: -28px;
+  height: 40px;
+  background: radial-gradient(50% 50% at 50% 50%, rgba(0, 0, 0, 0.6), transparent 70%);
+  filter: blur(6px);
+  z-index: -1;
+}
+
+/* Bild im Bildschirm (C, D) */
+.mb-screen img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+  display: block;
+}
+
+/* ─── Bühne mit Sticky-Pin ─── */
+
+.track { position: relative; }            /* Höhe setzt die Variante */
+.stage {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  height: 100svh;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .grain { display: none; }
+}

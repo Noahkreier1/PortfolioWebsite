@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="de-CH">
+<head>
+  <meta charset="utf-8" />
+  <meta name="robots" content="noindex, nofollow" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Variante D: Vorher / Nachher im Laptop</title>
+  <link rel="icon" href="data:," />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./shared/base.css" />
+  <style>
+    /* ─────────────────────────────────────────────────────────────
+       Variante D: "Before / After build"
+       Offenes MacBook, links die alte InspireDay-Seite, rechts der Relaunch.
+       Die Trennlinie wird vom Scroll geführt (100 % alt → 0 % alt) und lässt
+       sich jederzeit ziehen. Nach dem Ziehen scrollt sie von dort aus weiter,
+       statt zurückzuspringen (Offset statt Überschreiben).
+       ───────────────────────────────────────────────────────────── */
+
+    #ba-track { height: 300vh; }
+    @media (max-width: 720px) { #ba-track { height: 230vh; } }
+
+    .stage { background: radial-gradient(55% 50% at 50% 50%, rgba(38, 72, 120, 0.28), transparent 70%), var(--bg); }
+
+    .ba-layout { display: grid; justify-items: center; gap: 36px; padding: 0 24px; width: 100%; }
+    .ba-head { text-align: center; display: grid; gap: 14px; justify-items: center; }
+    .ba-head .display { font-size: clamp(2rem, 3.6vw, 3.25rem); max-width: 20ch; }
+    .ba-device { --mb-w: min(900px, 72vw); }
+    @media (max-width: 720px) { .ba-device { --mb-w: 92vw; } }
+
+    /* Vergleich im Bildschirm: Nachher unten, Vorher darüber, per clip-path beschnitten */
+    .cmp { position: absolute; inset: 0; cursor: ew-resize; touch-action: pan-y; user-select: none; -webkit-user-select: none; }
+    .cmp img { pointer-events: none; }
+    .cmp-before { position: absolute; inset: 0; clip-path: inset(0 calc(100% - var(--pos) * 1%) 0 0); }
+    .cmp-line {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      width: 2px;
+      background: var(--accent);
+      transform: translateX(calc(var(--pos) * 1cqw - 1px));
+    }
+    .cmp { container-type: inline-size; }
+    .cmp-knob {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 40px;
+      height: 40px;
+      margin: -20px 0 0 -20px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: #fff;
+      display: grid;
+      place-items: center;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+      transition: transform 160ms var(--ease-out);
+    }
+    .cmp:active .cmp-knob { transform: scale(0.94); }
+    .cmp-label {
+      position: absolute;
+      bottom: 4%;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 5px 10px;
+      border-radius: 6px;
+      transition: opacity 200ms var(--ease-out);
+      pointer-events: none;
+    }
+    .cmp-label--before { left: 3%; background: rgba(13, 12, 11, 0.75); color: var(--ink); }
+    .cmp-label--after { right: 3%; background: var(--accent); color: #fff; }
+    .cmp:focus-visible { outline: 2px solid var(--ink); outline-offset: 4px; }
+
+    .ba-caption { font-size: 14px; color: var(--ink-muted); text-align: center; }
+  </style>
+</head>
+<body>
+  <div class="grain" aria-hidden="true"></div>
+
+  <section class="intro">
+    <h1 class="display">Wir bauen Webseiten, die man nicht wegscrollt.</h1>
+    <p class="lead">Wie viel eine neue Seite ausmacht, sieht man am besten im direkten Vergleich.</p>
+    <p class="scroll-hint">Scrollen ↓</p>
+  </section>
+
+  <section class="track" id="ba-track" aria-label="Vorher und nachher">
+    <div class="stage">
+      <div class="ba-layout">
+        <div class="ba-head">
+          <div class="chips"><span class="chip">InspireDay</span><span class="chip">Volkshaus Zürich</span><span class="chip chip--live">Live</span></div>
+          <h2 class="display">Vom Template zum Ticket-Verkäufer.</h2>
+        </div>
+        <div class="ba-device">
+          <div class="mb">
+            <div class="mb-lid"><div class="mb-face"><div class="mb-screen">
+              <div class="cmp" id="cmp" role="slider" tabindex="0" aria-label="Vorher und nachher vergleichen" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100" style="--pos: 100">
+                <img src="/before-after/inspireday-after.webp" alt="InspireDay nach dem Relaunch" loading="lazy" decoding="async" />
+                <div class="cmp-before"><img src="/before-after/inspireday-before.webp" alt="InspireDay vor dem Relaunch" loading="lazy" decoding="async" /></div>
+                <div class="cmp-line"><div class="cmp-knob" aria-hidden="true">
+                  <svg width="18" height="12" viewBox="0 0 30 20" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M9 4 3 10l6 6M21 4l6 6-6 6" /></svg>
+                </div></div>
+                <span class="cmp-label cmp-label--before">Vorher</span>
+                <span class="cmp-label cmp-label--after">Nachher</span>
+              </div>
+            </div></div></div>
+            <div class="mb-deck"></div><div class="mb-shadow"></div>
+          </div>
+        </div>
+        <p class="ba-caption">Scrollen oder Regler ziehen.</p>
+      </div>
+      <div class="vignette"></div>
+    </div>
+  </section>
+
+  <section class="outro">
+    <h2 class="display">Über 1’000 verkaufte Tickets seit dem Relaunch.</h2>
+    <p class="lead">Positionierung, Design, Texte und Entwicklung aus einer Hand.</p>
+  </section>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js"></script>
+  <script src="./shared/motion.js"></script>
+  <script>
+    const { reduced } = setupMotion()
+    const cmp = document.getElementById('cmp')
+    const labels = { before: cmp.querySelector('.cmp-label--before'), after: cmp.querySelector('.cmp-label--after') }
+    const clamp = (v) => Math.min(100, Math.max(0, v))
+    // Sichtbarer Bereich der Linie: 3–97 %, damit der Knopf nie am Rand abgeschnitten wird
+    const clampView = (v) => Math.min(97, Math.max(3, v))
+
+    // pos = Anteil "Vorher" in Prozent. Scroll liefert eine Basis, Ziehen einen Offset dazu.
+    let scrollPos = 100, offset = 0
+    const render = () => {
+      const pos = clampView(scrollPos + offset)
+      cmp.style.setProperty('--pos', pos.toFixed(2))
+      cmp.setAttribute('aria-valuenow', Math.round(pos))
+      labels.before.style.opacity = pos > 12 ? 1 : 0
+      labels.after.style.opacity = pos < 88 ? 1 : 0
+    }
+
+    if (reduced) {
+      scrollPos = 50; render()          // Endzustand: Mitte, nur manuell
+    } else {
+      ScrollTrigger.create({
+        trigger: '#ba-track',
+        start: 'top top',
+        end: 'bottom bottom',
+        scrub: true,
+        // 10 % Halt am Anfang und Ende, dazwischen wandert die Linie von rechts nach links
+        onUpdate: (self) => {
+          const p = gsap.utils.clamp(0, 1, (self.progress - 0.1) / 0.8)
+          scrollPos = 100 - gsap.parseEase('power1.inOut')(p) * 100
+          render()
+        },
+      })
+    }
+
+    // Ziehen: Maus und Touch, ohne Textmarkierung, nach dem Loslassen scrollt es von hier weiter
+    let dragging = false
+    const fromEvent = (e) => {
+      const r = cmp.getBoundingClientRect()
+      offset = clamp(((e.clientX - r.left) / r.width) * 100) - scrollPos
+      render()
+    }
+    cmp.addEventListener('pointerdown', (e) => {
+      e.preventDefault()
+      window.getSelection()?.removeAllRanges()
+      dragging = true
+      cmp.setPointerCapture(e.pointerId)
+      fromEvent(e)
+    })
+    cmp.addEventListener('pointermove', (e) => { if (dragging) fromEvent(e) })
+    cmp.addEventListener('pointerup', () => { dragging = false })
+    cmp.addEventListener('pointercancel', () => { dragging = false })
+    cmp.addEventListener('keydown', (e) => {
+      const step = { ArrowLeft: -5, ArrowRight: 5, Home: -100, End: 100 }[e.key]
+      if (step === undefined) return
+      e.preventDefault()
+      offset = clamp(scrollPos + offset + step) - scrollPos
+      render()
+    })
+    render()
+  </script>
+</body>
+</html>

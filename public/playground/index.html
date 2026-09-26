@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="de-CH">
+<head>
+  <meta charset="utf-8" />
+  <meta name="robots" content="noindex, nofollow" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Zurio Playground</title>
+  <link rel="icon" href="data:," />
+  <style>
+    /* Umschalter für die Varianten A–D. Jede Variante läuft in einem eigenen iframe,
+       damit Scroll, Lenis und ScrollTrigger sich nicht in die Quere kommen. */
+    html, body { margin: 0; height: 100%; background: #0d0c0b; }
+    iframe { display: block; width: 100%; height: 100%; border: 0; }
+    .switch {
+      position: fixed;
+      top: 12px;
+      right: 12px;
+      z-index: 10;
+      display: flex;
+      gap: 2px;
+      padding: 3px;
+      border-radius: 999px;
+      background: rgba(13, 12, 11, 0.72);
+      -webkit-backdrop-filter: blur(12px);
+      backdrop-filter: blur(12px);
+      box-shadow: inset 0 0 0 1px rgba(242, 237, 230, 0.14);
+      font: 500 12px/1 Inter, 'Helvetica Neue', Arial, sans-serif;
+    }
+    .switch a {
+      min-width: 32px;
+      height: 32px;
+      display: grid;
+      place-items: center;
+      border-radius: 999px;
+      color: rgba(242, 237, 230, 0.7);
+      text-decoration: none;
+      transition: background 160ms ease, color 160ms ease;
+    }
+    .switch a[aria-current='page'] { background: #DA291C; color: #fff; }
+    .switch .sep { width: 1px; margin: 6px 3px; background: rgba(242, 237, 230, 0.18); }
+    .switch a:focus-visible { outline: 2px solid #f2ede6; outline-offset: 2px; }
+  </style>
+</head>
+<body>
+  <nav class="switch" aria-label="Variante wählen">
+    <a href="#a" title="Deckel auf, Seite baut sich">A</a>
+    <a href="#b" title="Milchglas, Linse zum Aufdecken">B</a>
+    <a href="#c" title="Zoom durch die Räume">C</a>
+    <a href="#d" title="Vorher / Nachher im Laptop">D</a>
+    <span class="sep" aria-hidden="true"></span>
+    <a href="#e" title="Code wird zur Seite">E</a>
+    <a href="#f" title="Explosionszeichnung">F</a>
+    <a href="#g" title="Ein Design, jedes Gerät">G</a>
+    <a href="#h" title="Schweizer Raster">H</a>
+    <span class="sep" aria-hidden="true"></span>
+    <a href="#i" title="Topografie wird Typografie">I</a>
+    <a href="#j" title="Durch das Kreuz">J</a>
+    <a href="#k" title="Abfahrtstafel">K</a>
+    <a href="#l" title="Uhrwerk">L</a>
+  </nav>
+  <iframe id="frame" title="Variante"></iframe>
+  <script>
+    const frame = document.getElementById('frame')
+    const show = () => {
+      const v = (location.hash.slice(1) || 'c').toLowerCase()
+      frame.src = `variant-${v}.html`
+      document.querySelectorAll('.switch a').forEach((a) => a.setAttribute('aria-current', a.hash === `#${v}` ? 'page' : 'false'))
+    }
+    window.addEventListener('hashchange', show)
+    show()
+  </script>
+</body>
+</html>

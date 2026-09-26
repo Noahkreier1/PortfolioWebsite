@@ -1,0 +1,330 @@
+<!doctype html>
+<html lang="de-CH">
+<head>
+  <meta charset="utf-8" />
+  <meta name="robots" content="noindex, nofollow" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Variante L: Uhrwerk</title>
+  <link rel="icon" href="data:," />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./shared/base.css" />
+  <style>
+    /* ─────────────────────────────────────────────────────────────
+       Variante L: "Uhrwerk"
+       Ein Kaliber, im Code erzeugt: Federhaus, Minutenrad, Kleinbodenrad,
+       Ankerrad, Unruh. Zähne und Übersetzungen sind echt berechnet
+       (Modul, Zähnezahl, Eingriffsphase), die Räder greifen ineinander.
+       Rote Lagersteine, gebläute Schrauben, Genfer Streifen auf der Platine.
+       Jedes Rad steht für einen Teil des Projekts.
+         0–24 %   Teile fliegen aus der Explosion zusammen
+         24–60 %  Werk läuft, Räder werden beschriftet
+         60–84 %  Zifferblatt schliesst sich, Glas-Reflex
+         84–100 % Kamera taucht ins Zifferblatt
+       ───────────────────────────────────────────────────────────── */
+
+    #watch-track { height: 460vh; }
+    @media (max-width: 720px) { #watch-track { height: 300vh; } }
+
+    .stage { background: radial-gradient(45% 50% at 58% 52%, rgba(200, 160, 90, 0.12), transparent 70%), var(--bg); }
+    .w-copy { position: absolute; left: max(24px, 6vw); top: max(24px, 10vh); z-index: 3; display: grid; gap: 14px; max-width: 360px; }
+    .w-copy .display { font-size: clamp(1.9rem, 3.2vw, 3rem); }
+    .w-now { min-width: 9ch; justify-content: center; }
+
+    .caliber { position: relative; width: min(78vh, 58vw); aspect-ratio: 1; margin-left: 18vw; }
+    .caliber svg { width: 100%; height: 100%; overflow: visible; }
+
+    /* Beschriftungen (Desktop), per JS an die Achsen gehängt */
+    .callout { position: absolute; z-index: 2; display: flex; align-items: center; gap: 10px; font-size: 14px; font-weight: 500; white-space: nowrap; opacity: 0; pointer-events: none; }
+    .callout::before { content: ''; width: 34px; height: 1px; background: rgba(242, 237, 230, 0.55); }
+    .callout b { font-family: var(--font-display); color: var(--accent); font-weight: 600; }
+    .callout::before { display: none; }
+
+    .cap { position: absolute; left: 50%; bottom: 5vh; transform: translateX(-50%); font-size: 12px; letter-spacing: 0.06em; color: var(--ink-faint); white-space: nowrap; }
+
+    @media (max-width: 900px) {
+      .caliber { width: 88vw; margin: 18vh 0 0; }
+      .callout { display: none; }
+      .w-copy { right: 24px; max-width: none; }
+      .w-copy .display { font-size: 1.6rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="grain" aria-hidden="true"></div>
+
+  <section class="intro">
+    <h1 class="display">Wir bauen Webseiten, die man nicht wegscrollt.</h1>
+    <p class="lead">Mit der Präzision, für die die Schweiz bekannt ist.</p>
+    <p class="scroll-hint">Scrollen ↓</p>
+  </section>
+
+  <section class="track" id="watch-track" aria-label="Präzision wie ein Uhrwerk">
+    <div class="stage">
+      <div class="w-copy" id="copy">
+        <h2 class="display">Jedes Rad greift ins nächste.</h2>
+        <div class="chips"><span class="chip">Kaliber Zurio</span><span class="chip w-now" id="now">Montage</span></div>
+      </div>
+      <div class="caliber" id="caliber">
+        <svg id="svg" viewBox="-500 -500 1000 1000" role="img" aria-label="Uhrwerk aus Zahnrädern, die ineinandergreifen">
+          <defs>
+            <pattern id="cotes" width="46" height="46" patternUnits="userSpaceOnUse" patternTransform="rotate(-24)">
+              <rect width="46" height="46" fill="#2b2a28" />
+              <rect width="23" height="46" fill="url(#stripe)" />
+              <rect x="23" width="23" height="46" fill="url(#stripe)" />
+            </pattern>
+            <linearGradient id="stripe" x1="0" x2="1">
+              <stop offset="0" stop-color="#2a2927" /><stop offset="0.5" stop-color="#3a3835" /><stop offset="1" stop-color="#2a2927" />
+            </linearGradient>
+            <radialGradient id="brass" cx="0.35" cy="0.3" r="0.9">
+              <stop offset="0" stop-color="#f3d38c" /><stop offset="0.55" stop-color="#c79c52" /><stop offset="1" stop-color="#8a6a33" />
+            </radialGradient>
+            <radialGradient id="steel" cx="0.35" cy="0.3" r="0.9">
+              <stop offset="0" stop-color="#f1f1f1" /><stop offset="0.6" stop-color="#a9abae" /><stop offset="1" stop-color="#6b6d70" />
+            </radialGradient>
+            <radialGradient id="ruby" cx="0.35" cy="0.3" r="0.8">
+              <stop offset="0" stop-color="#ff8a7a" /><stop offset="0.5" stop-color="#DA291C" /><stop offset="1" stop-color="#7a0e08" />
+            </radialGradient>
+            <radialGradient id="dialg" cx="0.5" cy="0.45" r="0.6">
+              <stop offset="0" stop-color="#f7f3ec" /><stop offset="1" stop-color="#e3ddd2" />
+            </radialGradient>
+            <linearGradient id="glint" x1="0" x2="1">
+              <stop offset="0" stop-color="#fff" stop-opacity="0" /><stop offset="0.5" stop-color="#fff" stop-opacity="0.35" /><stop offset="1" stop-color="#fff" stop-opacity="0" />
+            </linearGradient>
+            <clipPath id="caseclip"><circle r="452" /></clipPath>
+          </defs>
+          <g id="world">
+            <!-- Gehäuse und Platine -->
+            <circle r="470" fill="url(#steel)" />
+            <circle r="452" fill="#141312" />
+            <g clip-path="url(#caseclip)">
+              <circle id="plate" r="452" fill="url(#cotes)" />
+              <g id="parts"></g>
+              <!-- Zifferblatt -->
+              <g id="dial" opacity="0"></g>
+              <!-- Glas-Reflex -->
+              <rect id="glint" x="-900" y="-500" width="380" height="1000" fill="url(#glint)" transform="rotate(20)" opacity="0" />
+            </g>
+          </g>
+        </svg>
+      </div>
+      <p class="cap" id="cap">Gebläute Schrauben, rote Lagersteine, Genfer Streifen</p>
+    </div>
+  </section>
+
+  <section class="outro">
+    <h2 class="display">Präzision, die man nicht sieht, aber spürt.</h2>
+    <p class="lead">Jede Zurio-Seite ist von Hand gebaut, Teil für Teil.</p>
+  </section>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js"></script>
+  <script src="./shared/motion.js"></script>
+  <script>
+    const { reduced } = setupMotion()
+    const NS = 'http://www.w3.org/2000/svg'
+    const svgEl = (tag, attrs = {}, parent) => { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); parent?.appendChild(e); return e }
+    const rad = (d) => (d * Math.PI) / 180
+
+    /* ── Zahnrad-Profil: Modul m, Zähnezahl z. Trapezzähne, genau genug fürs Auge ── */
+    function gearPath(z, m, pointed = false) {
+      const r = (m * z) / 2, ro = r + m, rr = r - 1.25 * m, step = (2 * Math.PI) / z
+      let d = ''
+      for (let i = 0; i < z; i++) {
+        const a = i * step
+        const pts = pointed
+          ? [[rr, a - 0.5 * step], [rr, a - 0.1 * step], [ro + m * 0.6, a + 0.18 * step], [rr, a + 0.32 * step]]   // Ankerrad: Hakenzähne
+          : [[rr, a - 0.5 * step], [rr, a - 0.3 * step], [ro, a - 0.13 * step], [ro, a + 0.13 * step], [rr, a + 0.3 * step]]
+        pts.forEach(([rad_, ang], k) => { d += `${i === 0 && k === 0 ? 'M' : 'L'}${(rad_ * Math.cos(ang)).toFixed(2)},${(rad_ * Math.sin(ang)).toFixed(2)}` })
+      }
+      return { d: d + 'Z', r, rr }
+    }
+
+    /* Rad mit Speichen (Schenkeln), Nabe; Rückgabe: Gruppe, die gedreht wird */
+    function wheel(parent, z, m, { fill = 'url(#brass)', spokes = 4, pointed = false } = {}) {
+      const g = svgEl('g', {}, parent)
+      const { d, rr } = gearPath(z, m, pointed)
+      const hole = rr * 0.78
+      // Kranz mit Loch (evenodd)
+      svgEl('path', { d: `${d} M${hole},0 A${hole},${hole} 0 1,0 ${-hole},0 A${hole},${hole} 0 1,0 ${hole},0Z`, fill, 'fill-rule': 'evenodd', stroke: 'rgba(0,0,0,0.35)', 'stroke-width': 1 }, g)
+      for (let i = 0; i < spokes; i++) {
+        const a = (i * 360) / spokes
+        svgEl('rect', { x: -hole, y: -rr * 0.07, width: hole * 2, height: rr * 0.14, fill, transform: `rotate(${a / 2})`, stroke: 'rgba(0,0,0,0.25)', 'stroke-width': 0.8 }, g)
+      }
+      svgEl('circle', { r: rr * 0.24, fill, stroke: 'rgba(0,0,0,0.3)', 'stroke-width': 1 }, g)
+      return g
+    }
+    function pinion(parent, z, m) {
+      const g = svgEl('g', {}, parent)
+      svgEl('path', { d: gearPath(z, m).d, fill: 'url(#steel)', stroke: 'rgba(0,0,0,0.4)', 'stroke-width': 1 }, g)
+      return g
+    }
+    function jewel(parent, x, y, r = 10) {
+      svgEl('circle', { cx: x, cy: y, r: r + 4, fill: '#c9a45e' }, parent)
+      svgEl('circle', { cx: x, cy: y, r, fill: 'url(#ruby)' }, parent)
+      svgEl('circle', { cx: x - r * 0.35, cy: y - r * 0.35, r: r * 0.28, fill: 'rgba(255,255,255,0.7)' }, parent)
+    }
+    function screw(parent, x, y, r = 13, a = 30) {
+      svgEl('circle', { cx: x, cy: y, r, fill: '#2d4f93', stroke: '#16295a', 'stroke-width': 1.5 }, parent)      // gebläut
+      svgEl('rect', { x: x - r * 0.8, y: y - 1.8, width: r * 1.6, height: 3.6, fill: '#0e1a3a', transform: `rotate(${a} ${x} ${y})` }, parent)
+    }
+
+    /* ── Räderwerk: Achsen, Zähnezahlen, Module. Paare mit gleichem Modul greifen ineinander ── */
+    const parts = document.getElementById('parts')
+    const A = [
+      { name: 'Konzept', x: -165, y: 120, wheel: { z: 72, m: 4 } },                      // Federhaus
+      { name: 'Design', pinion: { z: 12, m: 4 }, wheel: { z: 64, m: 4 }, from: 0, angle: -58 },   // Minutenrad
+      { name: 'Inhalt', pinion: { z: 10, m: 4 }, wheel: { z: 50, m: 3 }, from: 1, angle: 6 },     // Kleinbodenrad
+      { name: 'Code', pinion: { z: 10, m: 3 }, wheel: { z: 20, m: 3.2, pointed: true }, from: 2, angle: -72 }, // Ankerrad
+    ]
+    // Positionen aus Achsabstand = Teilkreis Rad + Teilkreis Trieb
+    A.forEach((a, i) => {
+      if (i === 0) return
+      const p = A[a.from]
+      const dist = (p.wheel.m * p.wheel.z) / 2 + (a.pinion.m * a.pinion.z) / 2
+      a.x = p.x + dist * Math.cos(rad(a.angle))
+      a.y = p.y + dist * Math.sin(rad(a.angle))
+      // Drehverhältnis und Eingriffsphase relativ zum Vorgänger
+      a.ratio = -p.wheel.z / a.pinion.z
+      a.phase = a.angle * (1 + p.wheel.z / a.pinion.z) + 180 / a.pinion.z
+    })
+    A[0].ratio = 1; A[0].phase = 0
+
+    // Unruh (Balance) neben dem Ankerrad, schwingt statt zu drehen
+    const BAL = { name: 'Betreuung', x: A[3].x + 150, y: A[3].y + 120, r: 104 }
+
+    // Brücke für die Unruh (Unruhkloben)
+    svgEl('path', { d: `M${BAL.x - 30},${BAL.y - 140} Q${BAL.x + 170},${BAL.y - 60} ${BAL.x + 40},${BAL.y + 40} L${BAL.x - 10},${BAL.y + 10} Z`, fill: 'url(#cotes)', stroke: 'rgba(255,255,255,0.08)' }, parts)
+
+    const groups = A.map((a) => {
+      // Aussen: feste Position (Attribut). Innen: fly wird von GSAP bewegt, spin vom Werk gedreht
+      const pos = svgEl('g', { transform: `translate(${a.x} ${a.y})` }, parts)
+      const g = svgEl('g', {}, pos)
+      const spin = svgEl('g', {}, g)
+      if (a.wheel) wheel(spin, a.wheel.z, a.wheel.m, { pointed: a.wheel.pointed, spokes: a.wheel.pointed ? 3 : 4 })
+      if (a.pinion) pinion(spin, a.pinion.z, a.pinion.m)
+      jewel(g, 0, 0, a.pinion ? 8 : 12)
+      return { g, spin, a }
+    })
+
+    // Unruh: Reif mit Schrauben, Spirale angedeutet
+    const balPos = svgEl('g', { transform: `translate(${BAL.x} ${BAL.y})` }, parts)
+    const balG = svgEl('g', {}, balPos)
+    const balSpin = svgEl('g', {}, balG)
+    svgEl('circle', { r: BAL.r, fill: 'none', stroke: 'url(#brass)', 'stroke-width': 14 }, balSpin)
+    svgEl('rect', { x: -BAL.r, y: -5, width: BAL.r * 2, height: 10, fill: 'url(#brass)' }, balSpin)
+    for (let i = 0; i < 8; i++) { const an = rad(i * 45); svgEl('circle', { cx: Math.cos(an) * BAL.r, cy: Math.sin(an) * BAL.r, r: 5, fill: '#d9b46b', stroke: '#6b5226' }, balSpin) }
+    let spiral = ''; for (let t = 0; t < 26; t += 0.2) { const rr = 10 + t * 2.2; spiral += `${t === 0 ? 'M' : 'L'}${(rr * Math.cos(t)).toFixed(1)},${(rr * Math.sin(t)).toFixed(1)}` }
+    svgEl('path', { d: spiral, fill: 'none', stroke: 'rgba(210,215,220,0.6)', 'stroke-width': 1.2 }, balG)
+    jewel(balG, 0, 0, 10)
+
+    // Gebläute Schrauben auf der Platine
+    ;[[-330, -170], [-60, 330], [300, -280], [BAL.x + 100, BAL.y - 90], [-360, 200]].forEach(([x, y], i) => screw(parts, x, y, 13, 20 + i * 37))
+
+    /* ── Zifferblatt ── */
+    const dial = document.getElementById('dial')
+    svgEl('circle', { r: 452, fill: 'url(#dialg)' }, dial)
+    for (let i = 0; i < 60; i++) {
+      const big = i % 5 === 0
+      svgEl('rect', { x: -1.2 * (big ? 4 : 1), y: -440, width: 2.4 * (big ? 4 : 1), height: big ? 64 : 18, fill: i === 0 ? '#DA291C' : '#1d1812', transform: `rotate(${i * 6})` }, dial)
+    }
+    const txt = (t, y, size, weight, color, ls = 0) => { const e = svgEl('text', { x: 0, y, 'text-anchor': 'middle', 'font-family': 'Inter Tight, sans-serif', 'font-size': size, 'font-weight': weight, fill: color, 'letter-spacing': ls }, dial); e.textContent = t }
+    txt('zurio', -150, 64, 600, '#1d1812', -1.5)
+    txt('WEBSEITEN AUS WINTERTHUR', -104, 17, 600, '#6f695b', 3)
+    txt('SWISS MADE', 330, 18, 600, '#1d1812', 4)
+    const hand = (len, w, color, tail = 0) => { const g = svgEl('g', {}, dial); svgEl('rect', { x: -w / 2, y: -len, width: w, height: len + tail, rx: w / 2, fill: color }, g); return g }
+    const hHour = hand(250, 18, '#1d1812', 30), hMin = hand(380, 12, '#1d1812', 40), hSec = hand(410, 4, '#DA291C', 90)
+    svgEl('circle', { r: 14, fill: '#DA291C' }, dial)
+
+    /* ── Beschriftungen an den Achsen (Desktop) ── */
+    const caliber = document.getElementById('caliber')
+    const labelled = [...A, BAL]
+    const callouts = labelled.map((a, i) => {
+      const el = document.createElement('div')
+      el.className = 'callout'
+      el.innerHTML = `<b>${String(i + 1).padStart(2, '0')}</b>${a.name}`
+      caliber.appendChild(el)
+      return el
+    })
+    // Beschriftungen als ruhige Spalte rechts vom Werk; das aktive Rad bekommt einen roten Ring
+    const placeCallouts = () => {
+      const h = caliber.clientHeight
+      labelled.forEach((a, i) => {
+        const el = callouts[i]
+        el.style.left = `calc(100% + 32px)`
+        el.style.top = `${h * 0.3 + i * 40}px`
+      })
+    }
+    const rings = labelled.map((a, i) => {
+      const r = i < A.length ? ((a.wheel.m * a.wheel.z) / 2 + a.wheel.m * 2) : BAL.r + 16
+      return svgEl('circle', { cx: a.x, cy: a.y, r, fill: 'none', stroke: '#DA291C', 'stroke-width': 3, 'stroke-dasharray': '6 8', opacity: 0 }, parts)
+    })
+    placeCallouts(); addEventListener('resize', placeCallouts)
+
+    /* ── Werk antreiben: Winkel aus dem Scroll-Fortschritt ── */
+    const now = document.getElementById('now')
+    const runWorks = (p) => {
+      const base = p * 36                                        // Federhaus dreht langsam
+      let prev = base
+      groups.forEach(({ spin, a }, i) => {
+        const ang = i === 0 ? base : prev * a.ratio + a.phase
+        spin.setAttribute('transform', `rotate(${ang.toFixed(2)})`)
+        prev = ang
+      })
+      balSpin.setAttribute('transform', `rotate(${(Math.sin(p * 90) * 150).toFixed(2)})`)   // Unruh schwingt
+      hSec.setAttribute('transform', `rotate(${(p * 2160).toFixed(2)})`)
+      hMin.setAttribute('transform', `rotate(${(56 + p * 60).toFixed(2)})`)
+      hHour.setAttribute('transform', `rotate(${(305 + p * 5).toFixed(2)})`)
+      const label = p < 0.24 ? 'Montage' : p < 0.6 ? labelled[Math.min(labelled.length - 1, Math.floor((p - 0.26) / 0.068))]?.name || 'Konzept' : p < 0.84 ? 'Swiss made' : 'Zurio'
+      if (now.textContent !== label) now.textContent = label
+    }
+
+    if (reduced) {
+      runWorks(0.5)
+      gsap.set(callouts, { opacity: 1 })
+    } else {
+      // Explosion: Teile starten verstreut, verkleinert, gedreht
+      const scatter = [[-420, 380], [-360, -420], [420, -380], [460, 180]]
+      groups.forEach(({ g }, i) => gsap.set(g, { opacity: 0, x: scatter[i][0], y: scatter[i][1], scale: 0.5, rotation: (i % 2 ? 1 : -1) * 90, svgOrigin: '0 0' }))
+      gsap.set(balG, { opacity: 0, x: 380, y: 420, scale: 0.5, svgOrigin: '0 0' })
+      gsap.set('#plate', { opacity: 0 })
+
+      const tl = gsap.timeline({
+        defaults: { ease: 'none' },
+        scrollTrigger: {
+          trigger: '#watch-track', start: 'top top', end: 'bottom bottom', scrub: 0.6,
+          onUpdate: (self) => runWorks(self.progress),
+          onToggle: (self) => toggleWillChange([caliber], self.isActive ? 'transform' : 'auto'),
+        },
+      })
+      /* 0–24 %: Montage */
+      tl.to('#plate', { opacity: 1, duration: 8 }, 0)
+      groups.forEach(({ g }, i) => tl.to(g, { opacity: 1, x: 0, y: 0, scale: 1, rotation: 0, duration: 14, ease: 'power3.out' }, 2 + i * 3))
+      tl.to(balG, { opacity: 1, x: 0, y: 0, scale: 1, duration: 14, ease: 'power3.out' }, 12)
+
+      /* 24–60 %: Beschriftungen nacheinander */
+      // Nacheinander: Beschriftung voll + Ring am Rad, danach bleibt sie gedimmt stehen
+      callouts.forEach((c, i) => {
+        const at = 26 + i * 6.8
+        tl.to(c, { opacity: 1, duration: 2 }, at)
+        tl.to(rings[i], { opacity: 1, duration: 2 }, at)
+        tl.to(rings[i], { opacity: 0, duration: 2 }, at + 5.5)
+        tl.to(c, { opacity: 0.45, duration: 2 }, at + 5.5)
+      })
+      tl.to(callouts, { opacity: 0, duration: 4 }, 60)
+
+      /* 60–84 %: Zifferblatt schliesst sich, Reflex wandert übers Glas */
+      tl.fromTo('#dial', { opacity: 0, scale: 1.12, svgOrigin: '0 0' }, { opacity: 1, scale: 1, duration: 12, ease: 'power2.out' }, 62)
+      tl.to('#cap', { opacity: 0, duration: 4 }, 62)
+      tl.fromTo('#glint', { opacity: 0.9, x: 0 }, { x: 1500, duration: 12, ease: 'power1.inOut' }, 72)
+
+      /* 84–100 %: Tauchgang ins Zifferblatt */
+      tl.to('#copy', { opacity: 0, duration: 4 }, 84)
+      tl.to(caliber, { scale: 14, duration: 16, ease: 'power3.in', transformOrigin: '50% 50%' }, 84)
+      tl.to(caliber, { opacity: 0, filter: 'blur(8px)', duration: 5 }, 95)
+    }
+  </script>
+</body>
+</html>

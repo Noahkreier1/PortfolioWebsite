@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="de-CH">
+<head>
+  <meta charset="utf-8" />
+  <meta name="robots" content="noindex, nofollow" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Variante F: Explosionszeichnung</title>
+  <link rel="icon" href="data:," />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./shared/base.css" />
+  <link rel="stylesheet" href="./shared/mini-site.css" />
+  <style>
+    /* ─────────────────────────────────────────────────────────────
+       Variante F: "Explosionszeichnung"
+       Die fertige Seite zerfällt in 3D in ihre Schichten: Hintergrund & Bilder,
+       Raster, Layout, Typografie, Komponenten, Interaktion. Jede Schicht wird
+       beschriftet und nacheinander hervorgehoben, dann klappt alles zurück.
+       Jede Schicht ist dieselbe echte HTML-Seite, per CSS auf ihren Anteil reduziert.
+         0–12 %  flache, fertige Seite
+         12–40 % Kippen in die Isometrie, Schichten fächern auf
+         40–72 % Schicht für Schicht erklärt
+         72–100 % zurück in die flache, fertige Seite
+       ───────────────────────────────────────────────────────────── */
+
+    #layers-track { height: 380vh; }
+    @media (max-width: 720px) { #layers-track { height: 260vh; } }
+
+    .stage { background: radial-gradient(55% 55% at 55% 55%, rgba(218, 41, 28, 0.08), transparent 70%), var(--bg); perspective: 2200px; }
+
+    .lx-copy { position: absolute; left: max(24px, 6vw); top: max(24px, 10vh); z-index: 3; display: grid; gap: 14px; max-width: 380px; }
+    .lx-copy .display { font-size: clamp(1.75rem, 3vw, 2.75rem); }
+
+    /* Das Gerüst, das gekippt wird; Grösse = Mini-Seite im 16:10-Format */
+    .rig {
+      position: relative;
+      width: min(880px, 70vw);
+      aspect-ratio: 16 / 10;
+      transform-style: preserve-3d;
+    }
+    .layer {
+      position: absolute;
+      inset: 0;
+      transform-style: preserve-3d;
+      border-radius: 10px;
+      container-type: inline-size;
+    }
+    .layer-inner { position: absolute; inset: 0; overflow: hidden; border-radius: 10px; }
+    /* Papierplatte je Schicht: nur zerlegt sichtbar (--plate 0 → 1), damit jede Schicht als Blatt lesbar ist */
+    .rig { --plate: 0; }
+    .layer:not(.l-bg) .layer-inner::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 10px;
+      background: rgba(246, 242, 234, 0.82);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.6);
+      opacity: var(--plate);
+    }
+
+    /* Beschriftung neben jeder Schicht */
+    .tag {
+      position: absolute;
+      right: calc(100% + 18px);
+      top: 8%;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      white-space: nowrap;
+      font-size: clamp(11px, 1.3vw, 15px);
+      font-weight: 500;
+      color: var(--ink);
+      opacity: 0;
+    }
+    .tag::after { content: ''; width: 40px; height: 1px; background: rgba(242, 237, 230, 0.4); }
+    .tag b { font-family: var(--font-display); color: var(--accent); font-weight: 600; font-variant-numeric: tabular-nums; }
+
+    /* ── Schichten: dieselbe Seite, je nur ein Anteil sichtbar ── */
+    /* 1 Hintergrund & Bilder */
+    .l-bg .site * { color: transparent !important; box-shadow: none !important; }
+    .l-bg .site-cta, .l-bg .site-btn, .l-bg .site-card { background: transparent !important; }
+    .l-bg .site-card-img, .l-bg .site-photo { visibility: visible; }
+    .l-bg .site-photo::after { opacity: 0; }
+
+    /* 2 Raster: 12 Spalten */
+    .l-grid .layer-inner { background: none; }
+    .grid12 { position: absolute; inset: 0 5%; display: grid; grid-template-columns: repeat(12, 1fr); gap: 1.9%; }
+    .grid12 i { background: rgba(218, 41, 28, 0.13); border-inline: 1px solid rgba(218, 41, 28, 0.45); }
+
+    /* 3 Layout: Kästen als Linien */
+    .l-layout .site { background: transparent; }
+    .l-layout .site * { color: transparent !important; background: transparent !important; box-shadow: inset 0 0 0 1.5px rgba(20, 17, 13, 0.4) !important; border-radius: 6px; }
+    .l-layout .site-photo::after, .l-layout .site-logo span { box-shadow: none !important; }
+
+    /* 4 Typografie: nur Text */
+    .l-type .site { background: transparent; }
+    .l-type .site * { background: transparent !important; box-shadow: none !important; }
+    .l-type .site-btn, .l-type .site-cta, .l-type .site-card, .l-type .site-photo { visibility: hidden; }
+
+    /* 5 Komponenten: Buttons und Karten */
+    .l-comp .site { background: transparent; visibility: hidden; }
+    .l-comp .site-btn, .l-comp .site-cta, .l-comp .site-card { visibility: visible; }
+
+    /* 6 Interaktion: Cursor, Hover, Fokus */
+    .l-ix .fx { position: absolute; }
+    .ring { left: 5%; top: 54%; width: 19%; height: 8.6%; border-radius: 999px; box-shadow: 0 0 0 3px #f6f2ea, 0 0 0 5px var(--accent); }
+    .cursor { left: 20%; top: 60%; width: 4.2%; filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.35)); }
+    .tip { left: 25%; top: 66%; font: 600 clamp(8px, 1.1cqw, 13px)/1 var(--font-body); color: #fff; background: #1d1812; padding: 0.7em 1em; border-radius: 8px; white-space: nowrap; }
+
+    @media (max-width: 720px) {
+      .rig { width: 74vw; }
+      .tag { right: auto; left: 0; top: auto; bottom: calc(100% + 6px); }
+      .tag::after { display: none; }
+      .lx-copy .display { font-size: 1.6rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="grain" aria-hidden="true"></div>
+
+  <section class="intro">
+    <h1 class="display">Wir bauen Webseiten, die man nicht wegscrollt.</h1>
+    <p class="lead">Eine gute Seite besteht aus Schichten, die zusammenpassen. Hier auseinandergenommen.</p>
+    <p class="scroll-hint">Scrollen ↓</p>
+  </section>
+
+  <section class="track" id="layers-track" aria-label="Aufbau einer Webseite">
+    <div class="stage">
+      <div class="lx-copy">
+        <h2 class="display">Sechs Schichten, ein Auftritt.</h2>
+        <div class="chips"><span class="chip">Beispielprojekt</span><span class="chip" id="lx-now">Fertige Seite</span></div>
+      </div>
+      <div class="rig" id="rig"></div>
+    </div>
+  </section>
+
+  <section class="outro">
+    <h2 class="display">Wenn jede Schicht stimmt, merkt man keine davon.</h2>
+    <p class="lead">Man merkt nur, dass die Seite funktioniert.</p>
+  </section>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js"></script>
+  <script src="./shared/motion.js"></script>
+  <script src="./shared/mini-site.js"></script>
+  <script>
+    const { reduced } = setupMotion()
+    const rig = document.getElementById('rig')
+    const now = document.getElementById('lx-now')
+
+    // Reihenfolge von unten nach oben
+    const LAYERS = [
+      { cls: 'l-bg', name: 'Farben & Bilder', html: () => miniSiteHTML(false) },
+      { cls: 'l-grid', name: 'Raster, 12 Spalten', html: () => `<div class="grid12">${'<i></i>'.repeat(12)}</div>` },
+      { cls: 'l-layout', name: 'Layout', html: () => miniSiteHTML(false) },
+      { cls: 'l-type', name: 'Typografie', html: () => miniSiteHTML(false) },
+      { cls: 'l-comp', name: 'Komponenten', html: () => miniSiteHTML(false) },
+      { cls: 'l-ix', name: 'Interaktion', html: () => `
+        <span class="fx ring"></span>
+        <svg class="fx cursor" viewBox="0 0 24 24"><path d="M4 2l16 10-7 1.6L9.6 21z" fill="#fff" stroke="#1d1812" stroke-width="1.5" stroke-linejoin="round"/></svg>
+        <span class="fx tip">Hover, Fokus, Tastatur</span>` },
+    ]
+    const layers = LAYERS.map((l, i) => {
+      const el = document.createElement('div')
+      el.className = `layer ${l.cls}`
+      el.innerHTML = `<div class="layer-inner">${l.html()}</div><span class="tag"><b>${i + 1}</b>${l.name}</span>`
+      rig.appendChild(el)
+      el.querySelectorAll('.layer-inner').forEach(fitMiniSite)
+      return el
+    })
+    const tags = layers.map((l) => l.querySelector('.tag'))
+    // Hilfsschichten (Raster, Layout-Linien, Interaktion) nur im zerlegten Zustand sichtbar
+    const helpers = [layers[1], layers[2], layers[5]]
+
+    const mobile = window.matchMedia('(max-width: 720px)').matches
+    const GAP = mobile ? 34 : 70   // Abstand der Schichten in z
+
+    if (reduced) {
+      // Endzustand ohne 3D: fertige Seite, Hilfsschichten ausgeblendet
+      gsap.set(helpers, { opacity: 0 })
+    } else {
+      gsap.set(helpers, { opacity: 0 })
+      gsap.set(rig, { rotateX: 0, rotateZ: 0, y: 0 })
+      const tl = gsap.timeline({
+        defaults: { ease: 'none' },
+        scrollTrigger: {
+          trigger: '#layers-track', start: 'top top', end: 'bottom bottom', scrub: 0.6,
+          onToggle: (self) => toggleWillChange([rig, ...layers], self.isActive ? 'transform' : 'auto'),
+        },
+      })
+      /* 12–40 %: kippen und auffächern */
+      tl.to(rig, { rotateX: 58, rotateZ: -32, y: mobile ? 40 : 60, scale: mobile ? 0.82 : 0.8, duration: 22, ease: 'power2.inOut' }, 12)
+      layers.forEach((l, i) => tl.to(l, { z: i * GAP, duration: 22, ease: 'power2.inOut' }, 14))
+      tl.to(helpers, { opacity: 1, duration: 8 }, 22)
+      tl.to(rig, { '--plate': 1, duration: 8 }, 20)
+      tl.to(tags, { opacity: 0.55, duration: 6, stagger: 1 }, 30)
+
+      /* 40–72 %: Schicht für Schicht hervorheben (hebt sich an, Beschriftung voll) */
+      layers.forEach((l, i) => {
+        const at = 40 + i * 5.2
+        tl.to(l, { z: i * GAP + GAP * 0.55, duration: 2.2, ease: 'power2.out' }, at)
+        tl.to(tags[i], { opacity: 1, duration: 1.5 }, at)
+        tl.to(l, { z: i * GAP, duration: 2.2, ease: 'power2.inOut' }, at + 3)
+        tl.to(tags[i], { opacity: 0.55, duration: 1.5 }, at + 3)
+      })
+
+      /* 72–100 %: zurück zur flachen, fertigen Seite */
+      tl.to(tags, { opacity: 0, duration: 5 }, 72)
+      tl.to(helpers, { opacity: 0, duration: 10 }, 80)
+      tl.to(rig, { '--plate': 0, duration: 10 }, 78)
+      layers.forEach((l) => tl.to(l, { z: 0, duration: 20, ease: 'power2.inOut' }, 76))
+      tl.to(rig, { rotateX: 0, rotateZ: 0, y: 0, scale: 1, duration: 20, ease: 'power2.inOut' }, 78)
+      // Chip zeigt, was gerade zu sehen ist (funktioniert vorwärts wie rückwärts)
+      tl.eventCallback('onUpdate', () => {
+        const t = tl.time()
+        const label = t < 30 || t >= 94 ? 'Fertige Seite' : t < 40 || t >= 72 ? 'Zerlegt' : LAYERS[Math.min(LAYERS.length - 1, Math.floor((t - 40) / 5.2))].name
+        if (now.textContent !== label) now.textContent = label
+      })
+    }
+  </script>
+</body>
+</html>

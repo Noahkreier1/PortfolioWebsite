@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="de-CH">
+<head>
+  <meta charset="utf-8" />
+  <meta name="robots" content="noindex, nofollow" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Variante G: Ein Design, jedes Gerät</title>
+  <link rel="icon" href="data:," />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./shared/base.css" />
+  <style>
+    /* ─────────────────────────────────────────────────────────────
+       Variante G: "Ein Design, jedes Gerät"
+       Ein Gerät wird im Scroll vom Desktop-Fenster (1280 px) zum Tablet (820 px)
+       zum Handy (390 px). Die Seite darin bricht dabei wirklich um (Container
+       Queries), sie wird nicht nur verkleinert. Ein Zähler zeigt die Breite live.
+       Bewusste Ausnahme von "nur transform/opacity": die Breite des Rahmens ändert
+       sich, damit das Layout echt reagiert. Betroffen ist nur dieser kleine Teilbaum;
+       die Skalierung auf den Viewport läuft per transform.
+       ───────────────────────────────────────────────────────────── */
+
+    #rs-track { height: 360vh; }
+    @media (max-width: 720px) { #rs-track { height: 280vh; } }
+
+    .stage { background: radial-gradient(50% 50% at 50% 55%, rgba(40, 110, 200, 0.14), transparent 70%), var(--bg); }
+
+    .rs-copy { position: absolute; left: max(24px, 6vw); top: max(24px, 9vh); z-index: 2; display: grid; gap: 14px; max-width: 380px; }
+    .rs-copy .display { font-size: clamp(1.75rem, 3vw, 2.75rem); }
+    .rs-meter { position: absolute; right: max(24px, 6vw); top: max(24px, 9vh); z-index: 2; text-align: right; }
+    .rs-meter b { display: block; font-family: var(--font-display); font-size: clamp(1.5rem, 2.6vw, 2.25rem); font-weight: 600; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+    .rs-meter span { font-size: 12px; color: var(--ink-faint); letter-spacing: 0.04em; }
+
+    /* Rahmen: Grösse in echten Pixeln (per JS), auf den Viewport skaliert per transform */
+    .device-fit { position: absolute; left: 50%; top: 56%; transform-origin: 50% 50%; }
+    .device {
+      --radius: 12px;
+      --bezel: 0px;
+      position: relative;
+      width: 1280px;
+      height: 800px;
+      padding: var(--bezel);
+      border-radius: var(--radius);
+      background: #1b1a19;
+      box-shadow: 0 40px 120px -30px rgba(0, 0, 0, 0.9), inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+    }
+    .device-screen { position: relative; width: 100%; height: 100%; overflow: hidden; border-radius: calc(var(--radius) - var(--bezel) * 0.6); background: #f6f2ea; display: flex; flex-direction: column; }
+    .browserbar { flex: none; height: 44px; display: flex; align-items: center; gap: 10px; padding: 0 16px; background: #ece9e3; overflow: hidden; }
+    .browserbar i { width: 12px; height: 12px; border-radius: 50%; background: #cfc9bf; }
+    .browserbar span { margin-left: 12px; padding: 6px 16px; border-radius: 8px; background: #fff; color: #6f695b; font-size: 14px; }
+    .island { position: absolute; z-index: 3; top: 10px; left: 50%; width: 110px; height: 30px; margin-left: -55px; border-radius: 20px; background: #0d0c0b; opacity: 0; }
+
+    /* ── Responsive Beispielseite (Container Queries) ── */
+    .rs { flex: 1; container-type: inline-size; overflow: hidden; color: #1d1812; font-family: var(--font-body); position: relative; }
+    .rs-nav { display: flex; align-items: center; justify-content: space-between; padding: 22px clamp(20px, 5cqw, 64px); }
+    .rs-logo { font-family: var(--font-display); font-weight: 700; font-size: 22px; letter-spacing: -0.02em; }
+    .rs-logo span { color: #a0522d; }
+    .rs-links { display: flex; gap: 32px; font-size: 15px; color: #5b5146; }
+    .rs-cta { font-size: 15px; font-weight: 600; color: #f6f2ea; background: #1d1812; padding: 11px 20px; border-radius: 999px; }
+    .rs-burger { display: none; width: 26px; height: 14px; border-block: 2px solid #1d1812; position: relative; }
+    .rs-burger::after { content: ''; position: absolute; left: 0; right: 0; top: 4px; height: 2px; background: #1d1812; }
+
+    .rs-hero { display: grid; grid-template-columns: 1.05fr 1fr; gap: clamp(20px, 4cqw, 56px); padding: clamp(8px, 2.5cqw, 40px) clamp(20px, 5cqw, 64px) 0; }
+    .rs-eyebrow { font-size: 13px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: #a0522d; margin-bottom: 16px; }
+    .rs-h1 { font-family: var(--font-display); font-weight: 700; font-size: clamp(32px, 5.2cqw, 66px); line-height: 1.02; letter-spacing: -0.035em; margin-bottom: 18px; }
+    .rs-p { font-size: clamp(15px, 1.5cqw, 18px); line-height: 1.55; color: #5b5146; margin-bottom: 24px; max-width: 460px; }
+    .rs-btns { display: flex; gap: 12px; flex-wrap: wrap; }
+    .rs-btn { font-size: 16px; font-weight: 600; padding: 14px 24px; border-radius: 999px; background: #a0522d; color: #fff; }
+    .rs-btn--ghost { background: transparent; color: #1d1812; box-shadow: inset 0 0 0 1.5px #cbbfae; }
+    .rs-photo { min-height: 300px; border-radius: 20px; background: repeating-linear-gradient(96deg, rgba(0,0,0,0.05) 0 3px, transparent 3px 22px), linear-gradient(135deg, #c98f5b, #8b5a33 55%, #5e3a1f); }
+
+    .rs-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; padding: 32px clamp(20px, 5cqw, 64px) 0; }
+    .rs-card { border-radius: 16px; background: #fff; padding: 12px 12px 16px; }
+    .rs-card div { height: 90px; border-radius: 10px; margin-bottom: 12px; }
+    .rs-card:nth-child(1) div { background: linear-gradient(135deg, #d9c2a3, #a67c52); }
+    .rs-card:nth-child(2) div { background: linear-gradient(135deg, #bfc8c0, #6f7f73); }
+    .rs-card:nth-child(3) div { background: linear-gradient(135deg, #e4cdb5, #b0784a); }
+    .rs-card h4 { font-family: var(--font-display); font-size: 18px; letter-spacing: -0.02em; }
+    .rs-card p { font-size: 13px; color: #7a6e61; }
+
+    /* Handy-typische Leiste unten, erscheint nur schmal */
+    .rs-sticky { display: none; position: absolute; left: 14px; right: 14px; bottom: 18px; justify-content: center; font-weight: 600; font-size: 16px; color: #fff; background: #a0522d; padding: 15px; border-radius: 999px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+
+    @container (max-width: 980px) {
+      .rs-links { gap: 20px; font-size: 14px; }
+      .rs-hero { grid-template-columns: 1fr; }
+      .rs-photo { min-height: 0; height: 230px; order: 2; }
+      .rs-cards { grid-template-columns: repeat(2, 1fr); }
+      .rs-cards .rs-card:nth-child(3) { display: none; }
+    }
+    @container (max-width: 640px) {
+      .rs-links, .rs-cta { display: none; }
+      .rs-burger { display: block; }
+      .rs-nav { padding-top: 54px; }
+      .rs-btns .rs-btn--ghost { display: none; }
+      .rs-photo { height: 190px; }
+      .rs-cards { grid-template-columns: 1fr; }
+      .rs-sticky { display: flex; }
+      .rs-hero .rs-btns { display: none; }
+    }
+
+    @media (max-width: 720px) {
+      .rs-copy .display { font-size: 1.5rem; }
+      .rs-meter { top: auto; bottom: 24px; right: 50%; transform: translateX(50%); text-align: center; }
+      .device-fit { top: 55%; }
+    }
+  </style>
+</head>
+<body>
+  <div class="grain" aria-hidden="true"></div>
+
+  <section class="intro">
+    <h1 class="display">Wir bauen Webseiten, die man nicht wegscrollt.</h1>
+    <p class="lead">Auf dem Bildschirm im Büro, auf dem Tablet auf dem Sofa, auf dem Handy im Tram.</p>
+    <p class="scroll-hint">Scrollen ↓</p>
+  </section>
+
+  <section class="track" id="rs-track" aria-label="Eine Seite auf allen Geräten">
+    <div class="stage">
+      <div class="rs-copy">
+        <h2 class="display">Ein Design. Jedes Gerät.</h2>
+        <div class="chips"><span class="chip" id="rs-device">Desktop</span><span class="chip">Beispielprojekt</span></div>
+      </div>
+      <div class="rs-meter" aria-hidden="true"><b id="rs-w">1280 × 800</b><span>Pixel, live umgebrochen</span></div>
+
+      <div class="device-fit" id="fit">
+        <div class="device" id="device">
+          <div class="island" id="island"></div>
+          <div class="device-screen">
+            <div class="browserbar" id="bar"><i></i><i></i><i></i><span>holzwerk-keller.ch</span></div>
+            <div class="rs" aria-hidden="true">
+              <nav class="rs-nav">
+                <div class="rs-logo">Holzwerk <span>Keller</span></div>
+                <div class="rs-links"><span>Leistungen</span><span>Projekte</span><span>Über uns</span><span>Kontakt</span></div>
+                <div class="rs-cta">Offerte anfragen</div>
+                <div class="rs-burger"></div>
+              </nav>
+              <section class="rs-hero">
+                <div>
+                  <p class="rs-eyebrow">Schreinerei in Winterthur</p>
+                  <h1 class="rs-h1">Möbel nach Mass, gebaut für Jahrzehnte.</h1>
+                  <p class="rs-p">Küchen, Einbauschränke und Tische aus Schweizer Holz. Geplant mit Ihnen, gefertigt in unserer Werkstatt.</p>
+                  <div class="rs-btns"><span class="rs-btn">Beratung buchen</span><span class="rs-btn rs-btn--ghost">Projekte ansehen</span></div>
+                </div>
+                <div class="rs-photo"></div>
+              </section>
+              <section class="rs-cards">
+                <div class="rs-card"><div></div><h4>Küchen</h4><p>Fronten in Eiche, Nussbaum, Esche</p></div>
+                <div class="rs-card"><div></div><h4>Einbauschränke</h4><p>Jeder Zentimeter genutzt</p></div>
+                <div class="rs-card"><div></div><h4>Tische</h4><p>Massiv, geölt, reparierbar</p></div>
+              </section>
+              <div class="rs-sticky">Beratung buchen</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="outro">
+    <h2 class="display">Über die Hälfte Ihrer Besucher kommt mit dem Handy.</h2>
+    <p class="lead">Darum planen wir jede Seite für alle Bildschirme gleichzeitig.</p>
+  </section>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js"></script>
+  <script src="./shared/motion.js"></script>
+  <script>
+    const { reduced } = setupMotion()
+    const $ = (s) => document.getElementById(s)
+    const device = $('device'), fit = $('fit'), bar = $('bar'), island = $('island'), wEl = $('rs-w'), nameEl = $('rs-device')
+
+    // Stationen: Breite, Höhe, Eckradius, Rahmen, Browserleiste, Insel
+    const STOPS = [
+      { name: 'Desktop', w: 1280, h: 800, r: 12, bezel: 0, bar: 1, island: 0 },
+      { name: 'Tablet', w: 820, h: 1100, r: 34, bezel: 16, bar: 0, island: 0 },
+      { name: 'Handy', w: 390, h: 844, r: 54, bezel: 12, bar: 0, island: 1 },
+    ]
+    // Scroll-Abschnitte: Halt, Übergang, Halt, Übergang, Halt
+    const SEGMENTS = [[0, 0.14, 0, 0], [0.14, 0.42, 0, 1], [0.42, 0.56, 1, 1], [0.56, 0.84, 1, 2], [0.84, 1, 2, 2]]
+    const ease = gsap.parseEase('power2.inOut')
+    const lerp = (a, b, t) => a + (b - a) * t
+
+    const apply = (p) => {
+      const [s0, s1, a, b] = SEGMENTS.find(([s, e]) => p <= e) || SEGMENTS[SEGMENTS.length - 1]
+      const t = a === b ? 0 : ease(gsap.utils.clamp(0, 1, (p - s0) / (s1 - s0)))
+      const A = STOPS[a], B = STOPS[b]
+      const w = Math.round(lerp(A.w, B.w, t)), h = Math.round(lerp(A.h, B.h, t))
+      device.style.width = `${w}px`
+      device.style.height = `${h}px`
+      device.style.setProperty('--radius', `${lerp(A.r, B.r, t)}px`)
+      device.style.setProperty('--bezel', `${lerp(A.bezel, B.bezel, t)}px`)
+      bar.style.height = `${lerp(A.bar, B.bar, t) * 44}px`
+      bar.style.opacity = lerp(A.bar, B.bar, t)
+      island.style.opacity = lerp(A.island, B.island, t)
+      // Auf den verfügbaren Platz skalieren (transform, keine Layoutkosten ausserhalb)
+      const mobile = innerWidth < 720
+      const availW = innerWidth * (mobile ? 0.9 : 0.8), availH = innerHeight * (mobile ? 0.62 : 0.7)
+      const s = Math.min(availW / w, availH / h)
+      fit.style.transform = `translate(-50%, -50%) scale(${s})`
+      wEl.textContent = `${w} × ${h}`
+      const name = (t < 0.5 ? A : B).name
+      if (nameEl.textContent !== name) nameEl.textContent = name
+    }
+
+    if (reduced) {
+      apply(0)
+    } else {
+      apply(0)
+      ScrollTrigger.create({
+        trigger: '#rs-track', start: 'top top', end: 'bottom bottom',
+        onUpdate: (self) => apply(self.progress),
+        onRefresh: (self) => apply(self.progress),
+      })
+    }
+    addEventListener('resize', () => apply(ScrollTrigger.getAll()[0]?.progress ?? 0))
+  </script>
+</body>
+</html>

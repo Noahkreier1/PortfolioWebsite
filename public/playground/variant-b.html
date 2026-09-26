@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="de-CH">
+<head>
+  <meta charset="utf-8" />
+  <meta name="robots" content="noindex, nofollow" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Variante B: Milchglas, Linse zum Aufdecken</title>
+  <link rel="icon" href="data:," />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./shared/base.css" />
+  <link rel="stylesheet" href="./shared/mini-site.css" />
+  <style>
+    /* ─────────────────────────────────────────────────────────────
+       Variante B: "Frosted screen, hover to reveal"
+       Das MacBook ist offen, die fertige Seite liegt unter Milchglas
+       (backdrop-filter + 35 % Weiss + Rauschen). Eine klare Linse
+       (Radius 140 px) folgt der Maus mit Verzögerung (lerp) und zeigt
+       die scharfe Seite. Klick oder 60 % Scroll: Das Glas löst sich von
+       der Mausposition aus ganz auf. Touch: Glas klärt sich mit dem Scroll.
+       ───────────────────────────────────────────────────────────── */
+
+    #frost-track { height: 260vh; }
+    @media (max-width: 720px) { #frost-track { height: 220vh; } }
+
+    .stage {
+      background: radial-gradient(55% 50% at 64% 48%, rgba(160, 82, 45, 0.20), transparent 70%), var(--bg);
+    }
+    .frost-layout {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: grid;
+      grid-template-columns: minmax(260px, 0.8fr) 1.4fr;
+      align-items: center;
+      gap: 4vw;
+      padding: 0 max(24px, 6vw);
+    }
+    .frost-copy { display: grid; gap: 20px; }
+    .frost-copy .display { font-size: clamp(2.25rem, 4.2vw, 3.75rem); }
+    .frost-device { justify-self: center; --mb-w: min(820px, 54vw); }
+
+    /* Milchglas über der Mini-Seite */
+    .frost {
+      --x: 50%;
+      --y: 50%;
+      --r: 0px;          /* Linsenradius, per JS */
+      --clear: 0;         /* 0 = volles Glas, 1 = ganz klar (Touch/Scroll) */
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      cursor: none;
+      opacity: calc(1 - var(--clear));
+      background:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.1' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.35 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"),
+        rgba(255, 255, 255, 0.35);
+      -webkit-backdrop-filter: blur(18px) saturate(120%);
+      backdrop-filter: blur(18px) saturate(120%);
+      /* Loch mit weicher Kante an der Linsenposition */
+      -webkit-mask-image: radial-gradient(circle at var(--x) var(--y), transparent 0, transparent calc(var(--r) * 0.82), #000 var(--r));
+      mask-image: radial-gradient(circle at var(--x) var(--y), transparent 0, transparent calc(var(--r) * 0.82), #000 var(--r));
+    }
+    /* Hinweis auf dem Glas, verschwindet beim Aufdecken */
+    .frost-hint {
+      position: absolute;
+      z-index: 3;
+      left: 50%;
+      bottom: 7%;
+      transform: translateX(-50%);
+      font-size: 13px;
+      font-weight: 500;
+      color: #1d1812;
+      background: rgba(255, 255, 255, 0.7);
+      padding: 8px 14px;
+      border-radius: 999px;
+      pointer-events: none;
+      transition: opacity 240ms var(--ease-out);
+      white-space: nowrap;
+    }
+    .is-clear .frost-hint, .is-hovering .frost-hint { opacity: 0; }
+    /* Linsenring als feine Lichtkante */
+    .lens-ring {
+      position: absolute;
+      z-index: 3;
+      left: 0;
+      top: 0;
+      width: calc(var(--r) * 2);
+      height: calc(var(--r) * 2);
+      border-radius: 50%;
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.55), 0 8px 30px rgba(0, 0, 0, 0.18);
+      transform: translate(calc(var(--px) - var(--r)), calc(var(--py) - var(--r)));
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 200ms var(--ease-out);
+    }
+    .is-hovering .lens-ring { opacity: 1; }
+    .is-clear .lens-ring { opacity: 0; }
+
+    @media (max-width: 860px) {
+      .frost-layout { grid-template-columns: 1fr; align-content: center; gap: 36px; }
+      .frost-device { --mb-w: 92vw; }
+      .frost-copy .display { font-size: 2.25rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="grain" aria-hidden="true"></div>
+
+  <section class="intro">
+    <h1 class="display">Wir bauen Webseiten, die man nicht wegscrollt.</h1>
+    <p class="lead">Unter dem Glas liegt eine fertige Seite. Fahren Sie mit der Maus darüber.</p>
+    <p class="scroll-hint">Scrollen ↓</p>
+  </section>
+
+  <section class="track" id="frost-track" aria-label="Beispielseite">
+    <div class="stage">
+      <div class="frost-layout">
+        <div class="frost-copy">
+          <h2 class="display">Klarheit entsteht im Detail.</h2>
+          <div class="chips"><span class="chip">Beispielprojekt</span><span class="chip">Schreinerei</span><span class="chip">Winterthur</span></div>
+          <p class="lead">Typografie, Raster und Farben, abgestimmt auf eine Marke. Klicken Sie auf den Bildschirm, um das Glas ganz zu entfernen.</p>
+        </div>
+        <div class="frost-device">
+          <div class="mb">
+            <div class="mb-lid"><div class="mb-face"><div class="mb-screen" id="screen">
+              <!-- Mini-Seite per JS -->
+              <div class="frost" id="frost" role="button" tabindex="0" aria-label="Milchglas entfernen und Seite ansehen"></div>
+              <div class="lens-ring" id="ring"></div>
+              <span class="frost-hint">Maus über den Bildschirm bewegen</span>
+            </div></div></div>
+            <div class="mb-deck"></div><div class="mb-shadow"></div>
+          </div>
+        </div>
+      </div>
+      <div class="vignette"></div>
+    </div>
+  </section>
+
+  <section class="outro">
+    <h2 class="display">Weniger Nebel, mehr Anfragen.</h2>
+    <p class="lead">Wir entwerfen und programmieren Webseiten für Schweizer KMU.</p>
+  </section>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js"></script>
+  <script src="./shared/motion.js"></script>
+  <script src="./shared/mini-site.js"></script>
+  <script>
+    const { reduced } = setupMotion()
+    const screen = document.getElementById('screen')
+    const frost = document.getElementById('frost')
+    const ring = document.getElementById('ring')
+    screen.insertAdjacentHTML('afterbegin', miniSiteHTML(false))
+    fitMiniSite(screen)
+
+    const canHover = window.matchMedia('(hover: hover) and (pointer: fine)').matches
+    const LENS = 140
+    const state = { x: 0.5, y: 0.5, tx: 0.5, ty: 0.5, r: 0, tr: 0, cleared: false }
+
+    const setVars = () => {
+      const w = screen.clientWidth, h = screen.clientHeight
+      frost.style.setProperty('--x', `${state.x * 100}%`)
+      frost.style.setProperty('--y', `${state.y * 100}%`)
+      frost.style.setProperty('--r', `${state.r}px`)
+      ring.style.setProperty('--px', `${state.x * w}px`)
+      ring.style.setProperty('--py', `${state.y * h}px`)
+      ring.style.setProperty('--r', `${state.r}px`)
+    }
+
+    // Glas komplett auflösen: Maske wächst von der letzten Linsenposition bis über die Ecken
+    const clearAll = () => {
+      if (state.cleared) return
+      state.cleared = true
+      screen.classList.add('is-clear')
+      const w = screen.clientWidth, h = screen.clientHeight
+      const far = Math.hypot(Math.max(state.x, 1 - state.x) * w, Math.max(state.y, 1 - state.y) * h) / 0.82 + 4
+      gsap.to(state, { r: far, tr: far, duration: reduced ? 0 : 0.9, ease: 'power3.inOut', onUpdate: setVars })
+      frost.setAttribute('aria-label', 'Seite ist sichtbar')
+    }
+
+    if (reduced) {
+      // Kein Linsen-Effekt: Glas blendet beim Erreichen einfach aus
+      gsap.to(frost, { opacity: 0, duration: 0.5, scrollTrigger: { trigger: '#frost-track', start: 'top 40%' } })
+    } else if (canHover) {
+      // Linse folgt der Maus mit Verzögerung (lerp), nur solange das Glas da ist
+      screen.addEventListener('pointerenter', () => { if (!state.cleared) { state.tr = LENS; screen.classList.add('is-hovering') } })
+      screen.addEventListener('pointerleave', () => { if (!state.cleared) { state.tr = 0; screen.classList.remove('is-hovering') } })
+      screen.addEventListener('pointermove', (e) => {
+        const rect = screen.getBoundingClientRect()
+        state.tx = (e.clientX - rect.left) / rect.width
+        state.ty = (e.clientY - rect.top) / rect.height
+      })
+      gsap.ticker.add(() => {
+        if (state.cleared) return
+        state.x += (state.tx - state.x) * 0.14
+        state.y += (state.ty - state.y) * 0.14
+        state.r += (state.tr - state.r) * 0.18
+        setVars()
+      })
+      frost.addEventListener('click', clearAll)
+      frost.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); clearAll() } })
+      // Spätestens bei 60 % der Sektion löst sich das Glas von selbst
+      ScrollTrigger.create({ trigger: '#frost-track', start: 'top top', end: 'bottom bottom', onUpdate: (self) => { if (self.progress > 0.6) clearAll() } })
+    } else {
+      // Touch: kein Hover, das Glas klärt sich mit dem Scroll
+      frost.style.cursor = 'default'
+      screen.querySelector('.frost-hint').textContent = 'Weiterscrollen'
+      // Über die ganze Sektion gescrubbt: bei 60 % ist das Glas weg, danach Halt auf der klaren Seite
+      const hint = screen.querySelector('.frost-hint')
+      gsap.timeline({ scrollTrigger: { trigger: '#frost-track', start: 'top top', end: 'bottom bottom', scrub: 0.4 } })
+        .to(frost, { '--clear': 1, ease: 'none', duration: 0.6 }, 0)
+        .to(hint, { opacity: 0, ease: 'none', duration: 0.15 }, 0)
+        .to({}, { duration: 0.4 })
+      // Antippen deckt ebenfalls sofort auf
+      frost.addEventListener('click', () => gsap.to(frost, { '--clear': 1, duration: 0.5, ease: 'power2.out' }))
+    }
+  </script>
+</body>
+</html>
