@@ -22,8 +22,8 @@
                   und nahtlos zum echten nächsten Abschnitt wird
        ───────────────────────────────────────────────────────────── */
 
-    #build-track { height: 400vh; }
-    @media (max-width: 720px) { #build-track { height: 250vh; } }
+    #build-track { height: calc(400vh * var(--pace)); }
+    @media (max-width: 720px) { #build-track { height: calc(250vh * var(--pace)); } }
 
     .stage { background: radial-gradient(50% 45% at 50% 55%, rgba(242, 237, 230, 0.06), transparent 70%), var(--bg); }
 

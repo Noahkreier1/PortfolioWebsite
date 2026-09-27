@@ -23,8 +23,8 @@
          80–100 % Komposition wird zum Bildschirm
        ───────────────────────────────────────────────────────────── */
 
-    #topo-track { height: 480vh; }
-    @media (max-width: 720px) { #topo-track { height: 320vh; } }
+    #topo-track { height: calc(480vh * var(--pace)); }
+    @media (max-width: 720px) { #topo-track { height: calc(320vh * var(--pace)); } }
 
     .stage { display: block; }
     .world { position: absolute; inset: 0; transform-origin: 0 0; }

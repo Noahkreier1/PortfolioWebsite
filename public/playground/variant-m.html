@@ -1,0 +1,535 @@
+<!doctype html>
+<html lang="de-CH">
+<head>
+  <meta charset="utf-8" />
+  <meta name="robots" content="noindex, nofollow" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Variante M: Vom Entwurf aufs Handy</title>
+  <link rel="icon" href="data:," />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./shared/base.css" />
+  <link rel="stylesheet" href="./shared/phone.css" />
+  <link rel="stylesheet" href="./shared/hk.css" />
+  <style>
+    /* ─────────────────────────────────────────────────────────────
+       Variante M: «Vom Entwurf aufs Handy»
+       Auf dem MacBook ein Design-Tool mit der Desktop-Seite. Die Kamera fährt
+       heran, ein Cursor wählt die Überschrift, rote Masslinien zeigen Abstände,
+       Schrift und Farbe: alle Werte live aus dem Layout gemessen, nicht erfunden.
+       Nach «An Entwicklung übergeben» heben die Bausteine einzeln ab und fliegen
+       aufs iPhone, wo sie sich zur Handy-Seite neu ordnen (Flug mit Überblendung
+       zwischen Desktop- und Mobil-Fassung). Zum Schluss scrollt das Handy.
+       Zeitachse in Einheiten 0–500, Scrollweg = 500vh × --pace.
+       ───────────────────────────────────────────────────────────── */
+
+    #m-track { height: calc(500vh * var(--pace)); }
+
+    .stage {
+      background:
+        radial-gradient(55% 50% at 44% 58%, rgba(218, 41, 28, 0.07), transparent 70%),
+        radial-gradient(35% 40% at 84% 56%, rgba(242, 237, 230, 0.05), transparent 70%),
+        var(--bg);
+    }
+
+    .m-copy { position: absolute; z-index: 7; left: max(24px, 5vw); top: max(24px, 8vh); display: grid; gap: 14px; max-width: 380px; }
+    .m-copy .display { font-size: clamp(1.9rem, 3vw, 2.9rem); }
+    .m-copy .lead { font-size: 15px; }
+    .m-cap {
+      position: absolute; z-index: 7; left: 50%; bottom: 5vh; width: min(640px, 90vw);
+      transform: translateX(-50%); text-align: center; font-size: 15px; color: var(--ink-muted);
+    }
+    .m-cap p { position: absolute; left: 0; right: 0; bottom: 0; opacity: 0; }
+
+    .m-laptop { position: absolute; z-index: 1; left: 44%; top: 57%; --mb-w: min(900px, 58vw); transform: translate(-50%, -50%); }
+    .m-cam { transform-origin: 0 0; }
+    .m-phone { position: absolute; z-index: 3; left: 83%; top: 56%; transform: translate(-50%, -50%); perspective: 1400px; }
+    .m-phone .ip { --ip-w: min(250px, 16vw, 29vh); }
+    .m-pcam { transform-style: preserve-3d; }
+
+    .flyers { position: absolute; inset: 0; z-index: 5; pointer-events: none; }
+    .fly { position: absolute; left: 0; top: 0; transform-origin: 0 0; background: #f6f2ea; border-radius: 6px; visibility: hidden; }
+    .fly::after { content: ''; position: absolute; inset: 0; border-radius: inherit; box-shadow: 0 34px 60px -22px rgba(0, 0, 0, 0.75); opacity: var(--sh, 0); }
+    .fly > * { margin: 0 !important; position: relative !important; left: auto !important; right: auto !important; bottom: auto !important; top: auto !important; }
+
+    /* ── Handy-Inhalt ── */
+    .m-site { position: absolute; inset: 0; background: #f6f2ea; }
+    .m-scroll { position: absolute; left: 0; top: 0; width: 390px; }
+    .m-scroll .hk-root { --s: 1; }
+    .m-off { position: absolute; inset: 0; z-index: 40; background: #050505; }
+
+    /* ── Design-Tool (virtuell 1440 × 900) ── */
+    .dt { background: #121110; color: #d9d4cb; font-size: 13px; }
+    .dt-top { position: absolute; left: 0; right: 0; top: 0; height: 48px; display: flex; align-items: center; gap: 18px; padding: 0 16px; background: #1b1a19; border-bottom: 1px solid #2a2927; }
+    .dt-tools { display: flex; gap: 4px; }
+    .dt-tools i { width: 32px; height: 32px; border-radius: 6px; display: grid; place-items: center; color: #a9a39a; }
+    .dt-tools i.on { background: #2d2b29; color: #f2ede6; }
+    .dt-tools svg { width: 16px; height: 16px; }
+    .dt-file { margin-left: 10px; color: #f2ede6; font-weight: 500; }
+    .dt-file span { color: #8a8474; font-weight: 400; }
+    .dt-zoom { margin-left: auto; color: #a9a39a; font-variant-numeric: tabular-nums; }
+    .dt-avatars { display: flex; }
+    .dt-avatars i { width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; font-style: normal; font-size: 11px; font-weight: 600; color: #fff; background: var(--c); box-shadow: 0 0 0 2px #1b1a19; margin-left: -6px; }
+    .dt-handoff { display: flex; align-items: center; gap: 8px; height: 32px; padding: 0 14px; border-radius: 6px; background: #DA291C; color: #fff; font-weight: 600; transform-origin: 50% 50%; }
+    .dt-handoff.is-done { background: #2d2b29; color: #f2ede6; }
+    .dt-spin { width: 12px; height: 12px; border-radius: 50%; border: 2px solid rgba(255, 255, 255, 0.35); border-top-color: #fff; display: none; }
+    .dt-handoff.is-busy .dt-spin { display: block; }
+
+    .dt-left, .dt-right { position: absolute; top: 48px; bottom: 0; background: #1b1a19; padding: 14px 0; }
+    .dt-left { left: 0; width: 240px; border-right: 1px solid #2a2927; }
+    .dt-right { right: 0; width: 280px; border-left: 1px solid #2a2927; padding: 14px 16px; }
+    .dt-h { padding: 0 16px 8px; margin-top: 4px; font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #8a8474; }
+    .dt-right .dt-h { padding: 0 0 8px; margin-top: 18px; }
+    .dt-layer { display: flex; align-items: center; gap: 8px; height: 30px; padding-left: calc(16px + var(--d, 0) * 16px); color: #cfc9bf; }
+    .dt-layer svg { width: 13px; height: 13px; opacity: 0.6; flex: none; }
+    .dt-layer.is-on { background: rgba(218, 41, 28, 0.2); color: #fff; box-shadow: inset 2px 0 0 #DA291C; }
+    .dt-tabs { display: flex; gap: 16px; padding-bottom: 12px; border-bottom: 1px solid #2a2927; color: #8a8474; font-weight: 500; }
+    .dt-tabs .on { color: #f2ede6; }
+    .dt-row { display: grid; gap: 8px; margin-bottom: 8px; }
+    .dt-row.two { grid-template-columns: 1fr 1fr; }
+    .dt-field { height: 32px; border-radius: 6px; background: #262523; display: flex; align-items: center; gap: 8px; padding: 0 10px; color: #f2ede6; white-space: nowrap; overflow: hidden; }
+    .dt-field small { color: #8a8474; font-size: 12px; }
+    .dt-field b { font-weight: 500; font-variant-numeric: tabular-nums; }
+    .dt-sw { width: 16px; height: 16px; border-radius: 3px; flex: none; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.15); }
+
+    .dt-canvas {
+      position: absolute; left: 240px; right: 280px; top: 48px; bottom: 0;
+      background-color: #121110;
+      background-image: radial-gradient(rgba(242, 237, 230, 0.07) 1px, transparent 1px);
+      background-size: 20px 20px;
+    }
+    .dt-board-label { position: absolute; left: 40px; top: 48px; font-size: 12px; color: #8a8474; }
+    .dt-board { position: absolute; left: 40px; top: 70px; width: 840px; height: 525px; --s: 0.65625; box-shadow: 0 24px 70px rgba(0, 0, 0, 0.55); }
+    .dt-toast {
+      position: absolute; left: 50%; bottom: 36px; transform: translateX(-50%);
+      display: flex; align-items: center; gap: 10px; padding: 10px 16px; border-radius: 8px;
+      background: #f2ede6; color: #14110d; font-size: 14px; font-weight: 600; white-space: nowrap; opacity: 0;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+    }
+    .dt-toast i { width: 18px; height: 18px; border-radius: 50%; display: grid; place-items: center; background: #DA291C; color: #fff; font-style: normal; font-size: 11px; }
+
+    /* Kompakt (Handy): nur Werkzeugleiste und Zeichenfläche, Artboard gross */
+    .vs--compact .dt-left, .vs--compact .dt-right, .vs--compact .dt-tools, .vs--compact .dt-avatars { display: none; }
+    .vs--compact .dt-canvas { left: 0; right: 0; }
+    .vs--compact .dt-board { left: 80px; top: 38px; width: 1280px; height: 800px; --s: 1; }
+    .vs--compact .dt-board-label { left: 80px; top: 16px; font-size: 16px; }
+    .vs--compact .dt-top { height: 48px; font-size: 18px; }
+    .vs--compact .dt-handoff { height: 38px; font-size: 18px; }
+
+    /* Messebene im Artboard (Einheiten = Artboard-Pixel 1280 × 800) */
+    .dt-ov { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
+    .rl line { stroke: #DA291C; stroke-width: 3; }
+    .rl .lab rect { fill: #DA291C; }
+    .rl .lab text, .tagl text { font-family: Inter, sans-serif; font-weight: 600; font-size: 26px; fill: #fff; }
+    .tagl rect { fill: #14110d; }
+    .sel .box { fill: none; stroke: #DA291C; stroke-width: 3; }
+    .sel .hd { fill: #fff; stroke: #DA291C; stroke-width: 3; }
+    .ghost { fill: rgba(218, 41, 28, 0.04); stroke: rgba(29, 24, 18, 0.38); stroke-width: 2.5; stroke-dasharray: 10 8; }
+
+    .dt-cursor { position: absolute; left: 0; top: 0; z-index: 30; width: 28px; height: 28px; opacity: 0; pointer-events: none; }
+    .dt-cursor svg { width: 28px; height: 28px; filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.5)); }
+    .dt-click { position: absolute; left: -22px; top: -22px; width: 48px; height: 48px; border-radius: 50%; border: 3px solid #DA291C; opacity: 0; }
+
+    @media (max-width: 720px) {
+      .m-copy { right: 20px; max-width: none; top: 18px; gap: 10px; }
+      .m-copy .display { font-size: 1.55rem; }
+      .m-copy .lead { display: none; }
+      .m-laptop { left: 50%; top: 34%; --mb-w: 92vw; }
+      .m-phone { left: 73%; top: 72%; }
+      .m-phone .ip { --ip-w: min(46vw, 21vh); }
+      /* Handy: Bildunterschrift oben unter dem Titel, dort ist Platz */
+      .m-cap { top: 104px; bottom: auto; font-size: 13px; text-align: left; left: 20px; right: 20px; width: auto; transform: none; }
+      .m-cap p { top: 0; bottom: auto; }
+    }
+
+    .reduced #m-track { height: auto; }
+    .reduced #m-track .stage { position: relative; }
+  </style>
+</head>
+<body>
+  <div class="grain" aria-hidden="true"></div>
+
+  <section class="intro">
+    <h1 class="display">Wir bauen Webseiten, die man nicht wegscrollt.</h1>
+    <p class="lead">Erst gestaltet, dann vermessen, dann Baustein für Baustein aufs Handy gebracht.</p>
+    <p class="scroll-hint">Scrollen ↓</p>
+  </section>
+
+  <section class="track" id="m-track" aria-label="Vom Entwurf aufs Handy">
+    <div class="stage" id="stage">
+      <div class="m-copy" id="copy">
+        <div class="chips"><span class="chip" id="phase">Entwurf</span><span class="chip">Beispielprojekt</span></div>
+        <h2 class="display" id="title">Vom Entwurf aufs Handy.</h2>
+        <p class="lead" id="lead">Wir gestalten jede Seite zuerst im Detail und bauen sie dann für jedes Gerät, Baustein für Baustein.</p>
+      </div>
+
+      <div class="m-laptop" id="laptop">
+        <div class="m-cam" id="cam">
+          <div class="mb">
+            <div class="mb-lid"><div class="mb-face"><div class="mb-screen" id="lscreen">
+              <div class="vs dt" id="vs">
+                <header class="dt-top">
+                  <div class="dt-tools">
+                    <i class="on"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M5 3l14 8-6 1.6L10 19z"/></svg></i>
+                    <i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3v18M16 3v18M3 8h18M3 16h18"/></svg></i>
+                    <i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"/></svg></i>
+                    <i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20l4-1 11-11-3-3L5 16zM14 6l3 3"/></svg></i>
+                    <i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 5h14M12 5v14"/></svg></i>
+                  </div>
+                  <div class="dt-file">Holzwerk Keller <span>/ Startseite</span></div>
+                  <div class="dt-zoom">66 %</div>
+                  <div class="dt-avatars"><i style="--c:#a0522d">N</i><i style="--c:#5b6f64">L</i></div>
+                  <div class="dt-handoff" id="handoff"><span class="dt-spin"></span><span id="handoff-label">An Entwicklung übergeben</span></div>
+                </header>
+                <aside class="dt-left">
+                  <p class="dt-h">Ebenen</p>
+                  <div class="dt-layer" style="--d:0"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3v18M16 3v18M3 8h18M3 16h18"/></svg>Startseite · Desktop</div>
+                  <div class="dt-layer" style="--d:1">Navigation</div>
+                  <div class="dt-layer" style="--d:1">Hero</div>
+                  <div class="dt-layer" style="--d:2" data-l="h1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 5h14M12 5v14"/></svg>Überschrift</div>
+                  <div class="dt-layer" style="--d:2"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 5h14M12 5v14"/></svg>Einleitung</div>
+                  <div class="dt-layer" style="--d:2">Buttons</div>
+                  <div class="dt-layer" style="--d:2">Titelbild</div>
+                  <div class="dt-layer" style="--d:1">Leistungen</div>
+                  <p class="dt-h" style="margin-top:20px">Komponenten</p>
+                  <div class="dt-layer" style="--d:0">◇ Button / Primär</div>
+                  <div class="dt-layer" style="--d:0">◇ Karte / Leistung</div>
+                </aside>
+                <main class="dt-canvas">
+                  <p class="dt-board-label">Startseite · Desktop 1280</p>
+                  <div class="dt-board" id="board">
+                    <svg class="dt-ov" id="ov" viewBox="0 0 1280 800" preserveAspectRatio="none"></svg>
+                  </div>
+                  <div class="dt-toast" id="toast"><i>✓</i>9 Bausteine übergeben · Mobil 390</div>
+                </main>
+                <aside class="dt-right">
+                  <div class="dt-tabs"><span class="on">Gestaltung</span><span>Prototyp</span><span>Code</span></div>
+                  <p class="dt-h">Text</p>
+                  <div class="dt-row dt-prop"><div class="dt-field"><small>Schrift</small><b id="pv-font">Inter Tight</b></div></div>
+                  <div class="dt-row two dt-prop"><div class="dt-field"><small>Schnitt</small><b id="pv-w">Bold</b></div><div class="dt-field"><small>Grösse</small><b id="pv-fs"></b></div></div>
+                  <div class="dt-row two dt-prop"><div class="dt-field"><small>Zeile</small><b id="pv-lh"></b></div><div class="dt-field"><small>Laufweite</small><b id="pv-ls"></b></div></div>
+                  <p class="dt-h">Füllung</p>
+                  <div class="dt-row dt-prop"><div class="dt-field"><i class="dt-sw" id="pv-sw"></i><b id="pv-col"></b><small style="margin-left:auto">100 %</small></div></div>
+                  <p class="dt-h">Abstände</p>
+                  <div class="dt-row two dt-prop"><div class="dt-field"><small>Rand</small><b id="pv-pad"></b></div><div class="dt-field"><small>Danach</small><b id="pv-gap"></b></div></div>
+                </aside>
+                <div class="dt-cursor" id="cursor">
+                  <svg viewBox="0 0 24 24"><path d="M4 2l16 10-7 1.6L9.6 21z" fill="#fff" stroke="#14110d" stroke-width="1.5" stroke-linejoin="round"/></svg>
+                  <i class="dt-click" id="click"></i>
+                </div>
+              </div>
+            </div></div></div>
+            <div class="mb-deck"></div><div class="mb-shadow"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="m-phone" id="phoneWrap"><div class="m-pcam" id="pcam"></div></div>
+      <div class="flyers" id="flyers"></div>
+
+      <div class="m-cap" id="cap">
+        <p>Jeder Abstand vermessen, jede Schrift festgelegt.</p>
+        <p>Übergabe an die Entwicklung: dieselben Bausteine, neu geordnet fürs Handy.</p>
+        <p>Ein Entwurf. Pixelgenau auf jedem Gerät.</p>
+      </div>
+      <div class="vignette"></div>
+    </div>
+  </section>
+
+  <section class="outro">
+    <h2 class="display">Gestaltung und Code aus einer Hand.</h2>
+    <p class="lead">Was im Entwurf vermessen ist, sitzt auf jedem Bildschirm genau so.</p>
+  </section>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js"></script>
+  <script src="./shared/motion.js"></script>
+  <script src="./shared/scrub.js"></script>
+  <script src="./shared/phone.js"></script>
+  <script src="./shared/hk.js"></script>
+  <script>
+    const { reduced } = setupMotion()
+    const $ = (s, r = document) => r.querySelector(s)
+    const TOTAL = 500
+    const MEASURE_U = 240                      // Pose, in der Laptop und Handy neutral stehen
+    const mobile = () => innerWidth <= 720
+
+    /* ── Aufbau ── */
+    const stage = $('#stage'), cam = $('#cam'), vs = $('#vs'), lscreen = $('#lscreen')
+    const board = $('#board'), ov = $('#ov')
+    board.insertAdjacentHTML('afterbegin', hkHTML('d'))
+    const boardRoot = board.querySelector('.hk-root')
+    fitScale(vs, 1440, lscreen)
+    vs.classList.toggle('vs--compact', mobile())
+
+    $('#pcam').innerHTML = iphoneHTML({ id: 'phone', inner: `<div class="m-site"><div class="m-scroll" id="mscroll">${hkHTML('m')}</div>${hkStickyHTML()}<div class="m-off" id="off"></div></div>` })
+    const phone = $('#phone'), pview = phone.querySelector('.ip-view'), pcanvas = phone.querySelector('.ip-canvas')
+    fitScale(pcanvas, 390, pview)
+    const mRoot = phone.querySelector('.hk-root'), mscroll = $('#mscroll'), off = $('#off')
+    const pStatus = phone.querySelector('.ip-status'), pHome = phone.querySelector('.ip-home')
+
+    const KEYS = ['logo', 'nav', 'cta', 'eyebrow', 'h1', 'p', 'btn', 'photo', 'cards']
+    const dEl = (k) => boardRoot.querySelector(`[data-k="${k}"]`)
+    const mEl = (k) => (k === 'cta' ? phone.querySelector('.hk-sticky') : mRoot.querySelector(`[data-k="${k}"]`))
+
+    /* ── Flugkörper: je Baustein ein Desktop- und ein Mobil-Klon ── */
+    const flyers = $('#flyers')
+    const flights = KEYS.map((k) => ({ k, d: dEl(k), m: mEl(k) }))
+    function buildFlyers() {
+      flyers.innerHTML = ''
+      flights.forEach((f) => {
+        const mk = (src, mode) => {
+          const w = document.createElement('div')
+          w.className = `fly hk ${mode}`
+          const c = src.cloneNode(true)
+          c.removeAttribute('data-k')
+          c.style.width = `${src.offsetWidth}px`
+          c.style.height = `${src.offsetHeight}px`
+          c.style.opacity = '1'
+          w.appendChild(c)
+          flyers.appendChild(w)
+          return { w, nw: src.offsetWidth }
+        }
+        f.fd = mk(f.d, 'hk--d')
+        f.fm = mk(f.m, 'hk--m')
+      })
+    }
+
+    /* ── Messwerte aus dem echten Layout ── */
+    const svg = (tag, attrs, parent) => { const e = document.createElementNS('http://www.w3.org/2000/svg', tag); for (const a in attrs) e.setAttribute(a, attrs[a]); parent && parent.appendChild(e); return e }
+    const hex = (rgb) => '#' + rgb.match(/\d+/g).slice(0, 3).map((v) => (+v).toString(16).padStart(2, '0')).join('').toUpperCase()
+    function hkRel(el) {
+      const r = el.getBoundingClientRect(), R = boardRoot.getBoundingClientRect(), s = R.width / 1280
+      return { x: (r.left - R.left) / s, y: (r.top - R.top) / s, w: r.width / s, h: r.height / s }
+    }
+    let lines = [], sel = null, tagFont = null, tagCol = null, ghosts = []
+    function label(g, x, y, text, anchor = 'middle') {
+      const lab = svg('g', { class: 'lab' }, g)
+      const t = svg('text', { x, y: y + 9, 'text-anchor': anchor }, lab)
+      t.textContent = text
+      const bb = t.getBBox()
+      const r = svg('rect', { x: bb.x - 10, y: bb.y - 5, width: bb.width + 20, height: bb.height + 10, rx: 6 })
+      lab.insertBefore(r, t)
+      return lab
+    }
+    function buildOverlay() {
+      ov.innerHTML = ''
+      const g = {}
+      KEYS.forEach((k) => { g[k] = hkRel(dEl(k)) })
+      const nav = hkRel(boardRoot.querySelector('.hk-nav'))
+      const cards = [...boardRoot.querySelectorAll('.hk-card')].map(hkRel)
+      const h1 = g.h1, p = g.p, btn = g.btn, photo = g.photo
+      const colRight = h1.x + h1.w
+      const specs = [
+        { t: 'h', x1: 0, x2: h1.x, y: h1.y + h1.h * 0.32 },
+        { t: 'v', x: 1210, y1: 0, y2: nav.h },
+        { t: 'v', x: h1.x + 150, y1: h1.y + h1.h, y2: p.y },
+        { t: 'h', x1: colRight, x2: photo.x, y: photo.y + 110 },
+        { t: 'v', x: btn.x + 70, y1: p.y + p.h, y2: btn.y },
+        { t: 'h', x1: cards[0].x + cards[0].w, x2: cards[1].x, y: cards[0].y + 54 },
+      ]
+      lines = specs.map((s) => {
+        const grp = svg('g', { class: 'rl' }, ov)
+        const len = s.t === 'h' ? s.x2 - s.x1 : s.y2 - s.y1
+        let main
+        if (s.t === 'h') {
+          main = svg('line', { x1: s.x1, y1: s.y, x2: s.x2, y2: s.y, pathLength: 1 }, grp)
+          svg('line', { class: 'tk', x1: s.x1, y1: s.y - 11, x2: s.x1, y2: s.y + 11 }, grp)
+          svg('line', { class: 'tk', x1: s.x2, y1: s.y - 11, x2: s.x2, y2: s.y + 11 }, grp)
+        } else {
+          main = svg('line', { x1: s.x, y1: s.y1, x2: s.x, y2: s.y2, pathLength: 1 }, grp)
+          svg('line', { class: 'tk', x1: s.x - 11, y1: s.y1, x2: s.x + 11, y2: s.y1 }, grp)
+          svg('line', { class: 'tk', x1: s.x - 11, y1: s.y2, x2: s.x + 11, y2: s.y2 }, grp)
+        }
+        main.setAttribute('stroke-dasharray', '1 1')
+        const lx = s.t === 'h' ? (s.x1 + s.x2) / 2 : s.x + 40
+        const ly = s.t === 'h' ? s.y - 34 : (s.y1 + s.y2) / 2
+        const lab = label(grp, lx, ly, String(Math.round(len)), s.t === 'h' ? 'middle' : 'start')
+        return { grp, main, ticks: grp.querySelectorAll('.tk'), lab }
+      })
+      // Auswahl um die Überschrift mit echter Grösse
+      sel = svg('g', { class: 'sel' }, ov)
+      svg('rect', { class: 'box', x: h1.x, y: h1.y, width: h1.w, height: h1.h }, sel)
+      ;[[0, 0], [0.5, 0], [1, 0], [0, 0.5], [1, 0.5], [0, 1], [0.5, 1], [1, 1]].forEach(([fx, fy]) => svg('rect', { class: 'hd', x: h1.x + h1.w * fx - 7, y: h1.y + h1.h * fy - 7, width: 14, height: 14 }, sel))
+      const sz = svg('g', { class: 'rl' }, sel)
+      label(sz, h1.x + h1.w / 2, h1.y + h1.h + 30, `${Math.round(h1.w)} × ${Math.round(h1.h)}`)
+      // Schrift- und Farbangaben aus dem berechneten Stil
+      const cs = getComputedStyle(dEl('h1')), fs = parseFloat(cs.fontSize)
+      const lh = Math.round(parseFloat(cs.lineHeight)), ls = (parseFloat(cs.letterSpacing) / fs * 100).toFixed(1).replace('.', '.')
+      const btnCol = hex(getComputedStyle(boardRoot.querySelector('.hk-btn')).backgroundColor)
+      tagFont = svg('g', { class: 'tagl' }, ov)
+      const tt = svg('text', { x: h1.x + h1.w + 26, y: h1.y + 30 }, tagFont); tt.textContent = `Inter Tight Bold · ${Math.round(fs)} / ${lh}`
+      const tb = tt.getBBox(); tagFont.insertBefore(svg('rect', { x: tb.x - 12, y: tb.y - 7, width: tb.width + 24, height: tb.height + 14, rx: 6 }), tt)
+      tagCol = svg('g', { class: 'tagl' }, ov)
+      const ct = svg('text', { x: btn.x + btn.w + 60, y: btn.y + btn.h / 2 + 9 }, tagCol); ct.textContent = btnCol
+      const cb = ct.getBBox()
+      tagCol.insertBefore(svg('rect', { x: cb.x - 44, y: cb.y - 7, width: cb.width + 56, height: cb.height + 14, rx: 6 }), ct)
+      svg('rect', { x: cb.x - 34, y: cb.y + 1, width: 22, height: cb.height - 2, rx: 4, fill: btnCol }, tagCol)
+      // Eigenschaften-Panel mit denselben Werten
+      $('#pv-fs').textContent = Math.round(fs)
+      $('#pv-lh').textContent = lh
+      $('#pv-ls').textContent = `${ls} %`
+      const col = hex(cs.color); $('#pv-col').textContent = col; $('#pv-sw').style.background = col
+      $('#pv-pad').textContent = Math.round(h1.x)
+      $('#pv-gap').textContent = Math.round(p.y - (h1.y + h1.h))
+      // Platzhalter, die nach dem Abflug im Entwurf zurückbleiben
+      ghosts = KEYS.filter((k) => k !== 'cta').map((k) => svg('rect', { class: 'ghost', x: g[k].x, y: g[k].y, width: g[k].w, height: g[k].h, rx: 8, opacity: 0 }, ov))
+      ghosts.push(svg('rect', { class: 'ghost', x: g.cta.x, y: g.cta.y, width: g.cta.w, height: g.cta.h, rx: 20, opacity: 0 }, ov))
+    }
+
+    /* ── Messung in neutraler Pose: Flugbahnen, Kamera-Fokus, Cursor-Ziele ── */
+    let measured = false, lastU = 0
+    const geo = { focus: { x: 0, y: 0 }, pan: { x: 0, y: 0 }, cur: {} }
+    function vsPoint(el, fx = 0.5, fy = 0.5) {
+      const r = el.getBoundingClientRect(), V = vs.getBoundingClientRect(), s = V.width / 1440
+      return { x: (r.left - V.left + r.width * fx) / s, y: (r.top - V.top + r.height * fy) / s }
+    }
+    function measure() {
+      vs.classList.toggle('vs--compact', mobile())
+      const cur = lastU
+      measured = false
+      render(MEASURE_U)
+      buildOverlay()
+      buildFlyers()
+      const S = stage.getBoundingClientRect()
+      flights.forEach((f) => {
+        const a = f.d.getBoundingClientRect(), b = f.m.getBoundingClientRect()
+        f.a = { x: a.left - S.left, y: a.top - S.top, w: a.width }
+        f.b = { x: b.left - S.left, y: b.top - S.top, w: b.width }
+      })
+      // Kamera zoomt auf die Überschrift, leicht Richtung Bühnenmitte
+      const h1r = dEl('h1').getBoundingClientRect(), C = cam.getBoundingClientRect()
+      geo.focus = { x: h1r.left + h1r.width * 0.5 - C.left, y: h1r.top + h1r.height * 0.6 - C.top }
+      cam.style.transformOrigin = `${geo.focus.x}px ${geo.focus.y}px`
+      geo.pan = { x: (S.width * 0.5 - (h1r.left - S.left + h1r.width / 2)) * 0.45, y: (S.height * 0.52 - (h1r.top - S.top)) * 0.45 }
+      // Cursor-Stationen im virtuellen Bildschirm
+      geo.cur = { start: { x: 1300, y: 820 }, h1: vsPoint(dEl('h1'), 0.42, 0.55), btn: vsPoint($('#handoff'), 0.5, 0.55) }
+      geo.maxScroll = Math.max(0, mRoot.offsetHeight - 844)
+      measured = true
+      render(cur)
+    }
+
+    /* ── Szene ── */
+    const lerpPt = (a, b, t) => ({ x: Z.lerp(a.x, b.x, t), y: Z.lerp(a.y, b.y, t) })
+    const layerH1 = vs.querySelector('[data-l="h1"]')
+    const props = [...vs.querySelectorAll('.dt-prop')]
+    const caps = [...document.querySelectorAll('#cap p')]
+    const handoff = $('#handoff'), handoffLabel = $('#handoff-label')
+    const cursor = $('#cursor'), click = $('#click'), toast = $('#toast'), phaseEl = $('#phase')
+    const copyFade = [$('#title'), $('#lead')]
+
+    function render(u) {
+      lastU = u
+      const mob = mobile()
+
+      /* Kamera fährt an die Überschrift heran und wieder zurück */
+      const z = Z.inOut(Z.seg(u, 22, 72)) * (1 - Z.inOut(Z.seg(u, 200, 234)))
+      const zmax = mob ? 1.9 : 1.4
+      const fin = Z.inOut(Z.seg(u, 405, 470))                       // Schlussbild
+      cam.style.transform = `translate(${geo.pan.x * z}px, ${geo.pan.y * z}px) scale(${(1 + (zmax - 1) * z) * (1 - 0.05 * fin)})`
+      $('#laptop').style.opacity = 1 - 0.5 * fin
+      copyFade.forEach((el) => { el.style.opacity = 1 - Z.window(u, 18, 36, 226, 250) })
+
+      /* Handy: tritt beim Zoom zurück, wacht bei der Übergabe auf, dreht sich am Schluss */
+      const pc = $('#pcam')
+      pc.style.opacity = 1 - 0.94 * z
+      pc.style.transform = `translateX(${(mob ? 0 : 140) * z - (mob ? 0 : innerWidth * 0.05) * fin}px) rotateY(${-18 * fin}deg) rotateX(${5 * fin}deg) scale(${1 + 0.08 * fin})`
+      const wake = Z.smooth(Z.seg(u, 258, 274))
+      off.style.opacity = 1 - wake
+      pStatus.style.opacity = pHome.style.opacity = wake
+
+      /* Cursor: zur Überschrift, klicken, später zum Übergabe-Knopf */
+      const C = geo.cur
+      if (C.h1) {
+        let pt = C.start
+        if (u < 62) pt = lerpPt(C.start, C.h1, Z.inOut(Z.seg(u, 40, 62)))
+        else if (u < 232) pt = C.h1
+        else pt = lerpPt(C.h1, C.btn, Z.inOut(Z.seg(u, 232, 252)))
+        cursor.style.transform = `translate(${pt.x}px, ${pt.y}px)`
+        cursor.style.opacity = Z.window(u, 34, 40, 262, 272)
+        const ck = Math.max(Z.window(u, 62, 64, 66, 70), Z.window(u, 252, 254, 256, 260))
+        const ckT = u < 150 ? Z.seg(u, 62, 70) : Z.seg(u, 252, 260)
+        click.style.opacity = ck
+        click.style.transform = `scale(${0.4 + ckT * 1.2})`
+      }
+
+      /* Auswahl, Ebene und Eigenschaften */
+      const selA = Z.window(u, 63, 68, 250, 262)
+      if (sel) sel.style.opacity = selA
+      layerH1.classList.toggle('is-on', selA > 0.5)
+      props.forEach((row, i) => { row.style.opacity = 0.28 + 0.72 * Z.window(u, 66 + i * 3, 71 + i * 3, 250, 262) })
+
+      /* Masslinien nacheinander */
+      lines.forEach((l, i) => {
+        const a = 76 + i * 15
+        const d = Z.out(Z.seg(u, a, a + 12)) * (1 - Z.smooth(Z.seg(u, 250, 262)))
+        l.main.style.strokeDashoffset = 1 - d
+        l.ticks.forEach((t) => { t.style.opacity = d > 0.02 ? d : 0 })
+        l.lab.style.opacity = Z.smooth(Z.seg(u, a + 8, a + 13)) * (1 - Z.smooth(Z.seg(u, 250, 262)))
+      })
+      if (tagFont) tagFont.style.opacity = Z.window(u, 164, 172, 250, 262)
+      if (tagCol) tagCol.style.opacity = Z.window(u, 170, 178, 250, 262)
+
+      /* Übergabe-Knopf */
+      const press = Z.window(u, 252, 254, 256, 259)
+      handoff.style.transform = `scale(${1 - 0.06 * press})`
+      const busy = u >= 258 && u < 368, done = u >= 368
+      handoff.classList.toggle('is-busy', busy)
+      handoff.classList.toggle('is-done', done)
+      const txt = done ? '✓ Übergeben' : busy ? 'Übergabe läuft …' : 'An Entwicklung übergeben'
+      if (handoffLabel.textContent !== txt) handoffLabel.textContent = txt
+
+      /* Flüge: Desktop-Klon blendet in Mobil-Klon über, Bogen nach oben */
+      const H = stage.clientHeight
+      flights.forEach((f, i) => {
+        const a0 = 268 + i * 6
+        const e = Z.inOut(Z.seg(u, a0, a0 + 54))
+        const started = u > a0, done = e >= 1
+        f.d.style.opacity = started ? 0 : ''
+        f.m.style.opacity = done ? '' : 0
+        if (!measured || !f.fd) return
+        const show = started && !done
+        f.fd.w.style.visibility = f.fm.w.style.visibility = show ? 'visible' : 'hidden'
+        if (!show) return
+        const arc = Math.sin(Math.PI * e)
+        const x = Z.lerp(f.a.x, f.b.x, e)
+        const y = Z.lerp(f.a.y, f.b.y, e) - arc * H * (mob ? 0.04 : 0.14)
+        const w = Z.lerp(f.a.w, f.b.w, e) * (1 + 0.14 * arc)
+        const rot = arc * (i % 2 ? 3.5 : -3.5)
+        f.fd.w.style.transform = `translate(${x}px, ${y}px) rotate(${rot}deg) scale(${w / f.fd.nw})`
+        f.fm.w.style.transform = `translate(${x}px, ${y}px) rotate(${rot}deg) scale(${w / f.fm.nw})`
+        f.fd.w.style.opacity = 1 - Z.smooth(Z.seg(e, 0.22, 0.6))
+        f.fm.w.style.opacity = Z.smooth(Z.seg(e, 0.3, 0.72))
+        f.fd.w.style.setProperty('--sh', arc)
+        f.fm.w.style.setProperty('--sh', arc)
+      })
+      ghosts.forEach((g, i) => { const a0 = 268 + i * 6; g.setAttribute('opacity', Z.smooth(Z.seg(u, a0 + 20, a0 + 50))) })
+      toast.style.opacity = Z.smooth(Z.seg(u, 368, 382))
+      toast.style.transform = `translateX(-50%) translateY(${(1 - Z.out(Z.seg(u, 368, 382))) * 16}px)`
+
+      /* Handy scrollt durch die neue Seite */
+      mscroll.style.transform = `translateY(${-(geo.maxScroll || 0) * Z.inOut(Z.seg(u, 404, 470))}px)`
+
+      /* Texte */
+      caps[0].style.opacity = Z.window(u, 70, 84, 196, 210)
+      caps[1].style.opacity = Z.window(u, 262, 276, 380, 394)
+      caps[2].style.opacity = Z.smooth(Z.seg(u, 420, 440))
+      const ph = u < 70 ? 'Entwurf' : u < 234 ? 'Vermessen' : u < 385 ? 'Übergabe' : 'Mobil'
+      if (phaseEl.textContent !== ph) phaseEl.textContent = ph
+    }
+
+    /* ── Start ── */
+    if (reduced) {
+      document.documentElement.classList.add('reduced')
+      document.fonts.ready.then(() => { measure(); render(TOTAL) })
+    } else {
+      measure()
+      Z.scene('#m-track', TOTAL, render, { scrub: 1.2 })
+      document.fonts.ready.then(() => { measure(); ScrollTrigger.refresh() })
+      ScrollTrigger.addEventListener('refresh', () => requestAnimationFrame(measure))
+    }
+  </script>
+</body>
+</html>

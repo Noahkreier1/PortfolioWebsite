@@ -1,0 +1,361 @@
+<!doctype html>
+<html lang="de-CH">
+<head>
+  <meta charset="utf-8" />
+  <meta name="robots" content="noindex, nofollow" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Variante N: Seitenaufbau in Zeitlupe</title>
+  <link rel="icon" href="data:," />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./shared/base.css" />
+  <link rel="stylesheet" href="./shared/hk.css" />
+  <style>
+    /* ─────────────────────────────────────────────────────────────
+       Variante N: «Seitenaufbau in Zeitlupe»
+       Der Scroll ist eine Zeitlupe: eine einzige Sekunde Seitenaufbau über
+       die ganze Strecke. Stoppuhr auf die Millisekunde, Netzwerk-Wasserfall
+       mit Zeitlinie, Gerüst → Text ohne Verrutschen, Bilder laden zeilenweise
+       (wie progressive Bilder), an jedem Meilenstein wird die Zeit fast angehalten.
+       Beispielprojekt, Werte simuliert und so beschriftet.
+       Zeitachse in Einheiten 0–500, Scrollweg = 500vh × --pace.
+       ───────────────────────────────────────────────────────────── */
+
+    #n-track { height: calc(500vh * var(--pace)); }
+    .stage { background: radial-gradient(50% 50% at 38% 56%, rgba(242, 237, 230, 0.06), transparent 70%), var(--bg); }
+
+    .n-copy { position: absolute; z-index: 5; left: max(24px, 5vw); top: max(24px, 8vh); display: grid; gap: 14px; max-width: 400px; }
+    .n-copy .display { font-size: clamp(1.9rem, 3vw, 2.9rem); }
+    .n-copy .lead { font-size: 15px; }
+
+    .n-laptop { position: absolute; left: 38%; top: 58%; --mb-w: min(860px, 54vw); transform: translate(-50%, -50%); }
+    .n-cap { position: absolute; left: 38%; bottom: 4.5vh; transform: translateX(-50%); width: min(620px, 54vw); text-align: center; font-size: 15px; color: var(--ink-muted); min-height: 1.6em; }
+
+    /* ── Seitenleiste: Stoppuhr, Meilensteine, Wasserfall ── */
+    .n-side { position: absolute; left: 70%; top: 50%; transform: translateY(-50%); width: min(390px, 26vw); display: grid; gap: 22px; }
+    .chrono { display: flex; align-items: baseline; gap: 8px; font-family: var(--font-display); font-weight: 600; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
+    .chrono b { font-size: clamp(3rem, 5.2vw, 5.25rem); line-height: 0.9; font-weight: 600; }
+    .chrono span { font-size: clamp(1.25rem, 1.8vw, 1.75rem); color: var(--ink-muted); }
+    .chrono-note { font-size: 12px; letter-spacing: 0.06em; color: var(--ink-faint); margin-top: -12px; }
+    .scale { position: relative; height: 22px; margin-top: -6px; }
+    .scale::before { content: ''; position: absolute; left: 0; right: 0; top: 6px; height: 1px; background: rgba(242, 237, 230, 0.25); }
+    .scale i { position: absolute; top: 2px; width: 1px; height: 9px; background: rgba(242, 237, 230, 0.35); }
+    .scale i.big { height: 13px; top: 0; background: rgba(242, 237, 230, 0.6); }
+    .scale em { position: absolute; top: 14px; white-space: nowrap; font-style: normal; font-size: 10px; color: var(--ink-faint); transform: translateX(-50%); font-variant-numeric: tabular-nums; }
+    .needle { position: absolute; top: -3px; width: 2px; height: 20px; margin-left: -1px; background: var(--accent); border-radius: 1px; }
+
+    .ms { display: grid; gap: 2px; }
+    .ms-row { display: grid; grid-template-columns: 20px 1fr auto; align-items: center; gap: 10px; height: 28px; font-size: 14px; color: var(--ink); opacity: 0.4; transition: opacity 200ms var(--ease-out); }
+    .ms-row.is-on { opacity: 1; }
+    .ms-dot { width: 20px; height: 20px; border-radius: 50%; display: grid; place-items: center; font-size: 11px; font-weight: 600; box-shadow: inset 0 0 0 1.5px rgba(242, 237, 230, 0.4); color: var(--ink-muted); font-variant-numeric: tabular-nums; }
+    .ms-row.is-on .ms-dot { background: var(--accent); box-shadow: none; color: #fff; }
+    .ms-t { font-variant-numeric: tabular-nums; color: var(--ink-muted); font-size: 13px; }
+    .ms-k { display: none; }
+
+    .wf { background: #161514; border-radius: 8px; padding: 14px 14px 12px; box-shadow: inset 0 0 0 1px rgba(242, 237, 230, 0.07); }
+    .wf-head { display: flex; justify-content: space-between; font-size: 12px; color: var(--ink-muted); margin-bottom: 22px; }
+    .wf-head b { color: var(--ink); font-weight: 600; }
+    .wf-grid { position: relative; display: grid; grid-template-columns: 112px 1fr; row-gap: 6px; font-size: 12px; }
+    .wf-name { color: var(--ink-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 14px; }
+    .wf-track { position: relative; height: 14px; }
+    .wf-bar { position: absolute; top: 3px; height: 8px; border-radius: 2px; transform-origin: 0 50%; }
+    .wf-bar.doc { background: #cfc9bf; } .wf-bar.css { background: #8fb8e0; } .wf-bar.font { background: #d9b36c; } .wf-bar.js { background: #e8826a; } .wf-bar.img { background: #9ccf8a; }
+    .wf-lines { position: absolute; top: 0; bottom: 0; left: 112px; right: 0; pointer-events: none; }
+    .wf-mark { position: absolute; top: -4px; bottom: -4px; width: 1px; background: rgba(242, 237, 230, 0.45); opacity: 0; }
+    .wf-mark b { position: absolute; top: -14px; left: 50%; transform: translateX(-50%); width: 14px; height: 14px; border-radius: 50%; display: grid; place-items: center; font-size: 9px; background: var(--accent); color: #fff; }
+    .wf-now { position: absolute; top: -6px; bottom: -6px; width: 2px; margin-left: -1px; background: var(--accent); }
+    .wf-axis { display: grid; grid-template-columns: 112px 1fr; margin-top: 8px; font-size: 10px; color: var(--ink-faint); }
+    .wf-axis div { display: flex; justify-content: space-between; font-variant-numeric: tabular-nums; }
+
+    .n-sum { font-size: 13px; line-height: 1.5; color: var(--ink-muted); opacity: 0; }
+    .n-sum b { color: var(--ink); font-weight: 600; }
+    .n-sum a { color: #ff6a5c; text-decoration: none; font-weight: 500; }
+
+    /* ── Browser im Laptop (virtuell 1440 × 900) ── */
+    .br { background: #fff; }
+    .br-bar { position: absolute; left: 0; right: 0; top: 0; height: 56px; display: flex; align-items: center; gap: 18px; padding: 0 20px; background: #efece6; border-bottom: 1px solid #ddd8cf; }
+    .br-dots { display: flex; gap: 8px; }
+    .br-dots i { width: 13px; height: 13px; border-radius: 50%; background: #d7d2c9; }
+    .br-nav { color: #a39d92; font-size: 22px; letter-spacing: 8px; }
+    .br-url { flex: 1; max-width: 620px; margin: 0 auto; height: 34px; border-radius: 8px; background: #fff; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 15px; color: #3d372f; box-shadow: inset 0 0 0 1px #e2ddd4; position: relative; }
+    .br-url svg { width: 14px; height: 14px; }
+    .br-reload { position: absolute; right: 12px; top: 10px; width: 14px; height: 14px; color: #8a8474; }
+    .br-load { position: absolute; left: 0; top: 56px; height: 3px; width: 100%; }
+    .br-load i { display: block; height: 100%; background: var(--accent); transform-origin: 0 50%; }
+    .br-page { position: absolute; left: 0; right: 0; top: 59px; bottom: 0; overflow: hidden; }
+    .br-page .hk-root { --s: 1.125; }
+    .pg-blank { position: absolute; inset: 0; background: #fff; z-index: 1; }
+    .pg-skel { position: absolute; inset: 0; z-index: 2; pointer-events: none; }
+    .pg-skel i { position: absolute; border-radius: 8px; background: linear-gradient(90deg, #e9e4da, #f1ede5 50%, #e9e4da); }
+    .lq { position: absolute; inset: 0; border-radius: inherit; }
+    .hk-photo .lq { background: linear-gradient(135deg, #c29066, #8d5f3c 55%, #6b4529); }
+    .br-page .hk-card-img { position: relative; overflow: hidden; }   /* Vorschau bleibt im Kartenbild */
+    .hk-card-img .lq { background: #d6cbbb; }
+    .pg-cursor { position: absolute; left: 0; top: 0; z-index: 5; width: 30px; height: 30px; opacity: 0; }
+    .pg-cursor svg { width: 30px; height: 30px; filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.35)); }
+    .pg-ring { position: absolute; left: -24px; top: -24px; width: 52px; height: 52px; border-radius: 50%; border: 3px solid var(--accent); opacity: 0; }
+
+    @media (max-width: 860px) {
+      .n-copy { right: 20px; max-width: none; top: 16px; gap: 10px; }
+      .n-copy .display { font-size: 1.5rem; }
+      .n-copy .lead { display: none; }
+      .n-laptop { left: 50%; top: 27%; --mb-w: 92vw; }
+      .n-cap { display: none; }
+      .n-side { left: 5vw; right: 5vw; width: auto; top: auto; bottom: 3vh; transform: none; gap: 12px; }
+      .chrono b { font-size: 3rem; }
+      .chrono-note { margin-top: -8px; }
+      .ms { grid-template-columns: 1fr 1fr; column-gap: 12px; }
+      .ms-row { height: 24px; font-size: 12px; grid-template-columns: 18px 1fr; }
+      .ms-dot { width: 18px; height: 18px; font-size: 10px; }
+      .ms-t { display: none; }
+      .ms-l { display: none; }
+      .ms-k { display: inline; }
+      .wf { padding: 10px 10px 8px; }
+      .wf-grid { grid-template-columns: 92px 1fr; row-gap: 4px; font-size: 11px; }
+      .wf-lines { left: 92px; }
+      .wf-axis { grid-template-columns: 92px 1fr; }
+      .n-sum { font-size: 12px; }
+    }
+
+    .reduced #n-track { height: auto; }
+    .reduced #n-track .stage { position: relative; min-height: 100vh; }
+  </style>
+</head>
+<body>
+  <div class="grain" aria-hidden="true"></div>
+
+  <section class="intro">
+    <h1 class="display">Wir bauen Webseiten, die man nicht wegscrollt.</h1>
+    <p class="lead">Und die schnell sind. So schnell, dass man den Aufbau nur in Zeitlupe sieht.</p>
+    <p class="scroll-hint">Scrollen ↓</p>
+  </section>
+
+  <section class="track" id="n-track" aria-label="Seitenaufbau in Zeitlupe">
+    <div class="stage" id="stage">
+      <div class="n-copy">
+        <div class="chips"><span class="chip">Zeitlupe</span><span class="chip">Beispielprojekt</span></div>
+        <h2 class="display">Eine Sekunde, in Zeitlupe.</h2>
+        <p class="lead">So baut sich eine Seite auf, wenn jeder Schritt optimiert ist: Text zuerst, dann die Bilder, und nichts verrutscht.</p>
+      </div>
+
+      <div class="n-laptop">
+        <div class="mb">
+          <div class="mb-lid"><div class="mb-face"><div class="mb-screen" id="lscreen">
+            <div class="vs br" id="vs">
+              <div class="br-bar">
+                <span class="br-dots"><i></i><i></i><i></i></span>
+                <span class="br-nav">‹ ›</span>
+                <div class="br-url">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
+                  holzwerk-keller.ch
+                  <svg class="br-reload" id="reload" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M20 12a8 8 0 1 1-2.3-5.6M20 4v5h-5"/></svg>
+                </div>
+              </div>
+              <div class="br-load"><i id="loadbar"></i></div>
+              <div class="br-page" id="page">
+                <div class="pg-blank" id="blank"></div>
+                <div class="pg-skel" id="skel"></div>
+                <div class="pg-cursor" id="cursor"><svg viewBox="0 0 24 24"><path d="M4 2l16 10-7 1.6L9.6 21z" fill="#fff" stroke="#14110d" stroke-width="1.5" stroke-linejoin="round"/></svg><i class="pg-ring" id="ring"></i></div>
+              </div>
+            </div>
+          </div></div></div>
+          <div class="mb-deck"></div><div class="mb-shadow"></div>
+        </div>
+      </div>
+      <p class="n-cap" id="cap"></p>
+
+      <aside class="n-side" aria-label="Messwerte">
+        <div>
+          <div class="chrono" aria-live="off"><b id="clock">0.000</b><span>s</span></div>
+        </div>
+        <p class="chrono-note">seit dem Klick auf den Link</p>
+        <div class="scale" id="scale"><span class="needle" id="needle"></span></div>
+        <div class="ms" id="ms"></div>
+        <div class="wf">
+          <div class="wf-head"><span>Netzwerk</span><span><b>8</b> Anfragen · <b>184 kB</b></span></div>
+          <div class="wf-grid" id="wf"><div class="wf-lines" id="wflines"><span class="wf-now" id="now"></span></div></div>
+          <div class="wf-axis"><span></span><div><span>0</span><span>0.25</span><span>0.5</span><span>0.75</span><span>1 s</span></div></div>
+        </div>
+        <p class="n-sum" id="sum"><b>Bedienbar nach 0.90 s</b> · 0 Layout-Verschiebungen · 184 kB übertragen.<br />Beispielprojekt, Werte simuliert. Wie schnell ist Ihre Seite? <a href="/website-check">Website-Check →</a></p>
+      </aside>
+      <div class="vignette"></div>
+    </div>
+  </section>
+
+  <section class="outro">
+    <h2 class="display">Schnell ist kein Zufall.</h2>
+    <p class="lead">Schriften vorgeladen, Bilder in der richtigen Reihenfolge, Platz reserviert, bevor Inhalt kommt.</p>
+  </section>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js"></script>
+  <script src="./shared/motion.js"></script>
+  <script src="./shared/scrub.js"></script>
+  <script src="./shared/phone.js"></script>
+  <script src="./shared/hk.js"></script>
+  <script>
+    const { reduced } = setupMotion()
+    const $ = (s, r = document) => r.querySelector(s)
+    const TOTAL = 500
+
+    /* Zeitlupe: Scroll-Einheit → Millisekunden. An Meilensteinen steht die Zeit fast still. */
+    const TIME = [[0, 0], [30, 0], [62, 90], [82, 95], [134, 290], [158, 300], [168, 305], [246, 745], [266, 760], [276, 765], [318, 890], [338, 900], [348, 905], [412, 1000]]
+    const REQ = [
+      { n: 'holzwerk-keller.ch', type: 'doc', s: 0, e: 90 },
+      { n: 'main.css', type: 'css', s: 94, e: 150 },
+      { n: 'inter-tight.woff2', type: 'font', s: 98, e: 230 },
+      { n: 'main.js', type: 'js', s: 104, e: 262 },
+      { n: 'titelbild.avif', type: 'img', s: 190, e: 740 },
+      { n: 'kueche.avif', type: 'img', s: 420, e: 540 },
+      { n: 'schrank.avif', type: 'img', s: 440, e: 572 },
+      { n: 'tisch.avif', type: 'img', s: 460, e: 600 },
+    ]
+    const MS = [
+      { n: 'Erste Antwort vom Server', k: 'Erste Antwort', t: 90 },
+      { n: 'Erster Inhalt sichtbar', k: 'Erster Inhalt', t: 300 },
+      { n: 'Grösstes Bild geladen', k: 'Grösstes Bild', t: 760 },
+      { n: 'Seite bedienbar', k: 'Bedienbar', t: 900 },
+    ]
+    const CAPS = [
+      [0, 'Der Browser fragt den Server an.'],
+      [90, 'Das Gerüst steht. Schrift und Stil laden parallel.'],
+      [300, 'Text ist lesbar, genau dort, wo Platz reserviert war.'],
+      [420, 'Die Bilder laden der Reihe nach, das wichtigste zuerst.'],
+      [760, 'Das grösste Bild ist da.'],
+      [900, 'Die Seite reagiert auf jede Eingabe.'],
+    ]
+
+    /* ── Aufbau ── */
+    const vs = $('#vs'), lscreen = $('#lscreen'), page = $('#page')
+    fitScale(vs, 1440, lscreen)
+    page.insertAdjacentHTML('beforeend', hkHTML('d'))
+    const root = page.querySelector('.hk-root')
+    const photo = root.querySelector('.hk-photo'), cardImgs = [...root.querySelectorAll('.hk-card-img')]
+    // Niedrig aufgelöste Vorschau über den Bildern, wird zeilenweise durch das scharfe Bild ersetzt
+    ;[photo, ...cardImgs].forEach((el) => el.insertAdjacentHTML('beforeend', '<i class="lq"></i>'))
+    const lqPhoto = photo.querySelector('.lq'), lqCards = cardImgs.map((c) => c.querySelector('.lq'))
+    const TEXT_KEYS = ['logo', 'nav', 'cta', 'eyebrow', 'h1', 'p', 'btn']
+    const textEls = TEXT_KEYS.map((k) => root.querySelector(`[data-k="${k}"]`))
+    const cardText = [...root.querySelectorAll('.hk-card h4, .hk-card p')]
+    const cards = [...root.querySelectorAll('.hk-card')]
+
+    // Wasserfall
+    const wf = $('#wf'), wflines = $('#wflines')
+    const bars = REQ.map((r) => {
+      wf.insertAdjacentHTML('beforeend', `<span class="wf-name">${r.n}</span><span class="wf-track"><i class="wf-bar ${r.type}" style="left:${r.s / 10}%;width:${(r.e - r.s) / 10}%"></i></span>`)
+      return wf.lastElementChild.querySelector('.wf-bar')
+    })
+    const marks = MS.map((m, i) => { wflines.insertAdjacentHTML('beforeend', `<span class="wf-mark" style="left:${m.t / 10}%"><b>${i + 1}</b></span>`); return wflines.lastElementChild })
+    // Skala unter der Stoppuhr
+    const scale = $('#scale')
+    for (let i = 0; i <= 20; i++) scale.insertAdjacentHTML('beforeend', `<i class="${i % 5 === 0 ? 'big' : ''}" style="left:${i * 5}%"></i>`)
+    ;[0, 0.25, 0.5, 0.75, 1].forEach((v) => scale.insertAdjacentHTML('beforeend', `<em style="left:${v * 100}%">${v === 1 ? '1 s' : v}</em>`))
+    // Meilensteine
+    const ms = $('#ms')
+    const msRows = MS.map((m, i) => { ms.insertAdjacentHTML('beforeend', `<div class="ms-row"><span class="ms-dot">${i + 1}</span><span><span class="ms-l">${m.n}</span><span class="ms-k">${m.k}</span></span><span class="ms-t">${(m.t / 1000).toFixed(2)} s</span></div>`); return ms.lastElementChild })
+
+    /* ── Gerüst an den echten Positionen der Bausteine ── */
+    const skel = $('#skel')
+    let skelBlocks = [], geo = {}, photoSkel = null
+    function pageRel(el) {
+      const r = el.getBoundingClientRect(), P = page.getBoundingClientRect(), s = P.width / 1440
+      return { x: (r.left - P.left) / s, y: (r.top - P.top) / s, w: r.width / s, h: r.height / s }
+    }
+    function measure() {
+      skel.innerHTML = ''
+      const blocks = []
+      const add = (r, radius = 8) => { skel.insertAdjacentHTML('beforeend', `<i style="left:${r.x}px;top:${r.y}px;width:${r.w}px;height:${r.h}px;border-radius:${radius}px"></i>`); blocks.push(skel.lastElementChild) }
+      // Text als einzelne Zeilen, damit das Gerüst wie ein echtes Layout wirkt
+      const lineBlocks = (el, n, lastW = 0.62) => {
+        const r = pageRel(el), lh = r.h / n
+        for (let i = 0; i < n; i++) add({ x: r.x, y: r.y + i * lh + lh * 0.18, w: r.w * (i === n - 1 ? lastW : 1), h: lh * 0.64 }, 6)
+      }
+      add(pageRel(root.querySelector('[data-k="logo"]')), 6)
+      add(pageRel(root.querySelector('[data-k="nav"]')), 6)
+      add(pageRel(root.querySelector('[data-k="cta"]')), 999)
+      add(pageRel(root.querySelector('[data-k="eyebrow"]')), 4)
+      lineBlocks(root.querySelector('[data-k="h1"]'), 3, 0.7)
+      lineBlocks(root.querySelector('[data-k="p"]'), 3, 0.5)
+      root.querySelectorAll('.hk-btn').forEach((b) => add(pageRel(b), 999))
+      add(pageRel(photo), 26); photoSkel = blocks[blocks.length - 1]
+      cards.forEach((c) => add(pageRel(c), 18))
+      skelBlocks = blocks
+      // Cursor-Ziel: «Beratung buchen»
+      const btn = pageRel(root.querySelector('.hk-btn'))
+      geo.btn = { x: btn.x + btn.w * 0.5, y: btn.y + btn.h * 0.55 }
+      render(lastU)
+    }
+
+    /* ── Szene ── */
+    let lastU = 0
+    const clock = $('#clock'), needle = $('#needle'), now = $('#now'), loadbar = $('#loadbar'), reload = $('#reload')
+    const blank = $('#blank'), cap = $('#cap'), sum = $('#sum'), cursor = $('#cursor'), ring = $('#ring')
+    const btnEl = root.querySelector('.hk-btn')
+    function render(u) {
+      lastU = u
+      const t = Z.keys(u, TIME)                           // Millisekunden
+      clock.textContent = (t / 1000).toFixed(3)
+      needle.style.left = `${Math.min(100, t / 10)}%`
+      now.style.left = `${Math.min(100, t / 10)}%`
+      now.style.opacity = u < 30 ? 0 : 1
+
+      // Browser: Ladebalken und drehendes Neuladen-Symbol
+      loadbar.style.transform = `scaleX(${Math.min(1, t / 900)})`
+      loadbar.style.opacity = 1 - Z.seg(t, 920, 1000)
+      reload.style.transform = `rotate(${t < 900 ? t * 0.8 : 0}deg)`
+
+      // Seite: leer → Gerüst → Stil → Text → Bilder
+      blank.style.opacity = 1 - Z.seg(t, 150, 200)
+      const skelA = Z.seg(t, 90, 105) * (1 - Z.seg(t, 300, 330))
+      skelBlocks.forEach((b) => { b.style.opacity = skelA })
+      if (photoSkel) photoSkel.style.opacity = Z.seg(t, 90, 105) * (1 - Z.seg(t, 190, 210))   // Bildvorschau ersetzt das Gerüst früher
+      const txt = Z.seg(t, 300, 330)
+      textEls.forEach((el) => { el.style.opacity = txt })
+      cardText.forEach((el) => { el.style.opacity = txt })
+      cards.forEach((c) => { c.style.opacity = Z.seg(t, 300, 330) })
+      // Titelbild: ab 190 ms Vorschau, dann zeilenweise scharf bis 740 ms
+      photo.style.opacity = Z.seg(t, 190, 205)
+      lqPhoto.style.clipPath = `inset(${Z.seg(t, 205, 740) * 100}% 0 0 0)`
+      REQ.slice(5).forEach((r, i) => {
+        cardImgs[i].style.opacity = Z.seg(t, r.s, r.s + 12)
+        lqCards[i].style.clipPath = `inset(${Z.seg(t, r.s + 12, r.e) * 100}% 0 0 0)`
+      })
+
+      // Cursor fährt zum Button, der ab «bedienbar» reagiert
+      if (geo.btn) {
+        const e = Z.inOut(Z.seg(t, 800, 885))
+        cursor.style.transform = `translate(${Z.lerp(1180, geo.btn.x, e)}px, ${Z.lerp(760, geo.btn.y, e)}px)`
+        cursor.style.opacity = Z.seg(t, 790, 810)
+        const hover = t >= 900
+        btnEl.style.background = hover ? '#7d3f22' : ''
+        const rt = Z.seg(u, 340, 356)
+        ring.style.opacity = rt > 0 && rt < 1 ? 1 - rt : 0
+        ring.style.transform = `scale(${0.4 + rt * 1.1})`
+      }
+
+      // Wasserfall wächst mit der Zeit
+      REQ.forEach((r, i) => { bars[i].style.transform = `scaleX(${Z.seg(t, r.s, r.e)})`; bars[i].style.opacity = t >= r.s ? 1 : 0.18 })
+      marks.forEach((m, i) => { m.style.opacity = t >= MS[i].t ? 1 : 0 })
+      msRows.forEach((row, i) => row.classList.toggle('is-on', t >= MS[i].t))
+
+      // Bildunterschrift je Phase, Zusammenfassung am Schluss
+      const c = CAPS.filter(([ct]) => t >= ct).pop()[1]
+      if (cap.textContent !== c) cap.textContent = c
+      sum.style.opacity = Z.smooth(Z.seg(u, 420, 445))
+    }
+
+    /* ── Start ── */
+    if (reduced) {
+      document.documentElement.classList.add('reduced')
+      document.fonts.ready.then(() => { measure(); render(TOTAL) })
+    } else {
+      render(0)
+      Z.scene('#n-track', TOTAL, render, { scrub: 1.2 })
+      document.fonts.ready.then(() => { measure(); ScrollTrigger.refresh() })
+      ScrollTrigger.addEventListener('refresh', () => requestAnimationFrame(measure))
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,304 @@
+<!doctype html>
+<html lang="de-CH">
+<head>
+  <meta charset="utf-8" />
+  <meta name="robots" content="noindex, nofollow" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Variante P: Echte Projekte, erklärt</title>
+  <link rel="icon" href="data:," />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./shared/base.css" />
+  <link rel="stylesheet" href="./shared/phone.css" />
+  <style>
+    /* ─────────────────────────────────────────────────────────────
+       Variante P: «Echte Projekte, erklärt»
+       Drei iPhones mit echten Handy-Aufnahmen von InspireDay, Cosac und Hikebeast.
+       Das mittlere Handy scrollt langsam durch sein Projekt; an jeder Stelle, die
+       wir bewusst gestaltet haben, stoppt es, und eine rote Linie führt vom Element
+       zu einer kurzen Erklärung. Dann dreht sich die Reihe weiter zum nächsten Projekt.
+       Aufnahmen: echte Seiten, 390 px breit; fixe Leisten separat über dem Scrollinhalt.
+       Zeitachse in Einheiten 0–600, Scrollweg = 600vh × --pace.
+       ───────────────────────────────────────────────────────────── */
+
+    #p-track { height: calc(600vh * var(--pace)); }
+    .stage { background: radial-gradient(40% 55% at 50% 58%, rgba(242, 237, 230, 0.07), transparent 70%), var(--bg); perspective: 1800px; }
+
+    .p-head { position: absolute; z-index: 6; left: max(24px, 5vw); top: max(24px, 7vh); display: grid; gap: 12px; max-width: 360px; }
+    .p-head .display { font-size: clamp(1.9rem, 3vw, 2.9rem); }
+    .p-count { font-size: 12px; letter-spacing: 0.08em; color: var(--ink-faint); font-variant-numeric: tabular-nums; }
+    .p-title { position: relative; height: clamp(2.6rem, 4vw, 3.9rem); }
+    .p-title h3 { position: absolute; left: 0; top: 0; margin: 0; font-family: var(--font-display); font-weight: 600; letter-spacing: -0.03em; font-size: clamp(2.2rem, 3.6vw, 3.5rem); line-height: 1; opacity: 0; white-space: nowrap; }
+    .p-meta { position: relative; height: 34px; }
+    .p-meta .chips { position: absolute; left: 0; top: 0; opacity: 0; }
+    .p-metric { position: relative; height: 3.4em; font-size: 15px; color: var(--ink-muted); }
+    .p-metric p { position: absolute; left: 0; top: 0; margin: 0; opacity: 0; }
+
+    .carousel { position: absolute; left: 50%; top: 55%; width: 0; height: 0; transform-style: preserve-3d; }
+    .slot { position: absolute; left: 0; top: 0; transform-origin: 50% 50%; }
+    .slot .ip { --ip-w: min(290px, 19vw, 34vh); }
+    .slot-glow { position: absolute; left: 50%; top: 50%; width: 140%; height: 90%; transform: translate(-50%, -50%); background: radial-gradient(50% 50% at 50% 50%, var(--glow), transparent 70%); pointer-events: none; z-index: -1; }
+
+    /* Aufnahme im Handy */
+    .shot { position: absolute; left: 0; top: 50px; width: 390px; }   /* unter der Statusleiste */
+    .shot img { display: block; width: 390px; }
+    .fixbar { position: absolute; left: 0; width: 390px; z-index: 5; }
+    .fixbar img { display: block; width: 100%; }
+    .fixbar--bottom { left: 50%; width: auto; transform: translateX(-50%); }
+    .p-hl { position: absolute; z-index: 6; border-radius: 10px; box-shadow: 0 0 0 3px var(--accent), 0 0 0 9999px rgba(10, 8, 6, 0.28); opacity: 0; pointer-events: none; }
+
+    /* Erklärungen: rote Führungslinie vom Element zur Notiz */
+    .leads { position: absolute; inset: 0; z-index: 4; width: 100%; height: 100%; pointer-events: none; overflow: visible; }
+    .leads path { fill: none; stroke: var(--accent); stroke-width: 1.5; }
+    .leads circle { fill: var(--accent); }
+    .note { position: absolute; z-index: 5; width: min(300px, 22vw); display: grid; gap: 6px; opacity: 0; pointer-events: none; }
+    .note b { display: flex; align-items: center; gap: 10px; font-family: var(--font-display); font-weight: 600; font-size: 18px; letter-spacing: -0.01em; }
+    .note b i { width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; font-style: normal; font-size: 12px; background: var(--accent); color: #fff; flex: none; }
+    .note span { font-size: 14px; line-height: 1.5; color: var(--ink-muted); }
+
+    .p-dots { position: absolute; z-index: 6; left: 50%; bottom: 4vh; transform: translateX(-50%); display: flex; gap: 8px; }
+    .p-dots i { width: 28px; height: 3px; border-radius: 2px; background: rgba(242, 237, 230, 0.2); overflow: hidden; }
+    .p-dots i b { display: block; height: 100%; background: var(--ink); transform-origin: 0 50%; transform: scaleX(0); }
+
+    @media (max-width: 860px) {
+      .p-head { right: 20px; max-width: none; top: 16px; gap: 8px; }
+      .p-head .display { display: none; }
+      .p-title h3 { font-size: 2rem; }
+      .p-title { height: 2.2rem; }
+      .p-metric { font-size: 13px; height: 2.8em; }
+      .carousel { top: 56%; }
+      .slot .ip { --ip-w: min(44vw, 30vh); }
+      .note { width: auto; left: 20px !important; right: 20px; top: auto !important; bottom: 9vh; background: rgba(13, 12, 11, 0.86); padding: 12px 14px; border-radius: 10px; box-shadow: inset 0 0 0 1px rgba(242, 237, 230, 0.1); }
+      .note b { font-size: 16px; }
+      .note span { font-size: 13px; }
+      .leads { display: none; }
+    }
+
+    .reduced #p-track { height: auto; }
+    .reduced #p-track .stage { position: relative; }
+  </style>
+</head>
+<body>
+  <div class="grain" aria-hidden="true"></div>
+
+  <section class="intro">
+    <h1 class="display">Wir bauen Webseiten, die man nicht wegscrollt.</h1>
+    <p class="lead">Drei echte Projekte auf dem Handy. Wir zeigen, was wir wo und warum so gebaut haben.</p>
+    <p class="scroll-hint">Scrollen ↓</p>
+  </section>
+
+  <section class="track" id="p-track" aria-label="Drei Projekte auf dem Handy, erklärt">
+    <div class="stage" id="stage">
+      <div class="p-head">
+        <h2 class="display">Echte Projekte, erklärt.</h2>
+        <p class="p-count" id="count">1 / 3</p>
+        <div class="p-title" id="titles"></div>
+        <div class="p-meta" id="metas"></div>
+        <div class="p-metric" id="metrics"></div>
+      </div>
+      <div class="carousel" id="carousel"></div>
+      <svg class="leads" id="leads" aria-hidden="true"></svg>
+      <div id="notes"></div>
+      <div class="p-dots" id="dots"></div>
+      <div class="vignette"></div>
+    </div>
+  </section>
+
+  <section class="outro">
+    <h2 class="display">Jedes Detail hat einen Grund.</h2>
+    <p class="lead">Wir gestalten nicht, was gut aussieht, sondern was funktioniert, und sorgen dafür, dass es gut aussieht.</p>
+  </section>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js"></script>
+  <script src="./shared/motion.js"></script>
+  <script src="./shared/scrub.js"></script>
+  <script src="./shared/phone.js"></script>
+  <script>
+    const { reduced } = setupMotion()
+    const $ = (s, r = document) => r.querySelector(s)
+    const TOTAL = 600
+    const A = './assets/p/'
+
+    /* Projekte: Aufnahmen 390 px breit (Höhe in 390er-Punkten), Leisten und Stationen.
+       Stationen: y = Scrollposition in der Aufnahme, box = hervorgehobenes Element (390er-Punkte). */
+    const P = [
+      {
+        key: 'inspireday', name: 'InspireDay', img: 'inspireday.webp', h: 3400, glow: 'rgba(38, 72, 120, 0.45)',
+        chips: ['Event-Webseite', 'Volkshaus Zürich'], metric: 'Über 1’000 verkaufte Tickets über fünf Events seit dem Relaunch.',
+        head: { img: 'inspireday-head.webp', h: 56 }, bottom: { img: 'inspireday-bar.webp', w: 366, b: 26 },
+        stops: [
+          { y: 0, box: [19, 608, 247, 75], t: 'Tickets zuerst', d: 'Der Kauf-Button mit Early-Bird-Preis steht im ersten Bildschirm, ohne Scrollen.' },
+          { y: 0, box: [20, 504, 350, 79], t: 'Countdown', d: 'Die Zeit bis zum Event läuft sichtbar mit und erzeugt Dringlichkeit.' },
+          { y: 1880, box: [32, 2172, 326, 190], t: 'Fragen vorwegnehmen', d: 'Preis, Datum und Ort beantwortet die Seite, bevor jemand fragen muss.', bar: true },
+        ],
+      },
+      {
+        key: 'cosac', name: 'Cosac', img: 'cosac.webp', h: 2800, glow: 'rgba(170, 120, 70, 0.4)',
+        chips: ['E-Commerce', 'Leons eigene Marke'], metric: '4.7 von 5 Sternen aus 348 Kundenbewertungen.',
+        head: { img: 'cosac-head.webp', h: 72 }, bottom: null,
+        stops: [
+          { y: 0, box: [202, 585, 149, 52], t: 'Preis im Bild', d: '«Starting at $249» sitzt direkt auf dem Produktfoto, dort, wo der Blick hinfällt.' },
+          { y: 900, box: [24, 1145, 342, 128], t: 'Eine Entscheidung pro Schritt', d: 'Erst die Grösse, dann die Farbe: Wer nur eine Frage beantworten muss, kauft eher.' },
+          { y: 1320, box: [24, 1637, 342, 92], t: 'Vertrauen am Button', d: 'Gratis-Versand und Lieferzeit stehen direkt unter «In den Warenkorb».' },
+        ],
+      },
+      {
+        key: 'hikebeast', name: 'Hikebeast', img: 'hikebeast.webp', h: 2360, glow: 'rgba(40, 110, 200, 0.35)',
+        chips: ['Web-App', 'Eigenes Produkt'], metric: 'Über CHF 60’000 Umsatz in sechs Monaten.',
+        head: { img: 'hikebeast-head.webp', h: 56 }, bottom: { img: 'hikebeast-bar.webp', w: 362, b: 24 },
+        stops: [
+          { y: 0, box: [22, 382, 346, 62], t: 'Preis und Bewertung vorne', d: 'Einmalig CHF 27 und 5.0 Sterne aus 361 Bewertungen, bevor man überhaupt scrollt.', bar: true },
+          { y: 0, box: [22, 486, 346, 90], t: 'Nutzen in drei Zeilen', d: '141 Orte, Wildcamping, Fotospots: kurz, konkret, abhakbar.', bar: true },
+          { y: 1300, box: [22, 1595, 310, 237], t: 'Zeigen statt erzählen', d: 'Die Karte auf Bildschirm und Handy zeigt das Produkt, bevor man es kauft.', bar: true },
+        ],
+      },
+    ]
+    const OFF = 50                                // Aufnahme beginnt unter der Statusleiste
+    const VIEW = 844 - OFF                        // sichtbare Höhe der Aufnahme
+    const SEG = 200                               // Einheiten pro Projekt
+    const HOLD = [[22, 58], [80, 116], [138, 174]] // Haltezonen der drei Stationen pro Projekt
+    const MOVES = [[0, 22], [58, 80], [116, 138]]  // Scrollbewegungen dazwischen
+
+    /* ── Aufbau ── */
+    const carousel = $('#carousel'), notesEl = $('#notes'), leads = $('#leads')
+    const slots = P.map((p, i) => {
+      const inner = `
+        <div class="shot" data-shot><img src="${A}${p.img}" alt="" decoding="async" ${i ? 'loading="lazy"' : ''} /></div>
+        <div class="fixbar" style="top:0;height:${p.head.h + 50}px;padding-top:50px;background:#fff"><img src="${A}${p.head.img}" alt="" /></div>
+        ${p.bottom ? `<div class="fixbar fixbar--bottom" data-bar style="bottom:${p.bottom.b}px;width:${p.bottom.w}px"><img src="${A}${p.bottom.img}" alt="" /></div>` : ''}
+        <i class="p-hl" data-hl></i>`
+      const el = document.createElement('div')
+      el.className = 'slot'
+      el.style.setProperty('--glow', p.glow)
+      el.innerHTML = `<div class="slot-glow"></div>${iphoneHTML({ inner })}`
+      carousel.appendChild(el)
+      const ip = el.querySelector('.ip')
+      fitScale(el.querySelector('.ip-canvas'), 390, el.querySelector('.ip-view'))
+      return { el, ip, shot: el.querySelector('[data-shot]'), hl: el.querySelector('[data-hl]'), bar: el.querySelector('[data-bar]'), p }
+    })
+    // Titel, Chips, Kennzahl je Projekt
+    P.forEach((p) => {
+      $('#titles').insertAdjacentHTML('beforeend', `<h3>${p.name}</h3>`)
+      $('#metas').insertAdjacentHTML('beforeend', `<div class="chips">${p.chips.map((c) => `<span class="chip">${c}</span>`).join('')}<span class="chip chip--live">Live</span></div>`)
+      $('#metrics').insertAdjacentHTML('beforeend', `<p>${p.metric}</p>`)
+      $('#dots').insertAdjacentHTML('beforeend', '<i><b></b></i>')
+    })
+    const titles = [...$('#titles').children], metas = [...$('#metas').children], metrics = [...$('#metrics').children], dots = [...$('#dots').children]
+    // Notizen und Führungslinien (eine pro Station)
+    const notes = [], paths = [], ends = []
+    P.forEach((p, pi) => p.stops.forEach((s, si) => {
+      notesEl.insertAdjacentHTML('beforeend', `<div class="note"><b><i>${si + 1}</i>${s.t}</b><span>${s.d}</span></div>`)
+      notes.push({ el: notesEl.lastElementChild, pi, si })
+      const path = document.createElementNS('http://www.w3.org/2000/svg', 'path'); leads.appendChild(path); paths.push(path)
+      const dot = document.createElementNS('http://www.w3.org/2000/svg', 'circle'); dot.setAttribute('r', 4); leads.appendChild(dot); ends.push(dot)
+    }))
+
+    /* ── Szene ── */
+    const mobile = () => innerWidth <= 860
+    const count = $('#count')
+    let lastU = 0
+    function screenScale(slot) { return slot.el.querySelector('.ip-view').getBoundingClientRect().width / 390 }
+
+    function render(u) {
+      lastU = u
+      const mob = mobile()
+      const f = Math.min(P.length - 1 - 1e-6, u / SEG)            // Projekt-Fortschritt 0 … 3
+      const idx = Math.min(P.length - 1, Math.floor(u / SEG))
+      const local = u - idx * SEG                                  // 0 … 200 innerhalb des Projekts
+      // Karussell: Wechsel in den letzten 26 Einheiten jedes Projekts
+      const turn = idx < P.length - 1 ? Z.inOut(Z.seg(local, 174, 200)) : 0
+      const pos = idx + turn                                       // kontinuierliche Position 0 … 2
+      let focus = 0
+      if (!turn) HOLD.forEach(([a, b]) => { focus = Math.max(focus, Z.window(local, a - 6, a + 6, b - 4, b + 6)) })
+      const spread = (mob ? innerWidth * 0.62 : Math.min(innerWidth * 0.3, 470)) * (1 + (mob ? 0.25 : 0.6) * focus)
+
+      slots.forEach((s, i) => {
+        const d = i - pos                                          // −2 … 2
+        const ad = Math.abs(d)
+        const x = d * spread
+        const z = -ad * (mob ? 260 : 340)
+        const ry = -d * 32
+        const sc = 1 - Math.min(1, ad) * (mob ? 0.12 : 0.18)
+        s.el.style.transform = `translate(-50%, -50%) translate3d(${x}px, 0, ${z}px) rotateY(${ry}deg) scale(${sc})`
+        s.el.style.opacity = Math.max(0, 1 - Math.max(0, ad - 1) * 1.4) * (1 - Math.min(1, ad) * ((mob ? 0.55 : 0.35) + 0.55 * focus))
+        s.el.style.zIndex = String(10 - Math.round(ad * 3))
+        s.el.style.filter = ad > 0.05 ? `brightness(${1 - Math.min(1, ad) * 0.45})` : 'none'
+
+        // Scrollposition innerhalb der Aufnahme
+        const p = s.p
+        const stopY = (k) => Math.min(p.stops[k].y, p.h - VIEW)
+        let y = 0
+        if (i < idx || (i === idx && local >= 174)) y = stopY(2)
+        else if (i === idx) {
+          y = 0
+          MOVES.forEach(([a, b], k) => { if (local >= a) y = Z.lerp(k === 0 ? 0 : stopY(k - 1), stopY(k), Z.inOut(Z.seg(local, a, b))) })
+        }
+        s.y = y
+        s.shot.style.transform = `translateY(${-y}px)`
+        // Schwebende Kaufleisten erscheinen wie auf der echten Seite erst nach dem ersten Scrollen
+        if (s.bar) s.bar.style.opacity = Z.smooth(Z.seg(y, 150, 320))
+      })
+
+      /* Aktive Station: Rahmen im Handy, Linie, Notiz */
+      const cur = slots[idx], sc = screenScale(cur)
+      let active = -1, vis = 0
+      HOLD.forEach(([a, b], k) => { const w = Z.window(local, a, a + 8, b - 6, b); if (w > vis) { vis = w; active = k } })
+      if (turn > 0) vis = 0
+      slots.forEach((s, i) => { s.hl.style.opacity = 0 })
+      notes.forEach((n) => { n.el.style.opacity = 0 })
+      paths.forEach((p, i) => { p.style.opacity = 0; ends[i].style.opacity = 0 })
+      if (active >= 0 && vis > 0) {
+        const st = cur.p.stops[active]
+        const [bx, by, bw, bh] = st.box
+        const top = OFF + by - cur.y                                // Position im Handy-Bildschirm (390er-Punkte)
+        cur.hl.style.left = `${bx - 6}px`; cur.hl.style.top = `${top - 6}px`
+        cur.hl.style.width = `${bw + 12}px`; cur.hl.style.height = `${bh + 12}px`
+        cur.hl.style.opacity = vis
+        const ni = notes.findIndex((n) => n.pi === idx && n.si === active)
+        const note = notes[ni]
+        note.el.style.opacity = vis
+        if (!mob) {
+          // Element-Position auf der Bühne
+          const V = cur.el.querySelector('.ip-view').getBoundingClientRect(), S = $('#stage').getBoundingClientRect()
+          const ex = V.left - S.left + (bx + bw) * sc, ey = V.top - S.top + (top + bh / 2) * sc
+          const nx = V.right - S.left + 70, ny = Math.max(90, Math.min(S.height - 170, ey - 30))
+          note.el.style.left = `${nx + 16}px`; note.el.style.top = `${ny}px`
+          const d = `M${ex + 6},${ey} C${ex + 60},${ey} ${nx - 40},${ny + 12} ${nx + 6},${ny + 12}`
+          const path = paths[ni]
+          path.setAttribute('d', d)
+          const len = path.getTotalLength()
+          const draw = Z.seg(local, HOLD[active][0], HOLD[active][0] + 10)
+          path.style.strokeDasharray = `${len * draw} ${len}`
+          path.style.opacity = vis
+          ends[ni].setAttribute('cx', ex + 6); ends[ni].setAttribute('cy', ey); ends[ni].style.opacity = vis
+        }
+      }
+
+      /* Kopf: Titel, Chips, Kennzahl je Projekt, Fortschritt */
+      P.forEach((p, i) => {
+        const w = Math.max(0, 1 - Math.abs(i - pos) * 2.2)
+        titles[i].style.opacity = w
+        titles[i].style.transform = `translateY(${(i - pos) * 18}px)`
+        metas[i].style.opacity = w
+        metrics[i].style.opacity = w
+        dots[i].firstElementChild.style.transform = `scaleX(${Z.clamp01((u - i * SEG) / SEG)})`
+      })
+      const c = `${Math.min(P.length, Math.round(pos) + 1)} / ${P.length}`
+      if (count.textContent !== c) count.textContent = c
+    }
+
+    /* ── Start ── */
+    if (reduced) {
+      document.documentElement.classList.add('reduced')
+      render(HOLD[0][0] + 20)
+    } else {
+      render(0)
+      Z.scene('#p-track', TOTAL, render, { scrub: 1.2 })
+      addEventListener('resize', () => render(lastU))
+    }
+  </script>
+</body>
+</html>

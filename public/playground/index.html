@@ -77,7 +77,7 @@
   <nav class="bar" id="bar" aria-label="Variante wählen"></nav>
 
   <button class="pick" id="pick" type="button" aria-haspopup="dialog" aria-controls="sheet" aria-expanded="false">
-    <b id="pick-letter">C</b><span id="pick-name"></span>
+    <b id="pick-letter">M</b><span id="pick-name"></span>
     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M6 15l6-6 6 6" /></svg>
   </button>
 
@@ -93,6 +93,7 @@
       { title: 'Laptop & Kamera', items: [['a', 'Deckel auf, Seite baut sich'], ['b', 'Milchglas, Linse zum Aufdecken'], ['c', 'Zoom durch die Räume'], ['d', 'Vorher / Nachher im Laptop']] },
       { title: 'Handwerk sichtbar', items: [['e', 'Code wird zur Seite'], ['f', 'Explosionszeichnung'], ['g', 'Ein Design, jedes Gerät'], ['h', 'Schweizer Raster']] },
       { title: 'Swiss, experimentell', items: [['i', 'Topografie wird Typografie'], ['j', 'Durch das Kreuz'], ['k', 'Abfahrtstafel'], ['l', 'Uhrwerk']] },
+      { title: 'MacBook & iPhone, im Detail', items: [['m', 'Vom Entwurf aufs Handy'], ['n', 'Seitenaufbau in Zeitlupe'], ['o', 'Vom Handy live geändert'], ['p', 'Echte Projekte, erklärt']] },
     ]
     const NAMES = Object.fromEntries(GROUPS.flatMap((g) => g.items))
 
@@ -104,8 +105,8 @@
     const sheet = document.getElementById('sheet'), pick = document.getElementById('pick')
 
     const show = () => {
-      const v = (location.hash.slice(1) || 'c').toLowerCase()
-      const key = NAMES[v] ? v : 'c'
+      const v = (location.hash.slice(1) || 'm').toLowerCase()
+      const key = NAMES[v] ? v : 'm'
       frame.src = `variant-${key}.html`
       document.querySelectorAll('#bar a, #sheet-list a').forEach((a) => a.setAttribute('aria-current', a.hash === `#${key}` ? 'page' : 'false'))
       document.getElementById('pick-letter').textContent = key.toUpperCase()

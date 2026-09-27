@@ -24,8 +24,8 @@
          84–100 % Kamera taucht ins Zifferblatt
        ───────────────────────────────────────────────────────────── */
 
-    #watch-track { height: 460vh; }
-    @media (max-width: 720px) { #watch-track { height: 300vh; } }
+    #watch-track { height: calc(460vh * var(--pace)); }
+    @media (max-width: 720px) { #watch-track { height: calc(300vh * var(--pace)); } }
 
     .stage { background: radial-gradient(45% 50% at 58% 52%, rgba(200, 160, 90, 0.12), transparent 70%), var(--bg); }
     .w-copy { position: absolute; left: max(24px, 6vw); top: max(24px, 10vh); z-index: 3; display: grid; gap: 14px; max-width: 360px; }

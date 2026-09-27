@@ -23,8 +23,8 @@
          48–96 %  Zeile für Zeile mit Projektbild
        ───────────────────────────────────────────────────────────── */
 
-    #board-track { height: 440vh; }
-    @media (max-width: 860px) { #board-track { height: 300vh; } }
+    #board-track { height: calc(440vh * var(--pace)); }
+    @media (max-width: 860px) { #board-track { height: calc(300vh * var(--pace)); } }
 
     .stage { background: radial-gradient(60% 50% at 50% 50%, rgba(242, 237, 230, 0.05), transparent 70%), var(--bg); }
 

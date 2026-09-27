@@ -19,8 +19,8 @@
        statt zurückzuspringen (Offset statt Überschreiben).
        ───────────────────────────────────────────────────────────── */
 
-    #ba-track { height: 300vh; }
-    @media (max-width: 720px) { #ba-track { height: 230vh; } }
+    #ba-track { height: calc(300vh * var(--pace)); }
+    @media (max-width: 720px) { #ba-track { height: calc(230vh * var(--pace)); } }
 
     .stage { background: radial-gradient(55% 50% at 50% 50%, rgba(38, 72, 120, 0.28), transparent 70%), var(--bg); }
 

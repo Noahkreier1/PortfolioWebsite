@@ -24,8 +24,8 @@
        ───────────────────────────────────────────────────────────── */
 
     :root { --paper: #f2ede6; --ink-dark: #14110d; }
-    #grid-track { height: 320vh; }
-    @media (max-width: 720px) { #grid-track { height: 240vh; } }
+    #grid-track { height: calc(320vh * var(--pace)); }
+    @media (max-width: 720px) { #grid-track { height: calc(240vh * var(--pace)); } }
 
     .stage { background: var(--paper); color: var(--ink-dark); }
 

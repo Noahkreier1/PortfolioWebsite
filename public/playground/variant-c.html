@@ -20,8 +20,8 @@
        Alles an der Scrollposition (scrub), nichts zeitgesteuert.
        ───────────────────────────────────────────────────────────── */
 
-    #rooms { height: 520vh; }
-    @media (max-width: 720px) { #rooms { height: 270vh; } }
+    #rooms { height: calc(520vh * var(--pace)); }
+    @media (max-width: 720px) { #rooms { height: calc(270vh * var(--pace)); } }
 
     .room {
       position: absolute;

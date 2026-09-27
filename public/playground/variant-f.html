@@ -24,8 +24,8 @@
          72–100 % zurück in die flache, fertige Seite
        ───────────────────────────────────────────────────────────── */
 
-    #layers-track { height: 380vh; }
-    @media (max-width: 720px) { #layers-track { height: 260vh; } }
+    #layers-track { height: calc(380vh * var(--pace)); }
+    @media (max-width: 720px) { #layers-track { height: calc(260vh * var(--pace)); } }
 
     .stage { background: radial-gradient(55% 55% at 55% 55%, rgba(218, 41, 28, 0.08), transparent 70%), var(--bg); perspective: 2200px; }
 

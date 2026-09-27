@@ -21,8 +21,8 @@
        die Skalierung auf den Viewport läuft per transform.
        ───────────────────────────────────────────────────────────── */
 
-    #rs-track { height: 360vh; }
-    @media (max-width: 720px) { #rs-track { height: 280vh; } }
+    #rs-track { height: calc(360vh * var(--pace)); }
+    @media (max-width: 720px) { #rs-track { height: calc(280vh * var(--pace)); } }
 
     .stage { background: radial-gradient(50% 50% at 50% 55%, rgba(40, 110, 200, 0.14), transparent 70%), var(--bg); }
 

@@ -1,0 +1,441 @@
+<!doctype html>
+<html lang="de-CH">
+<head>
+  <meta charset="utf-8" />
+  <meta name="robots" content="noindex, nofollow" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Variante O: Vom Handy live geändert</title>
+  <link rel="icon" href="data:," />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./shared/base.css" />
+  <link rel="stylesheet" href="./shared/phone.css" />
+  <link rel="stylesheet" href="./shared/hk.css" />
+  <style>
+    /* ─────────────────────────────────────────────────────────────
+       Variante O: «Vom Handy live geändert»
+       iPhone mit einer Inhalts-App: Banner einschalten, Text auf der Schweizer
+       QWERTZ-Tastatur tippen (Taste für Taste, mit Tasten-Vorschau), neues
+       Titelbild wählen, veröffentlichen. Ein Signal fliegt zum MacBook, dort
+       lädt die echte Seite neu: Banner fährt ein, Bild wird ausgetauscht.
+       Zeitachse in Einheiten 0–500, Scrollweg = 500vh × --pace.
+       ───────────────────────────────────────────────────────────── */
+
+    #o-track { height: calc(500vh * var(--pace)); }
+    .stage { background: radial-gradient(45% 45% at 26% 62%, rgba(218, 41, 28, 0.07), transparent 70%), radial-gradient(50% 50% at 62% 52%, rgba(242, 237, 230, 0.05), transparent 70%), var(--bg); }
+
+    .o-copy { position: absolute; z-index: 7; left: max(24px, 5vw); top: max(24px, 8vh); display: grid; gap: 14px; max-width: 380px; }
+    .o-copy .display { font-size: clamp(1.9rem, 3vw, 2.9rem); }
+    .o-copy .lead { font-size: 15px; }
+    .o-cap { position: absolute; z-index: 7; left: 60%; bottom: 5vh; transform: translateX(-50%); width: min(560px, 50vw); text-align: center; font-size: 15px; color: var(--ink-muted); }
+    .o-cap p { position: absolute; left: 0; right: 0; bottom: 0; opacity: 0; }
+
+    .o-laptop { position: absolute; z-index: 1; left: 61%; top: 54%; --mb-w: min(860px, 54vw); transform: translate(-50%, -50%); }
+    .o-phone { position: absolute; z-index: 3; left: 21%; top: 63%; transform: translate(-50%, -50%); }
+    .o-phone .ip { --ip-w: min(240px, 16vw, 27vh); }
+
+    .o-arc { position: absolute; inset: 0; z-index: 6; width: 100%; height: 100%; pointer-events: none; overflow: visible; }
+    .o-arc .base { fill: none; stroke: rgba(242, 237, 230, 0.22); stroke-width: 1.5; stroke-dasharray: 3 7; }
+    .o-arc .trail { fill: none; stroke: var(--accent); stroke-width: 2.5; stroke-linecap: round; }
+    .o-arc .dot { fill: var(--accent); }
+    .o-arc .halo { fill: rgba(218, 41, 28, 0.25); }
+    .o-arc .pulse { fill: none; stroke: var(--accent); stroke-width: 2; }
+
+    /* ── Browser im Laptop (virtuell 1440 × 900) ── */
+    .br { background: #fff; }
+    .br-bar { position: absolute; left: 0; right: 0; top: 0; height: 56px; display: flex; align-items: center; gap: 18px; padding: 0 20px; background: #efece6; border-bottom: 1px solid #ddd8cf; }
+    .br-dots { display: flex; gap: 8px; }
+    .br-dots i { width: 13px; height: 13px; border-radius: 50%; background: #d7d2c9; }
+    .br-url { flex: 1; max-width: 620px; margin: 0 auto; height: 34px; border-radius: 8px; background: #fff; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 15px; color: #3d372f; box-shadow: inset 0 0 0 1px #e2ddd4; }
+    .br-url svg { width: 14px; height: 14px; }
+    .br-load { position: absolute; left: 0; top: 56px; height: 3px; width: 100%; }
+    .br-load i { display: block; height: 100%; background: var(--accent); transform-origin: 0 50%; transform: scaleX(0); }
+    .br-page { position: absolute; left: 0; right: 0; top: 59px; bottom: 0; overflow: hidden; }
+    .br-page .hk-root { --s: 1.125; }
+    .br-page .hk-banner { transform: translateY(-100%); }
+    .photo-new { position: absolute; inset: 0; border-radius: inherit; }
+    .live-pill { position: absolute; left: 50%; bottom: 28px; width: 300px; margin-left: -150px; justify-content: center; z-index: 5; display: flex; align-items: center; gap: 10px; padding: 10px 16px; border-radius: 999px; background: #1d1812; color: #f6f2ea; font-size: 16px; font-weight: 600; opacity: 0; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25); }
+    .live-pill i { width: 10px; height: 10px; border-radius: 50%; background: #3fb950; box-shadow: 0 0 0 4px rgba(63, 185, 80, 0.25); }
+
+    /* ── Inhalts-App im iPhone (390 × 844) ── */
+    .app { position: absolute; inset: 0; background: #f2f1ee; color: #1d1812; font-family: -apple-system, 'SF Pro Text', Inter, system-ui, sans-serif; overflow: hidden; }
+    .app-nav { position: absolute; left: 0; right: 0; top: 54px; height: 44px; display: flex; align-items: center; justify-content: space-between; padding: 0 16px; font-size: 17px; }
+    .app-back { color: #a0522d; }
+    .app-av { width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center; background: #a0522d; color: #fff; font-size: 13px; font-weight: 600; }
+    .app-title { position: absolute; left: 16px; top: 104px; font-size: 34px; font-weight: 700; letter-spacing: -0.02em; margin: 0; }
+    .app-sub { position: absolute; left: 16px; top: 150px; font-size: 14px; color: #7a746b; display: flex; align-items: center; gap: 7px; margin: 0; }
+    .app-sub i { width: 8px; height: 8px; border-radius: 50%; background: #34c759; }
+    .app-body { position: absolute; left: 16px; right: 16px; top: 186px; }
+    .grp-h { font-size: 13px; text-transform: uppercase; letter-spacing: 0.02em; color: #7a746b; margin: 0 0 7px 14px; }
+    .grp { background: #fff; border-radius: 12px; margin-bottom: 22px; overflow: hidden; }
+    .row { display: flex; align-items: center; gap: 12px; min-height: 50px; padding: 0 14px; font-size: 17px; }
+    .row + .row { box-shadow: inset 0 1px 0 #e6e3dd; }
+    .row-text { height: 96px; align-items: stretch; padding: 10px 14px 12px; }
+    .field { position: relative; flex: 1; border-radius: 10px; background: #f4f2ee; padding: 10px 12px; font-size: 16px; line-height: 1.35; }
+    .field .ph { color: #a39d92; }
+    .caret { display: inline-block; width: 2px; height: 20px; margin-left: 1px; vertical-align: -4px; background: #a0522d; animation: o-blink 1s steps(1) infinite; opacity: 0; }
+    @keyframes o-blink { 50% { visibility: hidden; } }
+    .sw { margin-left: auto; width: 51px; height: 31px; border-radius: 16px; background: #e4e1db; position: relative; flex: none; }
+    .sw b { position: absolute; left: 2px; top: 2px; width: 27px; height: 27px; border-radius: 50%; background: #fff; box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15), 0 1px 1px rgba(0, 0, 0, 0.1); }
+    .thumb { width: 44px; height: 44px; border-radius: 8px; flex: none; }
+    .th-a { background: repeating-linear-gradient(96deg, rgba(0,0,0,.06) 0 2px, transparent 2px 9px), linear-gradient(135deg, #c98f5b, #8b5a33 55%, #5e3a1f); }
+    .th-b { background: repeating-linear-gradient(90deg, rgba(255,255,255,.12) 0 1px, transparent 1px 16px), linear-gradient(165deg, #dfe3db, #a3b3a9 40%, #5b6f64); }
+    .th-c { background: linear-gradient(135deg, #7b5a43, #4a3426); }
+    .th-d { background: linear-gradient(135deg, #e9e1d3, #c9baa2); }
+    .th-e { background: linear-gradient(135deg, #b9a07e, #6d5a43); }
+    .th-f { background: linear-gradient(135deg, #5f6468, #2f3336); }
+    .chev { margin-left: auto; color: #a0522d; font-size: 16px; white-space: nowrap; }
+    .row-multi { font-size: 16px; line-height: 1.35; padding-top: 12px; padding-bottom: 12px; }
+    .app-foot { position: absolute; left: 16px; right: 16px; bottom: 38px; }
+    .pub { height: 54px; border-radius: 14px; display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 17px; font-weight: 600; background: #d8d4cc; color: #8f897f; }
+    .pub.is-on { background: #1d1812; color: #fff; }
+    .pub.is-done { background: #2f6b3f; color: #fff; }
+    .pub .spin { width: 16px; height: 16px; border-radius: 50%; border: 2px solid rgba(255, 255, 255, 0.35); border-top-color: #fff; display: none; }
+    .pub.is-busy .spin { display: block; }
+    .pub-note { text-align: center; font-size: 13px; color: #7a746b; margin: 10px 0 0; }
+
+    /* iOS-Tastatur, Schweizerdeutsch (QWERTZ mit ü ö ä) */
+    .kb { position: absolute; left: 0; right: 0; bottom: 0; height: 300px; z-index: 20; background: #d1d4da; padding: 0 3px 34px; transform: translateY(100%); }
+    .kb-sug { height: 44px; display: grid; grid-template-columns: repeat(3, 1fr); align-items: center; text-align: center; font-size: 16px; color: #1d1812; }
+    .kb-sug span + span { box-shadow: inset 1px 0 0 rgba(0, 0, 0, 0.14); }
+    .kb-row { display: flex; justify-content: center; gap: 6px; margin-top: 11px; }
+    .kb-row:first-of-type { margin-top: 2px; }
+    .key { position: relative; flex: 0 0 29.4px; height: 42px; border-radius: 5px; background: #fff; box-shadow: 0 1px 0 rgba(0, 0, 0, 0.3); display: grid; place-items: center; font-size: 22px; color: #111; }
+    .key.fn { flex-basis: 43px; background: #abb0ba; font-size: 18px; }
+    .key.fn svg { width: 20px; height: 20px; }
+    .key.wide { flex: 1 1 auto; font-size: 16px; }
+    .key.ret { flex-basis: 92px; background: #abb0ba; font-size: 16px; }
+    .key.is-down { background: #abb0ba; }
+    .key.fn.is-down, .key.ret.is-down { background: #fff; }
+    .kb-row.r3 .fn:first-child { margin-right: 8px; }
+    .kb-row.r3 .fn:last-child { margin-left: 8px; }
+    .kpop { position: absolute; z-index: 25; left: 0; top: 0; width: 48px; height: 60px; margin: -64px 0 0 -24px; border-radius: 9px; background: #fff; box-shadow: 0 3px 10px rgba(0, 0, 0, 0.28); display: grid; place-items: center; font-size: 32px; color: #111; opacity: 0; }
+
+    /* Bildauswahl als Blatt von unten */
+    .sheet { position: absolute; left: 0; right: 0; bottom: 0; height: 520px; z-index: 22; background: #fff; border-radius: 14px 14px 0 0; box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.18); transform: translateY(100%); padding: 10px 16px 0; }
+    .sheet-scrim { position: absolute; inset: 0; z-index: 21; background: rgba(0, 0, 0, 0.35); opacity: 0; }
+    .sheet-grip { width: 36px; height: 5px; border-radius: 3px; background: #d9d5ce; margin: 0 auto 12px; }
+    .sheet-head { display: flex; justify-content: space-between; align-items: center; font-size: 17px; margin-bottom: 16px; }
+    .sheet-head b { font-weight: 600; }
+    .sheet-head span { color: #a0522d; }
+    .pick { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .pick i { position: relative; aspect-ratio: 1; border-radius: 10px; }
+    .pick .sel { box-shadow: 0 0 0 3px #fff, 0 0 0 6px #a0522d; }
+    .pick .chk { position: absolute; right: 8px; bottom: 8px; width: 26px; height: 26px; border-radius: 50%; background: #a0522d; color: #fff; display: grid; place-items: center; font-size: 15px; font-style: normal; opacity: 0; box-shadow: 0 0 0 2px #fff; }
+    .pick-note { margin-top: 14px; font-size: 13px; color: #7a746b; }
+
+    @media (max-width: 720px) {
+      .o-copy { right: 20px; max-width: none; top: 18px; gap: 10px; }
+      .o-copy .display { font-size: 1.55rem; }
+      .o-copy .lead { display: none; }
+      .o-laptop { left: 50%; top: 31%; --mb-w: 92vw; }
+      .o-phone { left: 50%; top: 71%; }
+      .o-phone .ip { --ip-w: min(52vw, 24vh); }
+      .o-cap { left: 20px; right: 20px; width: auto; top: 104px; bottom: auto; transform: none; text-align: left; font-size: 13px; }
+      .o-cap p { top: 0; bottom: auto; }
+    }
+
+    .reduced #o-track { height: auto; }
+    .reduced #o-track .stage { position: relative; }
+  </style>
+</head>
+<body>
+  <div class="grain" aria-hidden="true"></div>
+
+  <section class="intro">
+    <h1 class="display">Wir bauen Webseiten, die man nicht wegscrollt.</h1>
+    <p class="lead">Und die Sie auf Wunsch selbst aktuell halten. Vom Handy aus, in Sekunden.</p>
+    <p class="scroll-hint">Scrollen ↓</p>
+  </section>
+
+  <section class="track" id="o-track" aria-label="Vom Handy live geändert">
+    <div class="stage" id="stage">
+      <div class="o-copy">
+        <div class="chips"><span class="chip" id="phase">Bearbeiten</span><span class="chip">Beispielprojekt</span></div>
+        <h2 class="display">Vom Handy live geändert.</h2>
+        <p class="lead">Aktion einschalten, Text tippen, Bild tauschen: Ihre Webseite zeigt es Sekunden später.</p>
+      </div>
+
+      <div class="o-laptop" id="laptop">
+        <div class="mb">
+          <div class="mb-lid"><div class="mb-face"><div class="mb-screen" id="lscreen">
+            <div class="vs br" id="vs">
+              <div class="br-bar">
+                <span class="br-dots"><i></i><i></i><i></i></span>
+                <div class="br-url"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>holzwerk-keller.ch</div>
+              </div>
+              <div class="br-load"><i id="loadbar"></i></div>
+              <div class="br-page" id="page">
+                <div class="live-pill" id="pill"><i></i>Aktualisiert · gerade eben</div>
+              </div>
+            </div>
+          </div></div></div>
+          <div class="mb-deck"></div><div class="mb-shadow"></div>
+        </div>
+      </div>
+
+      <div class="o-phone"><div id="phoneWrap"></div></div>
+
+      <svg class="o-arc" id="arc" aria-hidden="true">
+        <path class="base" id="arcBase" />
+        <path class="trail" id="arcTrail" />
+        <circle class="halo" id="arcHalo" r="14" />
+        <circle class="dot" id="arcDot" r="5" />
+        <circle class="pulse" id="arcPulse" r="10" />
+        <circle class="pulse" id="arcEmit" r="6" />
+      </svg>
+
+      <div class="o-cap" id="cap">
+        <p>Auf Wunsch pflegen Sie Aktionen und Texte selbst, sogar vom Handy aus.</p>
+        <p>Neues Bild aussuchen, einmal tippen, fertig.</p>
+        <p>Veröffentlichen, und die Webseite ist in Sekunden aktuell.</p>
+        <p>Ohne Ticket, ohne Wartezeit. Ihre Seite, Ihr Tempo.</p>
+      </div>
+      <div class="vignette"></div>
+    </div>
+  </section>
+
+  <section class="outro">
+    <h2 class="display">Ihre Webseite bleibt Ihre Webseite.</h2>
+    <p class="lead">Wir bauen sie so, dass Sie Texte und Bilder selbst pflegen können, wenn Sie das möchten.</p>
+  </section>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js"></script>
+  <script src="./shared/motion.js"></script>
+  <script src="./shared/scrub.js"></script>
+  <script src="./shared/phone.js"></script>
+  <script src="./shared/hk.js"></script>
+  <script>
+    const { reduced } = setupMotion()
+    const $ = (s, r = document) => r.querySelector(s)
+    const TOTAL = 500
+    const TEXT = 'Sommeraktion auf alle Küchen'
+    const TYPE_A = 74, TYPE_B = 190, STEP = (TYPE_B - TYPE_A) / TEXT.length
+
+    /* ── Laptop: Browser mit der echten Beispielseite, Banner vorbereitet ── */
+    const vs = $('#vs'), lscreen = $('#lscreen'), page = $('#page')
+    fitScale(vs, 1440, lscreen)
+    page.insertAdjacentHTML('afterbegin', hkHTML('d', { banner: `${TEXT} <b>Mehr erfahren →</b>` }))
+    const root = page.querySelector('.hk-root'), banner = root.querySelector('.hk-banner'), body = root.querySelector('.hk-body')
+    const photo = root.querySelector('.hk-photo')
+    photo.insertAdjacentHTML('beforeend', `<div class="photo-new hk-photo--b"><span class="hk-photo-tag">${HK_TEXT.tag.b}</span></div>`)
+    const photoNew = photo.querySelector('.photo-new')
+
+    /* ── iPhone: Inhalts-App ── */
+    const ROWS = [
+      ['q', 'w', 'e', 'r', 't', 'z', 'u', 'i', 'o', 'p', 'ü'],
+      ['a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'ö', 'ä'],
+      ['⇧', 'y', 'x', 'c', 'v', 'b', 'n', 'm', '⌫'],
+    ]
+    const SHIFT = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 4 4 12h4v7h8v-7h4z"/></svg>'
+    const BACK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M9 5h11v14H9l-6-7z"/><path d="m12 9 5 6m0-6-5 6"/></svg>'
+    const GLOBE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg>'
+    const kbHTML = `
+      <div class="kb" id="kb">
+        <div class="kb-sug"><span>Sommer</span><span>Sommeraktion</span><span>Sommerferien</span></div>
+        ${ROWS.map((r, i) => `<div class="kb-row r${i + 1}">${r.map((k) => k === '⇧' ? `<i class="key fn" data-k="shift">${SHIFT}</i>` : k === '⌫' ? `<i class="key fn" data-k="back">${BACK}</i>` : `<i class="key" data-k="${k}">${k}</i>`).join('')}</div>`).join('')}
+        <div class="kb-row r4"><i class="key fn" data-k="123" style="font-size:16px">123</i><i class="key fn" data-k="globe">${GLOBE}</i><i class="key wide" data-k=" ">Leerzeichen</i><i class="key ret" data-k="done">Fertig</i></div>
+        <i class="kpop" id="kpop"></i>
+      </div>`
+    const appHTML = `
+      <div class="app" id="app">
+        <div class="app-nav"><span class="app-back">‹ Seiten</span><span class="app-av">HK</span></div>
+        <h1 class="app-title">Startseite</h1>
+        <p class="app-sub"><i></i>holzwerk-keller.ch · live</p>
+        <div class="app-body">
+          <p class="grp-h">Aktions-Banner</p>
+          <div class="grp" id="g1">
+            <div class="row"><span>Banner anzeigen</span><i class="sw" id="sw"><b></b></i></div>
+            <div class="row row-text"><div class="field" id="field"><span id="ftext"></span><i class="caret" id="caret"></i><span class="ph" id="fph">Text für das Banner</span></div></div>
+          </div>
+          <div id="below">
+            <p class="grp-h">Titelbild</p>
+            <div class="grp"><div class="row" id="rowImg"><i class="thumb th-a" id="thumb"></i><span id="thumbName">${HK_TEXT.tag.a}</span><span class="chev" id="change">Ändern ›</span></div></div>
+            <p class="grp-h">Überschrift</p>
+            <div class="grp"><div class="row row-multi">${HK_TEXT.h1}</div></div>
+          </div>
+        </div>
+        <div class="app-foot"><div class="pub" id="pub"><span class="spin"></span><span id="publabel">Veröffentlichen</span></div><p class="pub-note" id="pubnote">Keine Änderungen</p></div>
+        <div class="sheet-scrim" id="scrim"></div>
+        <div class="sheet" id="sheet">
+          <div class="sheet-grip"></div>
+          <div class="sheet-head"><span>Abbrechen</span><b>Titelbild wählen</b><span style="visibility:hidden">Abbrechen</span></div>
+          <div class="pick" id="pick">${['a', 'c', 'b', 'd', 'e', 'f'].map((c) => `<i class="th-${c}"><em class="chk">✓</em></i>`).join('')}</div>
+          <p class="pick-note">Aus Ihrer Mediathek · 24 Bilder</p>
+        </div>
+        ${kbHTML}
+        <div class="ip-tap" id="tap"></div>
+      </div>`
+    $('#phoneWrap').innerHTML = iphoneHTML({ id: 'phone', inner: appHTML })
+    const phone = $('#phone')
+    fitScale(phone.querySelector('.ip-canvas'), 390, phone.querySelector('.ip-view'))
+
+    const sw = $('#sw'), g1 = $('#g1'), below = $('#below'), ftext = $('#ftext'), fph = $('#fph'), caret = $('#caret')
+    const kb = $('#kb'), kpop = $('#kpop'), keys = {}
+    kb.querySelectorAll('.key').forEach((k) => { keys[k.dataset.k] = k })
+    const sheet = $('#sheet'), scrim = $('#scrim'), picks = [...$('#pick').children], thumb = $('#thumb'), thumbName = $('#thumbName')
+    const pub = $('#pub'), publabel = $('#publabel'), pubnote = $('#pubnote'), tap = $('#tap')
+
+    /* ── Messung: Tasten, Tipp-Ziele, Signalbahn ── */
+    const geo = { keys: {}, taps: {} }
+    const appPt = (el) => { const r = el.getBoundingClientRect(), A = $('#app').getBoundingClientRect(), s = A.width / 390; return { x: (r.left - A.left + r.width / 2) / s, y: (r.top - A.top + r.height / 2) / s } }
+    function measure() {
+      const cur = lastU
+      render(0)
+      // Tastenmitten relativ zur Tastatur, bei ausgefahrener Tastatur
+      kb.style.transform = 'none'
+      const K = kb.getBoundingClientRect(), s = K.width / 390
+      Object.entries(keys).forEach(([k, el]) => { const r = el.getBoundingClientRect(); geo.keys[k] = { x: (r.left - K.left + r.width / 2) / s, y: (r.top - K.top) / s } })
+      geo.taps.done = appPt(keys.done)
+      sheet.style.transform = 'none'
+      geo.taps.pick = appPt(picks[2])
+      render(0)
+      geo.taps.sw = appPt(sw)
+      geo.taps.field = appPt($('#field'))
+      geo.taps.change = appPt($('#change'))
+      geo.taps.pub = appPt(pub)
+      // Signalbahn: startet oben am Handy und läuft ausserhalb der Bildschirme zum Laptop.
+      // Desktop: Bogen über beide Geräte, landet von oben in der Adresszeile. Handy: kurz nach oben.
+      const S = $('#stage').getBoundingClientRect(), Ph = phone.getBoundingClientRect(), L = lscreen.getBoundingClientRect()
+      const mob = innerWidth <= 720
+      const x0 = Ph.left + Ph.width / 2 - S.left, y0 = Ph.top - S.top + 2
+      const x1 = L.left + L.width * 0.5 - S.left
+      const y1 = mob ? L.bottom - S.top - 3 : L.top + L.height * 0.02 - S.top
+      const d = mob
+        ? `M${x0},${y0} C${x0},${(y0 + y1) / 2} ${x1},${(y0 + y1) / 2} ${x1},${y1}`
+        : `M${x0},${y0} C${x0 + S.width * 0.14},${y0 - S.height * 0.12} ${x1 - S.width * 0.06},${y1 - S.height * 0.26} ${x1},${y1}`
+      geo.start = { x: x0, y: y0 }
+      ;['arcBase', 'arcTrail'].forEach((id) => $('#' + id).setAttribute('d', d))
+      geo.path = $('#arcBase')
+      geo.len = geo.path.getTotalLength()
+      geo.end = { x: x1, y: y1 }
+      render(cur)
+    }
+
+    /* ── Szene ── */
+    let lastU = 0
+    const caps = [...document.querySelectorAll('#cap p')], phaseEl = $('#phase')
+    const TAPS = [['sw', 24, 32], ['field', 58, 66], ['done', 192, 200], ['change', 212, 220], ['pick', 234, 242], ['pub', 272, 280]]
+    function render(u) {
+      lastU = u
+
+      /* Schalter und aufklappende Textzeile */
+      const on = Z.inOut(Z.seg(u, 26, 34))
+      sw.style.background = `rgb(${Z.lerp(228, 52, on)}, ${Z.lerp(225, 199, on)}, ${Z.lerp(219, 89, on)})`
+      sw.firstElementChild.style.transform = `translateX(${20 * on}px)`
+      const x = Z.inOut(Z.seg(u, 34, 56))
+      g1.style.clipPath = `inset(0 0 ${(1 - x) * 96}px 0 round 12px)`
+      below.style.transform = `translateY(${-(1 - x) * 96}px)`
+
+      /* Tastatur hoch, Text Taste für Taste, wieder runter */
+      const kbY = Z.inOut(Z.seg(u, 60, 72)) * (1 - Z.inOut(Z.seg(u, 196, 208)))
+      kb.style.transform = `translateY(${(1 - kbY) * 100}%)`
+      const n = u < TYPE_A ? 0 : Math.min(TEXT.length, Math.floor((u - TYPE_A) / STEP) + 1)
+      ftext.textContent = TEXT.slice(0, n)
+      fph.style.display = n ? 'none' : ''
+      caret.style.opacity = u >= 62 && u < 200 ? 1 : 0
+      Object.values(keys).forEach((k) => k.classList.remove('is-down'))
+      kpop.style.opacity = 0
+      if (u >= 62 && n === 0) keys.shift.classList.add('is-down')         // Grossschreibung am Satzanfang
+      if (n > 0 && n <= TEXT.length && u < TYPE_B + 2) {
+        const frac = ((u - TYPE_A) / STEP) % 1
+        const ch = TEXT[n - 1].toLowerCase()
+        const key = keys[ch]
+        if (key && frac < 0.62) {
+          key.classList.add('is-down')
+          const g = geo.keys[ch]
+          if (g && ch !== ' ') { kpop.textContent = TEXT[n - 1]; kpop.style.transform = `translate(${g.x}px, ${g.y}px)`; kpop.style.opacity = 1 }
+        }
+      }
+      if (u >= 192 && u < 198) keys.done.classList.add('is-down')
+
+      /* Bildauswahl */
+      const sh = Z.inOut(Z.seg(u, 216, 230)) * (1 - Z.inOut(Z.seg(u, 250, 264)))
+      sheet.style.transform = `translateY(${(1 - sh) * 100}%)`
+      scrim.style.opacity = sh
+      const chosen = u >= 238
+      picks[2].classList.toggle('sel', chosen)
+      picks[2].firstElementChild.style.opacity = chosen ? 1 : 0
+      const swapped = u >= 258
+      thumb.className = `thumb ${swapped ? 'th-b' : 'th-a'}`
+      thumbName.textContent = swapped ? HK_TEXT.tag.b : HK_TEXT.tag.a
+
+      /* Veröffentlichen */
+      const changes = (u >= 34 ? 1 : 0) + (u >= TYPE_B ? 1 : 0) + (swapped ? 1 : 0)
+      const busy = u >= 280 && u < 326, done = u >= 326
+      pub.classList.toggle('is-on', changes > 0 && !done)
+      pub.classList.toggle('is-busy', busy)
+      pub.classList.toggle('is-done', done)
+      pub.style.transform = `scale(${1 - 0.04 * Z.window(u, 274, 276, 278, 281)})`
+      const lab = done ? '✓ Veröffentlicht' : busy ? 'Wird veröffentlicht …' : 'Veröffentlichen'
+      if (publabel.textContent !== lab) publabel.textContent = lab
+      const note = done ? 'Live auf holzwerk-keller.ch' : changes ? `${changes} ${changes === 1 ? 'Änderung' : 'Änderungen'}` : 'Keine Änderungen'
+      if (pubnote.textContent !== note) pubnote.textContent = note
+
+      /* Tipp-Anzeige */
+      let tp = null
+      for (const [k, a, b] of TAPS) if (u >= a && u < b) tp = [k, Z.seg(u, a, b)]
+      if (tp && geo.taps[tp[0]]) {
+        const p = geo.taps[tp[0]]
+        tap.style.transform = `translate(${p.x}px, ${p.y}px) scale(${0.7 + 0.5 * tp[1]})`
+        tap.style.opacity = Math.sin(Math.PI * tp[1])
+      } else tap.style.opacity = 0
+
+      /* Signal vom Handy zum Laptop */
+      if (geo.path) {
+        const e = Z.inOut(Z.seg(u, 296, 350))
+        const pt = geo.path.getPointAtLength(geo.len * e)
+        const vis = Z.window(u, 294, 300, 356, 366)
+        $('#arcBase').style.opacity = vis * 0.9
+        const trail = $('#arcTrail')
+        trail.style.strokeDasharray = `${geo.len * e} ${geo.len}`
+        trail.style.opacity = vis
+        ;['#arcDot', '#arcHalo'].forEach((id) => { const c = $(id); c.setAttribute('cx', pt.x); c.setAttribute('cy', pt.y); c.style.opacity = e > 0 && e < 1 ? 1 : 0 })
+        // Abstrahlen oben am Handy, bevor das Signal losfliegt
+        const em = Z.seg(u, 286, 300), emit = $('#arcEmit')
+        emit.setAttribute('cx', geo.start.x); emit.setAttribute('cy', geo.start.y)
+        emit.setAttribute('r', 6 + em * 30)
+        emit.style.opacity = em > 0 && em < 1 ? 1 - em : 0
+        const pu = Z.seg(u, 350, 368), pulse = $('#arcPulse')
+        pulse.setAttribute('cx', geo.end.x); pulse.setAttribute('cy', geo.end.y)
+        pulse.setAttribute('r', 8 + pu * 46)
+        pulse.style.opacity = pu > 0 && pu < 1 ? 1 - pu : 0
+      }
+
+      /* Laptop: Neu laden, Banner fährt ein, Bild wird ausgetauscht */
+      const ld = Z.seg(u, 350, 362)
+      $('#loadbar').style.transform = `scaleX(${ld})`
+      $('#loadbar').style.opacity = 1 - Z.seg(u, 362, 370)
+      const bn = Z.out(Z.seg(u, 356, 380))
+      banner.style.transform = `translateY(${(bn - 1) * 100}%)`
+      body.style.transform = `translateY(${44 * bn}px)`
+      photoNew.style.clipPath = `inset(0 ${(1 - Z.inOut(Z.seg(u, 366, 402))) * 100}% 0 0)`
+      const pill = $('#pill')
+      pill.style.opacity = Z.smooth(Z.seg(u, 394, 408))
+      pill.style.transform = `translateY(${(1 - Z.out(Z.seg(u, 394, 408))) * 16}px)`
+
+      /* Texte */
+      caps[0].style.opacity = Z.window(u, 14, 26, 196, 208)
+      caps[1].style.opacity = Z.window(u, 210, 220, 282, 292)
+      caps[2].style.opacity = Z.window(u, 296, 306, 404, 414)
+      caps[3].style.opacity = Z.smooth(Z.seg(u, 418, 434))
+      const ph = u < 272 ? 'Bearbeiten' : u < 356 ? 'Veröffentlichen' : 'Live'
+      if (phaseEl.textContent !== ph) phaseEl.textContent = ph
+    }
+
+    /* ── Start ── */
+    if (reduced) {
+      document.documentElement.classList.add('reduced')
+      document.fonts.ready.then(() => { measure(); render(TOTAL) })
+    } else {
+      render(0)
+      Z.scene('#o-track', TOTAL, render, { scrub: 1.2 })
+      document.fonts.ready.then(() => { measure(); ScrollTrigger.refresh() })
+      ScrollTrigger.addEventListener('refresh', () => requestAnimationFrame(measure))
+    }
+  </script>
+</body>
+</html>

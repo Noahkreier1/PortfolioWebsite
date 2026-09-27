@@ -21,8 +21,8 @@
        der Mausposition aus ganz auf. Touch: Glas klärt sich mit dem Scroll.
        ───────────────────────────────────────────────────────────── */
 
-    #frost-track { height: 260vh; }
-    @media (max-width: 720px) { #frost-track { height: 220vh; } }
+    #frost-track { height: calc(260vh * var(--pace)); }
+    @media (max-width: 720px) { #frost-track { height: calc(220vh * var(--pace)); } }
 
     .stage {
       background: radial-gradient(55% 50% at 64% 48%, rgba(160, 82, 45, 0.20), transparent 70%), var(--bg);

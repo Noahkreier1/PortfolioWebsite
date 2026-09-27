@@ -19,8 +19,8 @@
        den Code selbst schreiben. Alles scrubbed, rückwärts scrollen löscht wieder.
        ───────────────────────────────────────────────────────────── */
 
-    #code-track { height: 360vh; }
-    @media (max-width: 860px) { #code-track { height: 280vh; } }
+    #code-track { height: calc(360vh * var(--pace)); }
+    @media (max-width: 860px) { #code-track { height: calc(280vh * var(--pace)); } }
 
     .stage { background: radial-gradient(50% 50% at 70% 50%, rgba(160, 82, 45, 0.16), transparent 70%), var(--bg); }
 
