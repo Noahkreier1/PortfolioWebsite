@@ -356,6 +356,30 @@ button:focus-visible,
   margin-top: 2px;
 }
 
+/* Aufklappbare Prüfpunkte (Website-Check) */
+.audit-details summary {
+  cursor: pointer;
+  list-style: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--color-accent-ink);
+}
+.audit-details summary::-webkit-details-marker { display: none; }
+.audit-details summary::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: rotate(-45deg);
+  transition: transform 200ms var(--ease-out);
+}
+.audit-details[open] summary::before { transform: rotate(45deg); }
+
 /* Unbestimmter Fortschritt (Website-Check) */
 .progress-indeterminate {
   position: relative;

@@ -2,8 +2,11 @@ import { useRef, useState, useCallback, useEffect } from 'react'
 
 const clamp = (v) => Math.min(96, Math.max(4, v))
 
-/* Zu jedem JPEG liegt eine WebP-Fassung mit gleichem Namen; der Browser wählt selbst. */
-const webp = (src) => src.replace(/\.jpe?g$/i, '.webp')
+/* Zu jedem JPEG liegt eine WebP-Fassung (1800 px) und eine kleinere fürs Handy (-900); der Browser wählt selbst. */
+const webpSet = (src) => { const base = src.replace(/\.jpe?g$/i, ''); return `${base}-900.webp 900w, ${base}.webp 1800w` }
+// Angezeigte Breite: Regler über die ganze Spalte; Handy-Ausschnitt (4:3, randlos gefüllt) etwa 1.4 × Spaltenbreite
+const SIZES_SLIDER = '(min-width: 1200px) 1040px, calc(100vw - 80px)'
+const SIZES_STACK = 'calc((100vw - 48px) * 1.4)'
 
 // Beide Screenshots sind im gleichen Viewport aufgenommen (1440 × 778 @1.25x),
 // daher deckt sich der Ausschnitt ohne Zuschnitt.
@@ -27,10 +30,10 @@ const labelStyle = {
 
 const imgStyle = { position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top center' }
 
-function Shot({ src, alt, width, height, priority, style }) {
+function Shot({ src, alt, width, height, priority, style, sizes = SIZES_SLIDER }) {
   return (
     <picture style={{ display: 'contents' }}>
-      <source srcSet={webp(src)} type="image/webp" />
+      <source srcSet={webpSet(src)} sizes={sizes} type="image/webp" />
       <img
         src={src}
         alt={alt}
@@ -163,12 +166,12 @@ export default function CompareSlider({ before, after, altBefore, altAfter, prio
       <div className="flex flex-col gap-5 sm:hidden">
         {[
           { src: after, alt: altAfter, label: 'Nachher', bg: 'var(--color-text)', pos: 'left top' },
-          { src: before, alt: altBefore, label: 'Vorher', bg: 'rgba(20,17,13,0.55)', pos: 'center top' },
+          { src: before, alt: altBefore, label: 'Vorher', bg: 'var(--color-text-muted)', pos: 'center top' },
         ].map((s) => (
           <div key={s.label}>
             <span style={{ ...labelStyle, position: 'static', display: 'inline-block', marginBottom: 8, background: s.bg, color: '#FAFAF7' }}>{s.label}</span>
             <div className="relative overflow-hidden" style={{ aspectRatio: '4 / 3', borderRadius: 'var(--radius)', background: 'var(--color-bg-soft)' }}>
-              <Shot src={s.src} alt={s.alt} width="1800" height="973" priority={priority && s.label === 'Nachher'} style={{ ...imgStyle, objectPosition: s.pos }} />
+              <Shot src={s.src} alt={s.alt} width="1800" height="973" sizes={SIZES_STACK} priority={priority && s.label === 'Nachher'} style={{ ...imgStyle, objectPosition: s.pos }} />
             </div>
           </div>
         ))}

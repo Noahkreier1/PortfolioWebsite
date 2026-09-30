@@ -42,7 +42,12 @@ function ProjectCard({ project }) {
     <>
       <div className="project-card-media" style={{ aspectRatio: '16/10', background: 'var(--color-bg)' }}>
         <picture style={{ display: 'contents' }}>
-          <source srcSet={project.image.replace(/\.jpe?g$/i, '.webp')} type="image/webp" />
+          {/* 700 px fürs Handy, 1100 px für zwei Spalten auf grossen Bildschirmen */}
+          <source
+            srcSet={`${project.image.replace(/\.jpe?g$/i, '')}-700.webp 700w, ${project.image.replace(/\.jpe?g$/i, '.webp')} 1100w`}
+            sizes="(min-width: 1200px) 496px, (min-width: 768px) calc(50vw - 64px), calc(100vw - 48px)"
+            type="image/webp"
+          />
           <img
             src={project.image}
             alt={`Screenshot der Webseite von ${project.name}`}

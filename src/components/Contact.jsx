@@ -172,7 +172,7 @@ export default function Contact() {
                 </div>
                 <div className="field">
                   <label htmlFor="contact-website">Heutige Webseite <span>(optional)</span></label>
-                  <input id="contact-website" name="website" type="text" inputMode="url" autoComplete="url" placeholder="ihrefirma.ch" />
+                  <input id="contact-website" name="website" type="text" inputMode="url" autoComplete="url" autoCorrect="off" autoCapitalize="none" spellCheck={false} placeholder="ihrefirma.ch" />
                 </div>
                 <div className="field">
                   <label htmlFor="contact-message">Worum geht es? <span>(optional)</span></label>

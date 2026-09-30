@@ -53,7 +53,7 @@ Noah Kreier (Beratung, Marke und Umsetzung) und Leon Helg (Entwicklung und Produ
 
 - [Startseite](https://zurio.ch/): Angebot, Referenzen, Ablauf, Preisrechner, Team, FAQ, Kontakt
 - [Case Study InspireDay](https://zurio.ch/referenzen/inspireday): Ausgangslage, Vorgehen und Resultat eines Projekts
-- [Website-Check](https://zurio.ch/website-check): kostenloses Werkzeug, das Ladegeschwindigkeit, SEO-Grundlagen, Barrierefreiheit und technische Qualität einer Webseite über Google PageSpeed Insights misst
+- [Website-Check](https://zurio.ch/website-check): kostenloses Werkzeug, das eine Webseite über Google PageSpeed Insights dreimal auf dem Handy misst und streng bewertet: Ladezeit, Bedienung auf dem Handy, Technik, Barrierefreiheit und Auffindbarkeit bei Google, mit rund 30 Prüfpunkten. Die Gesamtnote ist der Durchschnitt der fünf Bereiche.
 - [Impressum](https://zurio.ch/impressum)
 - [Datenschutzerklärung](https://zurio.ch/datenschutz)
 - [AGB](https://zurio.ch/agb)
